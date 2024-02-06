@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
 from flask_login import current_user, login_required  # login_user, logout_user
+import json
 # from sqlalchemy import desc  # func
 from app import ver
 from config import ansible_host, playbooks_lst
@@ -27,7 +28,14 @@ def warm_up():
             status, log = exec_ansible_playbook(ssh, command, current_user.username)
 
             if status:
-                front_data = {'report': [True, log]}
+                facts_pool = log.split("[Display RESULT]")[1].split("=> ")[1].split("PLAY RECAP")[0].strip()
+                front_data = {
+                    'report': [True, log],
+                    'facts': json.loads(facts_pool)
+                }
+                print('******&&&&&&&&&********')
+                print(front_data['facts']["msg"][0]["false_condition"])
+
             else:
                 front_data = {'report': [False, log]}
         else:

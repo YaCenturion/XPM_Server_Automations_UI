@@ -174,24 +174,25 @@ def get_ssh(cred):
 def exec_ansible_playbook(ssh, command, ui_user):
     try:
         stdin, stdout, stderr = ssh.exec_command(command)
-        msg = printer(f"Executed SSH command:\n'{command}'\n", ui_user)
+        msg = printer(f":::: Executed SSH command:\n:::: {command}\n", ui_user)
     except Exception as ex:
-        msg = printer(f"Error executing playbook: {ex}")
+        msg = printer(f"---- Error executing playbook: {ex}")
         return False, msg
     out = str(stdout.read().decode('utf-8'))
     err = str(stdout.read().decode('utf-8'))
-    if out:
-        if 'unreachable=0' in out and 'failed=0' in out:
-            block_name = ":::: SUCCESS"
-        else:
-            block_name = "---- WARNING"
-        msg += printer(f"{block_name}:\n{out}\n{err}\n")
 
-        if block_name == ":::: SUCCESS":
-            msg += '\n:::: Ansible playbook execute success.\n'
-        else:
-            msg += '\n:::: Read the LOG! Somthing looks not good.\n'
+    if 'unreachable=0' in out and 'failed=0' in out:
+        block_name = ":::: Execution result SUCCESS"
+    else:
+        block_name = "---- Execution result WARNING"
+    msg += printer(f"{block_name}:\n{out}\n{err}\n")
 
-        ssh.close()
+    if "SUCCESS" in block_name:
+        msg += '\n:::: Ansible playbook execute success.\n'
+    else:
+        msg += '\n---- Read the LOG! Somthing looks not good.\n'
+
+    ssh.close()
+    msg += ':: SSH Connection close\n'
 
     return True, msg
