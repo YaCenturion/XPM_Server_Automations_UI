@@ -1,0 +1,107 @@
+{% extends 'base_sources/base.html' %}
+
+{% block page_title %}Add new user{% endblock %}
+
+{#  CSS settings - if need #}
+{# {% block html_css %}class_name{% endblock %} #}
+{# {% block body_css %}class_name{% endblock %} #}
+{#{% block main_css %}class_name{% endblock %}#}
+{# {% block main_div_css %}class_name{% endblock %} #}
+
+{% block main_top %}
+    {% include 'base_sources/messenger.html' %}
+{% endblock %}
+
+{% block main_content %}
+                    <!-- Insert here -->
+                    <div class="container content">
+                        <div class="mx-auto text-center">
+                            <h2>Add new user</h2>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-5">
+                                <form action="" method="POST" id="add_new_user">
+                                    {{ form.hidden_tag() }}
+                                    <div class="input-group mb-3">
+                                        {{ form.name.label(class="input-group-text") }}
+                                        {% if form.name.errors %}
+                                            {{ form.name(class="form-control text-bg-danger") }}
+                                            {% for error in form.name.errors %}
+                                                <span class="text-danger">[{{ error }}]</span>
+                                            {% endfor %}
+                                        {% else %}
+                                            {{ form.name(class="form-control") }}
+                                        {% endif %}
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        {{ form.username.label(class="input-group-text") }}
+                                        {% if form.username.errors %}
+                                            {{ form.username(class="form-control text-bg-danger") }}
+                                            {% for error in form.username.errors %}
+                                                <span class="text-danger">[{{ error }}]</span>
+                                            {% endfor %}
+                                        {% else %}
+                                            {{ form.username(class="form-control") }}
+                                        {% endif %}
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        {{ form.app_role.label(class="input-group-text") }}
+                                        {% if form.app_role.errors %}
+                                            {{ form.app_role(class="form-select text-bg-danger") }}
+                                            {% for error in form.app_role.errors %}
+                                                <span class="text-danger">[{{ error }}]</span>
+                                            {% endfor %}
+                                        {% else %}
+                                            {{ form.app_role(class="form-select") }}
+                                        {% endif %}
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        {{ form.email.label(class="input-group-text") }}
+                                        {% if form.email.errors %}
+                                            {{ form.email(class="form-control text-bg-danger") }}
+                                            {% for error in form.email.errors %}
+                                                <span class="text-danger">[{{ error }}]</span>
+                                            {% endfor %}
+                                        {% else %}
+                                            {{ form.email(class="form-control") }}
+                                        {% endif %}
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        {{ form.password.label(class="input-group-text") }}
+                                        {% if form.password.errors %}
+                                            {{ form.password(class="form-control text-bg-danger") }}
+                                            {% for error in form.password.errors %}
+                                                <span class="text-danger">[{{ error }}]</span>
+                                            {% endfor %}
+                                        {% else %}
+                                            {{ form.password(class="form-control") }}
+                                        {% endif %}
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        {{ form.password2.label(class="input-group-text") }}
+                                        {% if form.password2.errors %}
+                                            {{ form.password2(class="form-control text-bg-danger") }}
+                                            {% for error in form.password2.errors %}
+                                                <span class="text-danger">[{{ error }}]</span>
+                                            {% endfor %}
+                                        {% else %}
+                                            {{ form.password2(class="form-control") }}
+                                        {% endif %}
+                                    </div>
+                                    <div class="row justify-content-center py-4" id="create_button">
+                                        <div class="col-md-4 text-center">
+                                            <div class="d-grid gap-2">
+                                                {{ form.submit(class="btn btn-danger btn-custom") }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- //Insert here -->
+{% endblock %}
+
+{#{% block main_bottom %}<h3>bottom</h3>{% endblock %}#}
+
+{% block custom_scripts %}{% endblock %}

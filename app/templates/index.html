@@ -1,0 +1,275 @@
+{% extends 'base_sources/base.html' %}
+
+{% block page_title %}Search by customer{% endblock %}
+
+{#  CSS settings - if need #}
+{# {% block html_css %}class_name{% endblock %} #}
+{# {% block body_css %}class_name{% endblock %} #}
+{#{% block main_css %}class_name{% endblock %}#}
+{# {% block main_div_css %}class_name{% endblock %} #}
+
+{% block main_top %}
+    {% include 'base_sources/messenger.html' %}
+{% endblock %}
+
+{% block main_content %}
+                    <!-- Insert here -->
+                    <div class="container content">
+                        {% if results %}
+                            <div class="p-2 mx-auto text-center">
+                                <h2>Search results</h2>
+                                <p class="fs-5 text-muted">query: {{ results['search_query'] or 'empty search' }}</p>
+                            </div>
+                            {% if results['ips'] %}
+                                <div class="p-2 mx-auto text-center">
+                                    <h5>IPs:</h5>
+                                </div>
+                                <div class="row justify-content-center pt-3">
+                                    <div class="col-8 text-center">
+                                    {% for data in results['ips'] %}
+                                    <p>Virtual (external) IP: {{ data["virtual_ip"] }} == Internal IP: {{ data["internal_ip"] }}</p>
+                                    {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if results['urls'] %}
+                                {% if results['urls'][1] or results['urls'][2] %}
+                                    <div class="p-2 mx-auto text-center">
+                                        <h5>URLs:</h5>
+                                    </div>
+                                    <div class="row justify-content-center pt-3">
+                                        <div class="col-12 text-center">
+                                            <table class="table table-bordered table-striped table-responsive table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>URL</th>
+                                                        <th>A-Record</th>
+                                                        <th>WAF Account</th>
+                                                        <th>WAF Plan name</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% if results['urls'][1] %}
+                                                    <tr><td colspan="4"><img src="{{ url_for('static', filename='images/cloudflare_logo_horizontal.svg') }}" alt="CloudFlare" class="waf_logo_height"></td></tr>
+                                                    {% for data in results['urls'][1] %}
+                                                    <tr>
+                                                        <td>{{ data.dns_name }}</td>
+                                                        <td>{{ data.dns_content }}</td>
+                                                        <td>{{ data.account_name }}</td>
+                                                        <td>{{ data.plan_name }}</td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                {% endif %}
+                                                {% if results['urls'][2] %}
+                                                    <tr><td colspan="4"><img src="{{ url_for('static', filename='images/imperva_logo_horizontal.svg') }}" alt="Imperva" class="waf_logo_height"></td></tr>
+                                                    {% for data in results['urls'][2] %}
+                                                    <tr>
+                                                        <td>{{ data.dns_record_name }}</td>
+                                                        <td>{{ data.ip }}</td>
+                                                        <td>{{ data.account_name }}</td>
+                                                        <td>{{ data.plan_name }}</td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                {% endif %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                            {% if results['customers'] %}
+                                <div class="p-2 mx-auto text-center">
+                                    <h5>Customers:</h5>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead class="table-light align-middle">
+                                        <tr>
+                                            <th class="align-middle text-center">Company ID</th>
+                                            <th class="align-middle text-center">Name</th>
+                                            <th class="align-middle text-center">Phone</th>
+                                            <th class="align-middle text-center">Contacts</th>
+                                            <th class="align-middle text-center">Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for row in results['customers'] %}
+                                        <tr>
+                                            <td class="align-middle text-center"><strong>{{ row.custname }}</strong></td>
+                                            <td class="align-middle" dir="rtl">{{ row.custdes }}</td>
+                                            <td class="align-middle text-center">{{ row.phone }}</td>
+                                            <td class="align-middle text-center"><a href="{{ url_for('priority_customers', company_id=row.custname, condition='contacts') }}" class="btn btn-outline-secondary btn-outline-custom">Contacts</a></td>
+                                            <td class="align-middle text-center"><a href="{{ url_for('priority_customers', company_id=row.custname, condition='details') }}" class="btn btn btn-outline-secondary btn-outline-custom">Details</a></td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                                </div>
+                            {% endif %}
+                            {% if not results['customers'] and not results['urls'] and not results['ips'] %}
+                                <div class="p-2 mx-auto text-center">
+                                    <h5>Nothing found</h5>
+                                    <p>try changing your query</p>
+                                </div>
+                                <div class="row pt-3">
+                                    <form method="POST" id="search_everywhere_form">
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text" id="basic-addon3">I'm looking for:</span>
+                                            <input type="text" class="form-control" placeholder="google.com or 192.168.1.1 or שטראוס" aria-label="global_search_string" aria-describedby="global_search_string" id="global_search_string" name="global_search_string">
+                                            <button class="btn btn-outline-secondary btn-outline-custom" type="submit" id="button-search"><i class="fa-solid fa-magnifying-glass fa-beat"></i> Search</button>
+                                        </div>
+                                        <div class="row justify-content-center">
+                                            <div class="col-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="search_ip" id="search_ip" name="search_ip" checked>
+                                                    <label class="form-check-label" for="search_ip">
+                                                        IP-address
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="search_url" id="search_url" name="search_url" checked>
+                                                    <label class="form-check-label" for="search_url">
+                                                        URL
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="search_customer" id="search_customer" name="search_customer" checked>
+                                                    <label class="form-check-label" for="search_customer">
+                                                        Customer name
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="index_form" value="1">
+                                    </form>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                        {% if updates %}
+                            <div class="p-2 mx-auto text-center">
+                                <h2>Combined search</h2>
+{#                                <p class="fs-5 text-muted">You can search by IP, URL, customers.</p>#}
+                            </div>
+                            <div class="row pt-3">
+                                <form method="POST" id="search_everywhere_form">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text" id="basic-addon3">I'm looking for:</span>
+                                        <input type="text" class="form-control" placeholder="google.com or 192.168.1.1 or שטראוס" aria-label="global_search_string" aria-describedby="global_search_string" id="global_search_string" name="global_search_string">
+                                        <button class="btn btn-outline-secondary btn-outline-custom" type="submit" id="button-search"><i class="fa-solid fa-magnifying-glass fa-beat"></i> Search</button>
+                                    </div>
+                                    <div class="row justify-content-center">
+                                        <div class="col-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="search_ip" id="search_ip" name="search_ip" checked>
+                                                <label class="form-check-label" for="search_ip">
+                                                    IP-address
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="search_url" id="search_url" name="search_url" checked>
+                                                <label class="form-check-label" for="search_url">
+                                                    URL
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="search_customer" id="search_customer" name="search_customer" checked>
+                                                <label class="form-check-label" for="search_customer">
+                                                    Customer name
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="index_form" value="1">
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <!-- //Insert here -->
+{% endblock %}
+
+{% block main_bottom %}
+    {% if updates %}
+    <div class="container content mt-5">
+        <h5 class="text-center">Don't forgot to update data in DB</h5>
+    </div>
+    <div class="row justify-content-center pt-2">
+        <div class="col-3">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover table-bordered">
+                    <thead class="table-light align-middle">
+                        <tr>
+                            <th class="align-middle w-50">Last updates</th>
+                            <th class="align-middle w-50">IPs ranges</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-group-divider">
+                        <tr>
+                            <td class="align-middle table-{{ updates['fortigate_last'][0] }}">{{ updates['fortigate_last'][1] }}</td>
+                            <td class="align-middle">FortiGate</td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle table-{{ updates['cloudflare_last'][0] }}">{{ updates['cloudflare_last'][1] }}</td>
+                            <td class="align-middle">CloudFlare</td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle table-{{ updates['imperva_last'][0] }}">{{ updates['imperva_last'][1] }}</td>
+                            <td class="align-middle">Imperva</td>
+                        </tr>
+{#                        <tr>#}
+{#                            <td class="align-middle table-{{ updates['reblaze_last'][0] }}">{{ updates['reblaze_last'][1] }}</td>#}
+{#                            <td class="align-middle">Reblaze</td>#}
+{#                        </tr>#}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover table-bordered">
+                    <thead class="table-light align-middle">
+                        <tr>
+                            <th class="align-middle w-50">Last updates</th>
+                            <th class="align-middle w-50">WAF accounts</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-group-divider">
+                        <tr>
+                            <td class="align-middle table-{{ updates['cloudflare_waf_last'][0] }}">{{ updates['cloudflare_waf_last'][1] }}</td>
+                            <td class="align-middle">CloudFlare</td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle table-{{ updates['imperva_waf_last'][0] }}">{{ updates['imperva_waf_last'][1] }}</td>
+                            <td class="align-middle">Imperva</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center p-2">
+        <div class="col-3 text-center">
+            <form method="POST" id="expim-form-update-ip">
+                <div class="col-auto">
+                    <button class="btn btn-outline-secondary btn-outline-custom" type="submit" id="button-search"><i class="fa-solid fa-arrows-rotate fa-shake"></i> Update IPs ranges</button>
+                </div>
+                <input type="hidden" name="index_form" value="2">
+                <input type="hidden" name="update" value="update_ip">
+            </form>
+        </div>
+        <div class="col-3 text-center">
+            <form method="POST" id="expim-form-update-waf">
+                <div class="col-auto">
+                    <button class="btn btn-outline-secondary btn-outline-custom" type="submit" id="button-search"><i class="fa-solid fa-arrows-rotate fa-shake"></i> Update WAFs accounts</button>
+                </div>
+                <input type="hidden" name="index_form" value="3">
+                <input type="hidden" name="update" value="update_waf">
+            </form>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block custom_scripts %}{% endblock %}

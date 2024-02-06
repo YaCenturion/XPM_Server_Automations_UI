@@ -1,0 +1,75 @@
+{#{% macro value_check(value) -%}#}
+{#    {% if value == None %}{% set value = '' %}{% endif %}#}
+{#{%- endmacro %}#}
+
+{# csrf_token #}
+{% macro csrf() -%}
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+{%- endmacro %}
+
+
+{# divider #}
+{% macro divider(label) -%}
+    <span class="input-group-text label-width">{{ label }}</span>
+{%- endmacro %}
+
+{# input #}
+{% macro input(label, name, value='', placeholder='', required='required', disabled='', type='text') -%}
+    <label class="input-group-text label-width" for="input_{{ name }}">{{ label }}</label>
+    <input class="form-control" id="input_{{ name }}" name="{{ name }}" type="{{ type }}" value="{{ value|e }}" placeholder="{{ placeholder }}" {{ required }} {{ disabled }}>
+{%- endmacro %}
+
+{# phone #}
+{% macro phone(label, name, value='', required='required', disabled='', type='phone') -%}
+    <label class="input-group-text label-width" for="input_{{ name }}">{{ label }}</label>
+    <input class="form-control" id="input_{{ name }}" name="{{ name }}" type="{{ type }}" value="{{ value|e }}" {{ required }} {{ disabled }}>
+{%- endmacro %}
+
+{# email #}
+{% macro email(label, name, value='', required='required', disabled='', type='email') -%}
+    <label class="input-group-text label-width" for="input_{{ name }}">{{ label }}</label>
+    <input class="form-control" id="input_{{ name }}" name="{{ name }}" type="{{ type }}" value="{{ value|e }}" {{ required }} {{ disabled }}>
+{%- endmacro %}
+
+{# datalist #}
+{% macro datalist(label, name, lst, value='') -%}
+    <label class="input-group-text label-width" for="{{ name }}">{{ label }}</label>
+    <input class="form-control" placeholder="Type to search..." list="datalist_{{ name }}" id="{{ name }}" name="{{ name }}" value="{% for row in lst %}{% if value == row[0] %}{{ row[1]|e }}{% endif %}{% endfor %}">
+        <datalist id="datalist_{{ name }}">
+            {% for option in lst %}<option value="{{ option[1] }} #{{ option[0] }}">{% endfor %}
+        </datalist>
+{%- endmacro %}
+
+{# date #}
+{% macro date(label, name, value='', required='', disabled='', type='date') -%}
+    <label class="input-group-text label-width" for="date_{{ name }}">{{ label }}</label>
+    <input class="form-control" id="date_{{ name }}" name="date_{{ name }}" {{ required }} {{ disabled }} type="{{ type }}" value="{{ value }}">
+{%- endmacro %}
+
+{# radio #}
+{% macro radio(label, value, name, checked='', required='', disabled='', type='radio') -%}
+    <input type="{{ type }}" class="btn-check" name="{{ name }}" value="{{ value }}" id="radio_{{ value }}" {{ checked }} {{ required }} {{ disabled }} autocomplete="off">
+    <label class="btn btn-outline-secondary" for="radio_{{ value }}">{{ label }}</label>
+{%- endmacro %}
+
+{# textarea #}
+{%- macro textarea(label, value='', name='comments') -%}
+    {% if value == None %}{% set value = '' %}{% endif %}
+    <div class="form-floating">
+        <textarea class="form-control" placeholder="Leave a comment here" name="{{ name }}" id="textarea_{{ name }}">{{ value|e }}</textarea>
+        <label for="textarea_{{ name }}">{{ label|capitalize }}</label>
+    </div>
+{%- endmacro %}
+
+{# submit #}
+{%- macro submit(label="Submit", name="submit") -%}
+<div class="row justify-content-center py-3" id="add_button">
+    <div class="col-md-4 text-center">
+        <input class="btn btn-danger btn-custom" id="submit" name="{{ name }}" type="submit" value="{{ label }}">
+    </div>
+</div>
+{%- endmacro %}
+
+{%- macro group_submit(label="Submit") -%}
+    <button class="btn btn-danger btn-custom" type="submit" id="submit-button">{{ label|safe }}</button>
+{%- endmacro %}

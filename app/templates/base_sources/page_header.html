@@ -1,0 +1,21 @@
+<header class="border-bottom">
+    <nav class="navbar navbar-expand-md" aria-label="navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/"><img src="{{ url_for('static', filename='images/expim_logo.svg') }}" alt="Restee" class="m-2" style="max-width: 110px;"/></a>
+            <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample04" aria-controls="nav_bars" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="navbar-collapse collapse align-items-center" id="nav_bars" style="">
+                {% include 'base_sources/nav.html' %}
+
+                <form method="POST" action="/search" class="d-flex" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="customer search" aria-label="priority_search" aria-describedby="priority_search" id="priority_search" name="priority_search"/>
+                        <button class="btn btn-outline-secondary btn-outline-custom" type="submit" id="button-nav-search">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </nav>
+</header>

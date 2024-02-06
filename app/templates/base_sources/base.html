@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light" class="{% block html_css %}h-100{% endblock %}">
+    <head>
+        {% include 'base_sources/head_block.html' %}
+        <title>{% block page_title %}Default Title{% endblock %} - EXPIM</title>
+    </head>
+    <body class="{% block body_css %}d-flex flex-column h-100{% endblock %}" id="body_block">
+{#        {% include 'base_sources/themes_changer.html' %}#}
+        <div class="container">
+            {% include 'base_sources/page_header.html' %}
+        </div>
+
+        <main id="main_block" class="mt-4 {% block main_css %}{% endblock %}">
+            <div class="{% block main_div_css %}container pb-4{% endblock %}" id="main_div_block">
+                {% block main_top %}{% endblock %}
+                {% block main_content %}ERROR PAGE: No content{% endblock %}
+                {% block main_bottom %}{% endblock %}
+            </div>
+        </main>
+
+        {% include 'base_sources/page_footer.html' %}
+
+        {% block custom_scripts %}{% endblock %}
+        {% include 'base_sources/static_scripts.html' %}
+
+    </body>
+</html>

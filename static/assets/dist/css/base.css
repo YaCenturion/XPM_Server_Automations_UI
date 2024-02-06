@@ -1,0 +1,246 @@
+#dynamic-ui-theme-changer{
+    #dynamic-ui-theme-button {
+        --bd-custom-bg: #a9a9a9;
+        --bd-custom-hover-bg: #f9852c;
+        --bd-custom-rgb: 112.520718, 44.062154, 249.437846;
+
+        color: var(--bs-light);
+        --bs-btn-font-weight: 600;
+        --bs-btn-color: var(--bs-white);
+        --bs-btn-bg: var(--bd-custom-bg);
+        --bs-btn-border-color: var(--bd-custom-bg);
+        --bs-btn-hover-color: var(--bs-white);
+        --bs-btn-hover-bg: var(--bd-custom-hover-bg);
+        --bs-btn-hover-border-color: var(--bd-custom-hover-bg);
+        --bs-btn-focus-shadow-rgb: var(--bd-custom-rgb);
+        --bs-btn-active-color: var(--bs-btn-hover-color);
+        --bs-btn-active-bg: var(--bd-custom-hover-bg);
+        --bs-btn-active-border-color: var(--bd-custom-hover-bg);
+    }
+}
+.bi {
+    vertical-align: -0.125em;
+    fill: currentColor;
+}
+.bd-mode-toggle .dropdown-menu .active .bi {
+    display: block !important;
+}
+.bd-mode-toggle {
+    z-index: 1500;
+}
+.bd-mode-toggle .dropdown-menu .active .bi {
+    display: block !important;
+}
+/*****************/
+
+/* Base settings */
+:root {
+    --custom-xpm-primary-color: #bf1b2d;
+    --custom-xpm-secondary-color: #8e8e8e;
+
+    --custom-border-color: #a6a6a6;
+    --custom-btn-bg-color: #b0b0b0;
+    --custom-btn-color: #202020;
+    --custom-btn-color-hover: #bbb;
+
+
+    --custom-badge-bg-color: #dedede;
+}
+/*****************/
+body {
+    background: linear-gradient(180deg, #e0e0e0, #fff 100px) no-repeat;
+}
+
+.label-width {
+    min-width: 120px;
+}
+
+
+#textarea_comments {
+    height: 120px;
+}
+/* MUTE line in table */
+/*tr.text-muted {*/
+/*    color: rgba(33, 37, 41, 0.4) !important;*/
+/*}*/
+/*.table-striped>tbody>tr:nth-of-type(odd)>* {*/
+/*    color: rgba(33, 37, 41, 0.4) !important;*/
+/*}*/
+
+/* POPOVER*/
+.popover {
+    --bs-popover-max-width: 370px;
+}
+
+/* Badges */
+.badge.custom-version {
+    color: var(--custom-xpm-secondary-color);
+    background-color: var(--custom-badge-bg-color);
+    font-weight: 600;
+    border: var(--bs-border-width) solid var(--custom-border-color);
+}
+.badge.custom-info {
+    color: var(--custom-btn-color);
+    background-color: var(--custom-badge-bg-color);
+    font-weight: 600;
+    border: var(--bs-border-width) solid var(--custom-border-color);
+}
+
+/* Forms and buttons settings */
+.btn-outline-custom {
+    border-color: var(--custom-border-color);
+    background-color: var(--custom-btn-bg-color);
+    color: var(--custom-btn-color);
+}
+.btn-outline-custom:hover {
+    border-color: var(--custom-border-color);
+    background-color: var(--custom-xpm-primary-color);
+}
+.input-group-text, .form-select, .form-control, .form-check-input {
+    border-color: var(--custom-border-color);
+}
+.form-check-input:checked {
+    background-color: var(--custom-xpm-primary-color) !important;
+    border-color: #7e0613 !important;
+}
+.form-check-input:checked:disabled {
+    border-color: var(--custom-border-color) !important;
+    background-color: var(--custom-btn-bg-color) !important;
+    pointer-events: none;
+    filter: none;
+    opacity: .5;
+}
+
+
+.btn-custom {
+    --bs-btn-color: var(--custom-btn-color);
+    --bs-btn-bg: var(--bs-secondary-bg);
+    --bs-btn-border-color: var(--custom-border-color);
+}
+.btn.query {
+    --bs-btn-hover-color: var(--bs-danger-text-emphasis);
+    --bs-btn-hover-bg: var(--bs-danger-bg-subtle);
+    --bs-btn-hover-border-color: var(--bs-danger-text-emphasis);
+    --bs-btn-focus-shadow-rgb: 60,153,110;
+    --bs-btn-active-color: var(--bs-danger-text-emphasis);
+    --bs-btn-active-bg: var(--bs-danger-bg-subtle);
+    --bs-btn-active-border-color:var(--bs-danger-text-emphasis);
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: var(--bs-danger-bg-subtle);
+    --bs-btn-disabled-border-color: var(--bs-danger-text-emphasis);
+}
+.btn.download {
+    --bs-btn-hover-color: var(--bs-success-text-emphasis);
+    --bs-btn-hover-bg: var(--bs-success-bg-subtle);
+    --bs-btn-hover-border-color: var(--bs-success-text-emphasis);
+    --bs-btn-focus-shadow-rgb: 60,153,110;
+    --bs-btn-active-color: var(--bs-success-text-emphasis);
+    --bs-btn-active-bg: var(--bs-success-bg-subtle);
+    --bs-btn-active-border-color: var(--bs-success-text-emphasis);
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: var(--bs-success-bg-subtle);
+    --bs-btn-disabled-border-color: var(--bs-success-text-emphasis);
+}
+
+.custom-code {
+    color: var(--custom-xpm-primary-color);
+    font-weight: bolder;
+}
+
+.bi {
+    /*width: 3rem;*/
+    /*height: 3rem;*/
+    vertical-align: -0.125em;
+    fill: currentcolor;
+}
+.waf_logo_height {
+    height: 14px;
+}
+.footer-icon {
+    font-size: 1.5rem!important;
+}
+.footer-icon:hover {
+    color: var(--custom-xpm-primary-color);
+}
+
+.container.content {
+    max-width: 960px;
+}
+
+/* Table */
+.custom-fs-07 {
+    font-size: 0.7rem!important;
+}
+.custom-fs-08 {
+    font-size: 0.8rem!important;
+}
+.custom-fs-09 {
+    font-size: 0.9rem!important;
+}
+
+/* Show code block */
+.bd-callout-warning {
+    --bd-callout-color: var(--bs-warning-text-emphasis);
+    --bd-callout-bg: var(--bs-warning-bg-subtle);
+    --bd-callout-border: var(--bs-warning-border-subtle);
+}
+.bd-callout {
+    padding: 1.25rem;
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+    color: var(--bd-callout-color, inherit);
+    background-color: var(--bd-callout-bg, var(--bs-gray-100));
+    border-left: 0.25rem solid var(--bd-callout-border, var(--bs-gray-300));
+}
+
+/* WAIT - Loading */
+.modal-loading{
+    position: fixed;
+    width: 100vw;
+    max-width: none;
+    height: 100%;
+    margin: 0;
+    left: 0;
+    top: 0;
+    background: rgb(29 42 62 / 45%);
+    /*border: 0.5rem solid #FFF;*/
+    z-index: 1032 ;
+}
+
+.wait-radius {
+    border-radius: 2rem;
+}
+/**/
+.lds-hourglass {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+.lds-hourglass:after {
+    content: " ";
+    display: block;
+    border-radius: 50%;
+    width: 0;
+    height: 0;
+    margin: 8px;
+    box-sizing: border-box;
+    border: 32px solid;
+    border-color: #fff transparent #fff transparent;
+    animation: lds-hourglass 1.2s infinite;
+}
+@keyframes lds-hourglass {
+    0% {
+        transform: rotate(0);
+        animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+    }
+    50% {
+        transform: rotate(900deg);
+        animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+    100% {
+        transform: rotate(1800deg);
+    }
+}

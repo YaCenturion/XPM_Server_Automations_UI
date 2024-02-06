@@ -1,0 +1,35 @@
+<div class="waiting modal-loading" id="waiting" style="display: none;">
+    <div class="position-absolute top-50 start-50 translate-middle bg-dark wait-radius text-center p-5 bg-opacity-75">
+        <div class="lds-hourglass"></div>
+        <div class="text-white p-2">Wait please...</div>
+    </div>
+</div>
+<script>
+    function showLoading() {
+        var loading = document.getElementById("waiting");
+        loading.style.display = "block";
+    }
+
+    var forms = document.querySelectorAll("#expim-form");
+    if (forms) {
+        forms.forEach(function (form) {
+            var buttons = form.querySelectorAll("button");
+            buttons.forEach(function (button) {
+                button.addEventListener("click", showLoading);
+            });
+        });
+    }
+</script>
+
+
+<script>
+function toClipboard(value) {
+    navigator.clipboard.writeText(value)
+        .then(() => {
+            console.log("Copied to clipboard: " + value);
+        })
+        .catch((error) => {
+            console.error("Unable to copy to clipboard. Error:", error);
+        });
+    }
+</script>

@@ -1,0 +1,45 @@
+                        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/"><i class="fa-solid fa-house"></i></a>
+                            </li>
+                            {% if user.is_authenticated %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Server settings
+                                </a>
+                                <ul class="dropdown-menu">
+{#                                    <li><hr class="dropdown-divider"></li>#}
+                                    <li><a class="dropdown-item" href="{{ url_for('servers.warm_up') }}">Choose by IP</a></li>
+{#                                    <li><a class="dropdown-item" href="{{ url_for('persons.person', way='add') }}">Person</a></li>#}
+{#                                    <li><a class="dropdown-item" href="{{ url_for('add_contract') }}">Contract</a></li>#}
+{#                                    <li><a class="dropdown-item" href="{{ url_for('add_hosting') }}">Hosting</a></li>#}
+{#                                    <li><a class="dropdown-item" href="{{ url_for('add_domain') }}">Domain</a></li>#}
+{#                                    <li><a class="dropdown-item" href="{{ url_for('add_site') }}">Site</a></li>#}
+{#                                    <li><a class="dropdown-item" href="{{ url_for('add_mail_system') }}">Mail service</a></li>#}
+{#                                    <li><a class="dropdown-item" href="{{ url_for('add_identifier') }}">Identifier</a></li>#}
+                                </ul>
+                            </li>
+{#                            <li class="nav-item dropdown">#}
+{#                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">#}
+{#                                    Lists#}
+{#                                </a>#}
+{#                                <ul class="dropdown-menu">#}
+{#                                    <li><a class="dropdown-item" href="{{ url_for('companies.all_companies') }}">Companies</a></li>#}
+{#                                    <li><a class="dropdown-item" href="{{ url_for('persons.all_persons') }}">Persons</a></li>#}
+{#                                </ul>#}
+{#                            </li>#}
+
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Management
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="{{ url_for('users.all_users') }}"><i class="fa-solid fa-address-book"></i> Users list</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('users.add_user') }}"><i class="fa-solid fa-square-plus"></i> Add User</a></li>
+                                    </ul>
+                                </li>
+                                <li class="nav-item"><a class="nav-link" href="{{ url_for('general.logout') }}"><i class="fa-solid fa-arrow-right-from-bracket"></i> {{ current_user.name }}</a></li>
+                            {% else %}
+                                <li class="nav-item"><a class="nav-link" href="{{ url_for('general.login') }}"><i class="fa-solid fa-id-badge"></i> Login</a></li>
+                            {% endif %}
+                        </ul>

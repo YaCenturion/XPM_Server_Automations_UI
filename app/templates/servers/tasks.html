@@ -1,0 +1,57 @@
+{% extends 'base_sources/base.html' %}
+{% import 'base_sources/form-fields.html' as fields %}
+
+{% block page_title %}Add new company{% endblock %}
+
+{#  CSS settings - if need #}
+{# {% block html_css %}class_name{% endblock %} #}
+{# {% block body_css %}class_name{% endblock %} #}
+{#{% block main_css %}class_name{% endblock %}#}
+{# {% block main_div_css %}class_name{% endblock %} #}
+
+{% block main_top %}
+    {% include 'base_sources/messenger.html' %}
+{% endblock %}
+
+{% block main_content %}
+                    <!-- Insert here -->
+                    <div class="container content">
+                        <div class="mx-auto text-center">
+                            {% if resource %}{% set headline = 'Edit' %}{% else %}{% set headline = 'Add new' %}{% endif %}
+                            <h2>{{ headline }} company</h2>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-8">
+                                <form action="" method="POST" id="add_new_unit">
+                                    <div class="input-group mb-3">
+                                        {{ fields.input('Name', 'name', resource.name) }}
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        {{ fields.input('Full name', 'full_name', resource.full_name) }}
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        {% if resource %}{% set s_date = resource.start_date|timestamp2date('%Y-%m-%d') %}{% endif %}
+                                        {{ fields.date('Start date', 'start', s_date) }}
+                                        {% if resource %}{% set e_date = resource.end_date|timestamp2date('%Y-%m-%d') %}{% endif %}
+                                        {{ fields.date('End date', 'end', e_date) }}
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        {{ fields.divider('Pay status') }}
+                                        {% for pay_status in pay_status_lst %}
+                                            {% if pay_status[0]|string == resource.pay_status|string %}{% set checked='checked' %}{% endif %}
+                                        {{ fields.radio(pay_status[1], pay_status[0], 'pay_status', checked) }}
+                                        {% endfor %}
+                                    </div>
+                                    {{ fields.textarea('Comments', resource.comments) }}
+                                    {% if resource %}{% set submit_label = 'Save changes' %}{% else %}{% set submit_label = 'Add new element' %}{% endif %}
+                                    {{ fields.submit(submit_label) }}
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- //Insert here -->
+{% endblock %}
+
+{#{% block main_bottom %}<h3>bottom</h3>{% endblock %}#}
+
+{% block custom_scripts %}{% endblock %}
