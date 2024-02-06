@@ -16,6 +16,9 @@ def handler_facts(log):
     for name in linux_packages_dict[os_family].keys():
         for package in all_facts['msg'][1]['ansible_facts']['packages'].keys():
             ''' Перебрать два словаря'''
-            # linux_packages_dict[os_family][name]
+            print(package)
+            if linux_packages_dict[os_family][name] == all_facts['msg'][1]['ansible_facts']['packages'][package]:
+                print('cool')
+                # linux_packages_dict[os_family][name]
 
     pass
