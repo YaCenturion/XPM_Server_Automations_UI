@@ -15,14 +15,15 @@ servers = Blueprint('servers', __name__)
 def warm_up():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
-    host = False
+    username = current_user.username
+    target = False
     front_data = {}
     full_log = ""
     if request.method == 'POST':
-        printer(f'Get POST data from: /{request.endpoint}', current_user.username)
+        printer(f'Get POST data from: /{request.endpoint}', username)
         show_post_data(request.form.items())
-
-        host = str(request.form['ip_address']).strip()
+        
+        target = str(request.form['ip_address']).strip()
         ssh, msg = get_ssh(ansible_host)
 
         if ssh:
@@ -31,46 +32,26 @@ def warm_up():
             if 'update' in request.form:
                 if request.form['update'] == 'true':
                     printer(f'Update tyt')
-                    remove_pool, install_pool = [], []
-                    for key, value in request.form.items():
-                        if value == '+set':
-                            install_pool.append(key)
-                        elif value == '-del':
-                            remove_pool.append(key)
-
-                    printer(install_pool)
-                    printer(remove_pool)
-
-                    # if len(remove_pool) > 0:
-                    #     command = f'{playbooks_lst["base"]}{playbooks_lst["remover"]} -i {host}, -e "target={host}"'
-                    #     status_update, ssh_log = exec_ansible_playbook(ssh, command, current_user.username)
-                    #     full_log += ssh_log
-                    #     front_data['update_rm'] = [status_update, ssh_log]
-                    # elif len(install_pool) > 0:
-                    #     command = f'{playbooks_lst["base"]}{playbooks_lst["installer"]} -i {host}, -e "target={host}"'
-                    #     status_update, ssh_log = exec_ansible_playbook(ssh, command, current_user.username)
-                    #     full_log += ssh_log
-                    #     front_data['update_set'] = [status_update, ssh_log]
-
+                    update_pool = get_packages_changes(request.form.items())
+                    # print(update_pool['install'])
+                    # print(update_pool['delete'])
+                    front_data, update_logs = update_server_packages(front_data, update_pool, ssh, target, username)
+                    full_log += update_logs + "=" * 30 + "\n"
+                    if not front_data['update_delete'][0] or not front_data['update_install'][0]:
+                        text, cat = 'Warning! Read LOG carefully!', 'error'
+                    else:
+                        text, cat = 'Update success!', 'success'
+                    flash(text, cat)
+                    
             # Ansible: Get facts
-            command = f'{playbooks_lst["base"]}{playbooks_lst["get_facts"]} -i {host}, -e "target={host}"'
-            status_get_facts, ssh_log = exec_ansible_playbook(ssh, command, current_user.username)
-            full_log += ssh_log
-
-            if status_get_facts:
-                result, data_pool = handler_facts(ssh_log)
-                if result:
-                    front_data['get_facts'] = [result, ssh_log]
-                    front_data['packages'] = data_pool
-
-            front_data['get_facts'] = [status_get_facts, ssh_log]
-            close_ssh(ssh, current_user.username)
+            front_data = get_facts(front_data, ssh, target, username)
+            close_ssh(ssh, username)
         else:
             front_data['get_facts'] = [False, msg]
 
         if not front_data['get_facts'][0]:
-            text = 'Warning! Read LOG carefully!'
-            cat = 'error'
+            text, cat = 'Warning! Read LOG carefully!', 'error'
             flash(text, cat)
 
-    return render_template('servers/warm_up.html', query=host, full_log=full_log, data=front_data, user=current_user, ver=ver)
+    return render_template(
+        'servers/warm_up.html', query=target, full_log=full_log, data=front_data, user=current_user, ver=ver)
