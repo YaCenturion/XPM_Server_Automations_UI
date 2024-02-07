@@ -54,10 +54,8 @@
 
 {# checkbox #}
 {% macro checkbox(label, value, name, checked='', required='', disabled='', type='checkbox') -%}
-{#    <div class="form-check">#}
         <input class="form-check-input" type="{{ type }}" name="{{ name }}" value="{{ value }}" id="checkbox_{{ name }}" {{ checked }} {{ required }} {{ disabled }} autocomplete="off">
         <label class="form-check-label" for="checkbox_{{ name }}">{{ label|safe }}</label>
-{#    </div>#}
 {%- endmacro %}
 
 {# textarea #}
@@ -67,6 +65,11 @@
         <textarea class="form-control" placeholder="Leave a comment here" name="{{ name }}" id="textarea_{{ name }}">{{ value|e }}</textarea>
         <label for="textarea_{{ name }}">{{ label|capitalize }}</label>
     </div>
+{%- endmacro %}
+
+{# input_hidden #}
+{%- macro input_hidden(value='', name='') -%}
+    <input type="hidden" name="{{ name }}" value="{{ value }}">
 {%- endmacro %}
 
 {# submit #}

@@ -64,8 +64,10 @@ ansible_host = {
 }
 
 playbooks_lst = {
+    "base": 'ansible-playbook /etc/ansible/',
     "get_facts": 'get_facts.yml',
     "installer": 'install_packages.yml',
+    "remover": 'remove_packages.yml',
 }
 
 linux_packages_dict = {

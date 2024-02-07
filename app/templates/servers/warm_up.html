@@ -35,7 +35,7 @@
                                 </div>
                             </div>
                         {% endif %}
-                        {% if data['report'] %}
+                        {% if data['get_facts'] %}
                             <div class="row justify-content-center p-2">
                                 <p class="text-center"><code>{{ query }}</code></p>
                             </div>
@@ -72,11 +72,11 @@
                                                                 {% for package in data['packages'][division_name] %}
                                                                     {% if package[2] == 'checked' %}
                                                                         {% set label = '<i class="fa-solid fa-trash-can text-danger"></i> Delete' %}
-                                                                        {% set value = 'del' %}
+                                                                        {% set value = '-del' %}
                                                                         {% set status = '<i class="fa-solid fa-circle-check text-success" aria-hidden="true"></i>' %}
                                                                     {% else %}
                                                                         {% set label = '<i class="fa-solid fa-circle-up text-success"></i> Setup' %}
-                                                                        {% set value = 'set' %}
+                                                                        {% set value = '+set' %}
                                                                         {% set status = '<i class="fa-solid fa-minus text-secondary" aria-hidden="true"></i>' %}
                                                                     {% endif %}
                                                                     <tr>
@@ -97,6 +97,8 @@
                                                             </table>
                                                         </div>
 {#                                                        {{ fields.submit(label="Update state", name="submit") }}#}
+                                                        {{ fields.input_hidden(query, 'ip_address') }}
+                                                        {{ fields.input_hidden('true', 'update') }}
                                                         {{ fields.csrf() }}
                                                     </form>
                                                 </div>
@@ -111,13 +113,13 @@
                                 <div class="accordion-item">
                                     <h2 class="accordion-header">
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ConsoleLog-collapseOne" aria-expanded="false" aria-controls="ConsoleLog-collapseOne">
-                                            <i class="fa-solid {% if data['report'][0] %}fa-circle-check text-success{% else %}fa-triangle-exclamation text-danger{% endif %} px-3" aria-hidden="true"></i> Full SSH Console log
+                                            <i class="fa-solid {% if data['get_facts'][0] %}fa-circle-check text-success{% else %}fa-triangle-exclamation text-danger{% endif %} px-3" aria-hidden="true"></i> Full SSH Console log
                                         </button>
                                     </h2>
                                     <div id="ConsoleLog-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionConsoleLog">
                                         <div class="accordion-body text-start">
-                                            <div class="bd-callout bd-callout-{% if data['report'][0] %}success{% else %}warning{% endif %} text-start">
-                                                <pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml">{{ data['report'][1] }}</code></pre>
+                                            <div class="bd-callout bd-callout-{% if data['get_facts'][0] %}success{% else %}warning{% endif %} text-start">
+                                                <pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml">{{ data['get_facts'][1] }}</code></pre>
                                             </div>
                                         </div>
                                     </div>

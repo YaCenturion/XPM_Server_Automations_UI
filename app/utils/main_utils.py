@@ -151,7 +151,6 @@ def printer(text, user='N/A'):
     return text
 
 
-
 def get_ssh(cred):
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -192,7 +191,10 @@ def exec_ansible_playbook(ssh, command, ui_user):
     else:
         msg += '\n---- Read the LOG! Somthing looks not good.\n'
 
-    ssh.close()
-    msg += ':: SSH Connection close\n'
-
     return True, msg
+
+
+def close_ssh(ssh, user):
+    ssh.close()
+    printer(':: SSH Connection close\n', user)
+    return
