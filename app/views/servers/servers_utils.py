@@ -51,12 +51,14 @@ def update_server_packages(front_data, update_pool, ssh, target, username):
     front_data['update_delete'] = [True, 'Not used']
     front_data['update_install'] = [True, 'Not used']
     if update_pool['delete']:
-        command = f'{playbooks_lst["base"]}{playbooks_lst["remover"]} -i {target}, -e "target={target}"'
+        pool = ', '.join(update_pool['delete'])
+        command = f'{playbooks_lst["base"]}{playbooks_lst["delete"]} -i {target}, -e "target={target} packages={pool}"'
         status_remove, ssh_log_remove = exec_ansible_playbook(ssh, command, username)
         full_log += ssh_log_remove
         front_data['update_delete'] = [status_remove, ssh_log_remove]
     if update_pool['install']:
-        command = f'{playbooks_lst["base"]}{playbooks_lst["installer"]} -i {target}, -e "target={target}"'
+        pool = ', '.join(update_pool['install'])
+        command = f'{playbooks_lst["base"]}{playbooks_lst["install"]} -i {target}, -e "target={target} packages={pool}"'
         status_install, ssh_log_install = exec_ansible_playbook(ssh, command, username)
         full_log += ssh_log_install
         front_data['update_install'] = [status_install, ssh_log_install]

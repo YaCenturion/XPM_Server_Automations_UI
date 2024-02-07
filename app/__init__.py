@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 __author__ = "Boris Drozdovski, TLV"
-__version__ = "0.7"
+__version__ = "0.8"
 
 from flask import Flask
 from flask_login import LoginManager
