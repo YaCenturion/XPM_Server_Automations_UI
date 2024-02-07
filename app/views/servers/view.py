@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_login import current_user, login_required  # login_user, logout_user
 # from sqlalchemy import desc  # func
 from app import ver
-from servers_utils import *
+from app.views.servers.servers_utils import *
 from config import ansible_host, playbooks_lst
 from app.utils.main_utils import *
 # from app import client_pay_status_lst
@@ -28,9 +28,12 @@ def warm_up():
             status, log = exec_ansible_playbook(ssh, command, current_user.username)
 
             if status:
-                front_data = {'report': [True, log]}
+
                 result, data_pool = handler_facts(log)
-                # TODO send data_pool to frontend
+                if result:
+                    front_data = {'report': [True, log], 'packages': data_pool}
+                else:
+                    front_data = {'report': [False, log]}
             else:
                 front_data = {'report': [False, log]}
         else:

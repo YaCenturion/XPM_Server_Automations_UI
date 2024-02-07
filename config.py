@@ -69,37 +69,35 @@ playbooks_lst = {
 }
 
 linux_packages_dict = {
-    'redhat': {
-        'yum': 'yum',
-        'php': {
-            '7.1 fpm': 'php71u-fpm',
-            '7.4 fpm': 'php74-php-fpm',
-            '8.0': 'php80',
-            '8.0 fpm': 'php80-php-fpm',
-            '8.1': 'php81',
-            '8.1 fpm': 'php81-php-fpm',
-            '8.2 fpm': 'php82-php-fpm',
-        },
-        'memcache': 'memcached',
-        'pure-ftpd': 'pure-ftpd',
-        'python 2': 'python',
-        'python 3': 'python3',
-        'git': 'git',
-        'elasticsearch': 'elasticsearch',
-        'centos-release': 'centos-release',
-        'zabbix': 'zabbix-release',
-        'zip': 'zip',
-        'tar': 'tar',
-        'openssh': 'openssh',
-        'openldap': 'openldap',
-        'nginx': 'nginx-release-centos',
-        'apache 2': 'httpd24u',
-        'mysql server': 'mysql-community-server',
-        'mysql client': 'mysql-community-client'
-    },
-    'debian': {
-        'python 2': 'python',
-        'python 3': 'python3',
-        'git': 'git',
-    }
+    'redhat': [  # label name, package_name, type
+        ['yum', 'yum', 'sys'],
+        ['PHP 7.1 fpm', 'php71u-fpm', 'web'],
+        ['PHP 7.4 fpm', 'php74-php-fpm', 'web'],
+        ['PHP 8.0', 'php80', 'web'],
+        ['PHP 8.0 fpm', 'php80-php-fpm', 'web'],
+        ['PHP 8.1', 'php81', 'web'],
+        ['PHP 8.1 fpm', 'php81-php-fpm', 'web'],
+        ['PHP 8.2 fpm', 'php82-php-fpm', 'web'],
+        ['Memcached', 'memcached', 'other'],
+        ['Pure-FTPd', 'pure-ftpd', 'web'],
+        ['Python 2', 'python', 'other'],
+        ['Python 3', 'python3', 'other'],
+        ['Git', 'git', 'sys'],
+        ['ElasticSearch', 'elasticsearch', 'other'],
+        ['centos-release', 'centos-release', 'other'],
+        ['Zabbix', 'zabbix-agent2', 'other'],
+        ['zip', 'zip', 'sys'],
+        ['tar', 'tar', 'sys'],
+        ['OpenSSH', 'openssh', 'sys'],
+        ['OpenLDAP', 'openldap', 'sys'],
+        ['Nginx', 'nginx-release-centos', 'web'],
+        ['Apache 2', 'httpd24u', 'web'],
+        ['MySQL Server', 'mysql-community-server', 'db'],
+        ['MySQL Client', 'mysql-community-client', 'db'],
+    ],
+    'debian': [
+        ['python 2', 'python', 'other'],
+        ['python 3', 'python3', 'other'],
+        ['git', 'git', 'sys'],
+    ]
 }

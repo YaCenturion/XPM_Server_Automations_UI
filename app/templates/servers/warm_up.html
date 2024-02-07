@@ -24,7 +24,7 @@
                         {% if not data %}
                             <div class="row justify-content-center p-2">
                                 <div class="col-8 text-center">
-                                    <form method="POST" class="d-flex">
+                                    <form method="POST" class="d-flex" id="expim-form">
                                         <div class="input-group">
                                             {% if query %}{% set value = query %}{% endif %}
                                             {{ fields.input('IP address', 'ip_address', value, "input IP plz") }}
@@ -37,16 +37,84 @@
                         {% endif %}
                         {% if data['report'] %}
                             <div class="row justify-content-center p-2">
-                                <p class="text-center">Information about <code>{{ query }}</code></p>
+                                <p class="text-center"><code>{{ query }}</code></p>
                             </div>
-                            <div class="accordion my-4" id="accordionFlushExample">
+
+                            <div class="row justify-content-center p-2">
+
+                            </div>
+
+                            <div class="row justify-content-center p-2">
+                                <div class="col-12">
+                                    <h3>Packages:</h3>
+                                    <div class="accordion my-4" id="accordionPackages">
+                                        {% for division_name in data['packages'].keys() %}
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{ division_name }}_packages-collapseOne" aria-expanded="false" aria-controls="{{ division_name }}_packages-collapseOne">
+                                                    {{ division_name }}
+                                                </button>
+                                            </h2>
+                                            <div id="{{ division_name }}_packages-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionPackages">
+                                                <div class="accordion-body text-start">
+                                                    <form method="POST" id="expim-form">
+                                                        <div class="col-12 text-center">
+                                                            <table class="table table-hover">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th scope="col" class="align-middle text-center">Package</th>
+                                                                        <th scope="col" class="align-middle text-center">Version</th>
+                                                                        <th scope="col" class="align-middle text-center">Status</th>
+                                                                        <th scope="col" class="align-middle text-center">Update</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                {% for package in data['packages'][division_name] %}
+                                                                    {% if package[2] == 'checked' %}
+                                                                        {% set label = '<i class="fa-solid fa-trash-can text-danger"></i> Delete' %}
+                                                                        {% set value = 'del' %}
+                                                                        {% set status = '<i class="fa-solid fa-circle-check text-success" aria-hidden="true"></i>' %}
+                                                                    {% else %}
+                                                                        {% set label = '<i class="fa-solid fa-circle-up text-success"></i> Setup' %}
+                                                                        {% set value = 'set' %}
+                                                                        {% set status = '<i class="fa-solid fa-minus text-secondary" aria-hidden="true"></i>' %}
+                                                                    {% endif %}
+                                                                    <tr>
+                                                                        <th scope="row"{% if package[2] %} class="table-success"{% endif %}>{{ package[0] }}</th>
+                                                                        <td>{% if package[3] != None  %}{{ package[3] }}{% else %}{{ status|safe }}{% endif %}</td>
+                                                                        <td>{{ status|safe }}</td>
+                                                                        <td>{{ fields.checkbox(label, value, package[1]) }}</td>
+                                                                    </tr>
+                                                                {% endfor %}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="col-12 text-center">
+                                                            <table class="table">
+                                                                <tr>
+                                                                    <td class="align-middle text-center">{{ fields.submit(label="Update state", name="submit") }}</td>
+                                                                </tr>
+                                                            </table>
+                                                        </div>
+{#                                                        {{ fields.submit(label="Update state", name="submit") }}#}
+                                                        {{ fields.csrf() }}
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion my-4" id="accordionConsoleLog">
                                 <div class="accordion-item">
                                     <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                                            <i class="fa-solid {% if data['report'][0] %}fa-circle-check text-success{% else %}fa-triangle-exclamation text-danger{% endif %} px-3" aria-hidden="true"></i> SSH Console log
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ConsoleLog-collapseOne" aria-expanded="false" aria-controls="ConsoleLog-collapseOne">
+                                            <i class="fa-solid {% if data['report'][0] %}fa-circle-check text-success{% else %}fa-triangle-exclamation text-danger{% endif %} px-3" aria-hidden="true"></i> Full SSH Console log
                                         </button>
                                     </h2>
-                                    <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                                    <div id="ConsoleLog-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionConsoleLog">
                                         <div class="accordion-body text-start">
                                             <div class="bd-callout bd-callout-{% if data['report'][0] %}success{% else %}warning{% endif %} text-start">
                                                 <pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml">{{ data['report'][1] }}</code></pre>
