@@ -2,7 +2,7 @@ import os
 
 cfg = {
     'sqlite_db_name': 'xpm_aui.db',
-    'from_zero': True,  # True for clear DB FIXME
+    'from_zero': False,  # True for clear DB TODO
     'fake_data': 0  # num rows for fake generator
 }
 
