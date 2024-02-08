@@ -22,7 +22,7 @@ def handler_facts(log):
     }
     for name in linux_packages_dict[os_family]:
         search_package = True
-        for package, pkg_data in all_facts['msg'][2]['ansible_facts']['packages'].items():
+        for package, pkg_data in all_facts['msg'][1]['ansible_facts']['packages'].items():
             if name[1] == package:
                 unit = [name[0], name[1], 'checked', pkg_data[0]["version"]]
                 result_data[name[2]].append(unit)
