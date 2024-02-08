@@ -22,7 +22,7 @@ def handler_facts(log):
     }
     for name in linux_packages_dict[os_family]:
         search_package = True
-        for package, pkg_data in all_facts['msg'][1]['ansible_facts']['packages'].items():
+        for package, pkg_data in all_facts['msg'][2]['ansible_facts']['packages'].items():
             if name[1] == package:
                 unit = [name[0], name[1], 'checked', pkg_data[0]["version"]]
                 result_data[name[2]].append(unit)
@@ -53,7 +53,6 @@ def update_server_packages(front_data, update_pool, ssh, target, username):
     first_block = f'{playbooks_lst["base"]}{playbooks_lst["action"]} -i {target}, -e "target={target} packages='
     if update_pool['delete']:
         pkg_names_pool = ','.join(update_pool['delete'])
-        ''' -i 172.17.188.226, -e "target=172.17.188.226 packages=git action=latest"'''
         command = first_block + f'{pkg_names_pool} action=absent"'
         status_remove, ssh_log_remove = exec_ansible_playbook(ssh, command, username)
         full_log += ssh_log_remove
@@ -80,4 +79,11 @@ def get_facts(front_data, ssh, target, username):
             status_get_facts = False
             front_data['packages'] = False
     front_data['get_facts'] = [status_get_facts, ssh_log_facts]
+    if 'full_log' in front_data:
+        print('=====================>>>', front_data['full_log'])
+        front_data['full_log'][0] = status_get_facts
+        front_data['full_log'][1] += ssh_log_facts
+    else:
+        front_data['full_log'] = [status_get_facts, ssh_log_facts]
+
     return front_data

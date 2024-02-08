@@ -97,8 +97,17 @@ linux_packages_dict = {
         ['MySQL Client', 'mysql-community-client', 'db'],
     ],
     'debian': [
-        ['python 2', 'python', 'other'],
-        ['python 3', 'python3', 'other'],
-        ['git', 'git', 'sys'],
+        ['apt', 'apt', 'sys'],
+        ['Python 2', 'python', 'other'],
+        ['Python 3', 'python3', 'other'],
+        ['Git', 'git', 'sys'],
+        ['Apache 2', 'apache2', 'web'],
+        ['Nginx', 'nginx', 'web'],
+        ['Varnish', 'varnish', 'other'],
+        ['OpenSSH', 'openssh', 'sys'],
+        ['OpenLDAP', 'openldap', 'sys'],
+        ['Memcached', 'memcached', 'other'],
+        ['Pure-FTPd', 'pure-ftpd', 'web'],
+        ['Zabbix', 'zabbix-agent2', 'other'],
     ]
 }

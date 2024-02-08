@@ -33,13 +33,12 @@ def warm_up():
                 if request.form['update'] == 'true':
                     printer(f'Update tyt')
                     update_pool = get_packages_changes(request.form.items())
-                    # print(update_pool['install'])
-                    # print(update_pool['delete'])
                     front_data, update_logs = update_server_packages(front_data, update_pool, ssh, target, username)
                     full_log += update_logs + "=" * 30 + "\n"
                     if not front_data['update_delete'][0] or not front_data['update_install'][0]:
                         text, cat = 'Warning! Read LOG carefully!', 'error'
                     else:
+                        front_data['full_log'] = [True, full_log]
                         text, cat = 'Update success!', 'success'
                     flash(text, cat)
                     
@@ -54,4 +53,4 @@ def warm_up():
             flash(text, cat)
 
     return render_template(
-        'servers/warm_up.html', query=target, full_log=full_log, data=front_data, user=current_user, ver=ver)
+        'servers/warm_up.html', query=target, data=front_data, user=current_user, ver=ver)
