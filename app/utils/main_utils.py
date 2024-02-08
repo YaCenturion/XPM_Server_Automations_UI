@@ -120,6 +120,7 @@ def get_ssh(cred):
 
 
 def exec_ansible_playbook(ssh, command, ui_user):
+    result = True
     try:
         stdin, stdout, stderr = ssh.exec_command(command)
         msg = printer(f":::: Executed SSH command:\n:::: {command}\n", ui_user)
@@ -132,6 +133,7 @@ def exec_ansible_playbook(ssh, command, ui_user):
     if 'unreachable=0' in out and 'failed=0' in out:
         block_name = ":::: Execution result SUCCESS"
     else:
+        result = False
         block_name = "---- Execution result WARNING"
     msg += printer(f"{block_name}:\n{out}\n{err}\n")
 
@@ -140,7 +142,7 @@ def exec_ansible_playbook(ssh, command, ui_user):
     else:
         msg += '\n---- Read the LOG! Somthing looks not good.\n'
 
-    return True, msg
+    return result, msg
 
 
 def close_ssh(ssh, user):

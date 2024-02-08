@@ -76,6 +76,8 @@ def get_facts(front_data, ssh, target, username):
         result, data_pool = handler_facts(ssh_log_facts)
         if result:
             front_data['packages'] = data_pool
-    
+        else:
+            status_get_facts = False
+            front_data['packages'] = False
     front_data['get_facts'] = [status_get_facts, ssh_log_facts]
     return front_data
