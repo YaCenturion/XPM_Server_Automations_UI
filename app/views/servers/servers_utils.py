@@ -50,15 +50,17 @@ def update_server_packages(front_data, update_pool, ssh, target, username):
     full_log = ''
     front_data['update_delete'] = [True, 'Not used']
     front_data['update_install'] = [True, 'Not used']
+    first_block = f'{playbooks_lst["base"]}{playbooks_lst["action"]} -i {target}, -e "target={target} packages='
     if update_pool['delete']:
-        pool = ', '.join(update_pool['delete'])
-        command = f'{playbooks_lst["base"]}{playbooks_lst["delete"]} -i {target}, -e "target={target} packages={pool}"'
+        pkg_names_pool = ','.join(update_pool['delete'])
+        ''' -i 172.17.188.226, -e "target=172.17.188.226 packages=git action=latest"'''
+        command = first_block + f'{pkg_names_pool} action=absent"'
         status_remove, ssh_log_remove = exec_ansible_playbook(ssh, command, username)
         full_log += ssh_log_remove
         front_data['update_delete'] = [status_remove, ssh_log_remove]
     if update_pool['install']:
-        pool = ', '.join(update_pool['install'])
-        command = f'{playbooks_lst["base"]}{playbooks_lst["install"]} -i {target}, -e "target={target} packages={pool}"'
+        pkg_names_pool = ','.join(update_pool['install'])
+        command = first_block + f'{pkg_names_pool} action=latest"'
         status_install, ssh_log_install = exec_ansible_playbook(ssh, command, username)
         full_log += ssh_log_install
         front_data['update_install'] = [status_install, ssh_log_install]
