@@ -6,12 +6,9 @@ from config import linux_packages_dict, playbooks_lst
 def handler_facts(log):
     facts_str = log.split("[Display RESULT]")[1].split("=> ")[1].split("PLAY RECAP")[0].strip()
     all_facts = json.loads(facts_str)
-    # print(all_facts['msg'][0])
-    if 'RedHat' in all_facts['msg'][0]:
-        os_family = 'redhat'
-    elif 'Debian' in all_facts['msg'][0]:
-        os_family = 'debian'
-    else:
+    main_facts = all_facts['msg'][0]
+
+    if not main_facts['family'].lower() in linux_packages_dict:
         return False, False
 
     result_data = {
@@ -20,7 +17,7 @@ def handler_facts(log):
         'db': [],
         'other': []
     }
-    for name in linux_packages_dict[os_family]:
+    for name in linux_packages_dict[main_facts['family'].lower()]:
         search_package = True
         for package, pkg_data in all_facts['msg'][1]['ansible_facts']['packages'].items():
             if name[1] == package:
