@@ -6,14 +6,14 @@
 </div>
 <script>
     function showLoading() {
-        var loading = document.getElementById("waiting");
+        let loading = document.getElementById("waiting");
         loading.style.display = "block";
     }
 
-    var forms = document.querySelectorAll("#expim-form");
+    let forms = document.querySelectorAll("#expim-form");
     if (forms) {
         forms.forEach(function (form) {
-            var buttons = form.querySelectorAll("button");
+            let buttons = form.querySelectorAll("button");
             buttons.forEach(function (button) {
                 button.addEventListener("click", showLoading);
             });

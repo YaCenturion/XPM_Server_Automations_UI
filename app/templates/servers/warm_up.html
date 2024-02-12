@@ -40,108 +40,152 @@
                                 <p class="text-center"><code>{{ query }}</code></p>
                             </div>
 
-                            <div class="row justify-content-center p-2">
-
-                            </div>
-
-                            {% if data['packages'] %}
+                            {% if data['system'] or data['packages'] %}
                                 <div class="row justify-content-center p-2">
+                                    {% if data['system'] %}
                                     <div class="col-5">
-                                        <h3>System info:</h3>
-                                        <div class="card" style="width: 18rem;">
+                                        <h5>Summary:</h5>
+                                        <div class="card">
                                             <div class="card-header">
-                                                {{  }}
+                                                <i class="fa-brands fa-{{ data['system']['family']|lower }} text-danger p-1"></i> {{ data['system']['family'] }} family
                                             </div>
                                             <div class="card-body">
-                                                <h5 class="card-title">Card title</h5>
-                                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                                <span class="badge bg-secondary fs-5"><i class="fa-brands fa-{{ data['system']['dist']|lower }}"></i> {{ data['system']['dist'] }} v.{{ data['system']['ver'] }}</span>
+                                                <p class="card-text">{{ data['system']['kernel'] }}</p>
                                             </div>
                                             <ul class="list-group list-group-flush">
-                                                <li class="list-group-item">An item</li>
-                                                <li class="list-group-item">A second item</li>
-                                                <li class="list-group-item">A third item</li>
+                                                {% if data['all_ipv4'] %}
+                                                    <li class="list-group-item">Uses IP:
+                                                    {% for ip_adr in data['all_ipv4'] %}
+                                                        <span class="badge custom-info">{{ ip_adr }}</span>
+                                                    {% endfor %}
+                                                    </li>
+                                                {% endif %}
+                                                {% if data['mounts'] %}{% for disk in data['mounts'] %}
+                                                    {% set free_percent = (disk["size_available"] / disk["size_total"]) * 100 %}{% set free_gb = disk["size_available"] / (1024 ** 3) %}
+                                                    <li class="list-group-item{% if disk["mount"] == "/" %} list-group-item-secondary{% endif %}">Disk: {{ disk['device'] }}<p>{% if free_percent > 45 %}<i class="fa-solid fa-circle-check text-success"></i>{% elif free_percent > 25 %}<i class="fa-solid fa-triangle-exclamation text-warning"></i>{% else %}<i class="fa-solid fa-triangle-exclamation text-danger"></i>{% endif %} Free: <strong>{{ '%.2f' % free_gb }} GB</strong> or <strong>~{{ '%.2f' % free_percent }}%</strong></p></li>
+                                                {% endfor %}{% endif %}
                                             </ul>
-                                            <div class="card-body">
-                                                <a href="#" class="card-link">Card link</a>
-                                                <a href="#" class="card-link">Another link</a>
-                                            </div>
+{#                                            <div class="card-body">#}
+{#                                                <form method="POST" action="http://tools.expim.local/">#}
+{#                                                    {{  fields.csrf() }}#}
+{#                                                    {{  fields.input_hidden(value=query, name='global_search_string') }}#}
+{#                                                    {{  fields.input_hidden(value='search_ip', name='search_ip') }}#}
+{#                                                    {{  fields.input_hidden(value='search_customer', name='search_customer') }}#}
+{#                                                    {{  fields.input_hidden(value='search_url', name='search_url') }}#}
+{#                                                    {{  fields.input_hidden(value='search_vms', name='search_vms') }}#}
+{#                                                    {{  fields.input_hidden(value='1', name='index_form') }}#}
+{##}
+{#                                                    {{  fields.submit(label="More about VM", id="submit_"+query, col='8') }}#}
+{#                                                </form>#}
+{#                                            </div>#}
                                         </div>
                                     </div>
+                                    {% endif %}
+                                    {% if data['packages'] or data['ports'] %}
                                     <div class="col-7">
-                                        <h3>Packages:</h3>
-                                        <div class="accordion my-4" id="accordionPackages">
-                                            {% for division_name in data['packages'].keys() %}
-                                            <div class="accordion-item">
-                                                <h2 class="accordion-header">
-                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{ division_name }}_packages-collapseOne" aria-expanded="false" aria-controls="{{ division_name }}_packages-collapseOne">
-                                                        {% if division_name == 'sys' %}
-                                                            System
-                                                        {% elif division_name == 'web' %}
-                                                            Web services
-                                                        {% elif division_name == 'db' %}
-                                                            Databases
-                                                        {% elif division_name == 'other' %}
-                                                            Others
-                                                        {% else %}
-                                                            ERROR
-                                                        {% endif %}
-                                                    </button>
-                                                </h2>
-                                                <div id="{{ division_name }}_packages-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionPackages">
-                                                    <div class="accordion-body text-start">
-                                                        <form method="POST" id="expim-form">
-                                                            <div class="col-12 text-center">
-                                                                <table class="table table-hover">
-                                                                    <thead>
+                                        {% if data['packages'] %}
+                                            <h5>Packages:</h5>
+                                            <div class="accordion pb-3" id="accordionPackages">
+                                                {% for division_name in data['packages'].keys() %}
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header">
+                                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{ division_name }}_packages-collapseOne" aria-expanded="false" aria-controls="{{ division_name }}_packages-collapseOne">
+                                                            {% if division_name == 'sys' %}
+                                                                System
+                                                            {% elif division_name == 'web' %}
+                                                                Web services
+                                                            {% elif division_name == 'db' %}
+                                                                Databases
+                                                            {% elif division_name == 'other' %}
+                                                                Others
+                                                            {% else %}
+                                                                ERROR
+                                                            {% endif %}
+                                                        </button>
+                                                    </h2>
+                                                    <div id="{{ division_name }}_packages-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionPackages">
+                                                        <div class="accordion-body text-start">
+                                                            <form method="POST" id="expim-form">
+                                                                <div class="col-12 text-center">
+                                                                    <table class="table table-hover">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th scope="col" class="align-middle text-center">Package</th>
+                                                                                <th scope="col" class="align-middle text-center">Version</th>
+                                                                                <th scope="col" class="align-middle text-center">Status</th>
+                                                                                <th scope="col" class="align-middle text-center">Update</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                        {% for package in data['packages'][division_name] %}
+                                                                            {% if package[2] == 'checked' %}
+                                                                                {% set label = '<i class="fa-solid fa-trash-can text-danger"></i> Delete' %}
+                                                                                {% set value = '-del' %}
+                                                                                {% set status = '<i class="fa-solid fa-circle-check text-success"></i>' %}
+                                                                            {% else %}
+                                                                                {% set label = '<i class="fa-solid fa-circle-up text-success"></i> Setup' %}
+                                                                                {% set value = '+set' %}
+                                                                                {% set status = '<i class="fa-solid fa-minus text-secondary"></i>' %}
+                                                                            {% endif %}
+                                                                            <tr>
+                                                                                <th scope="row"{% if package[2] %} class="table-success"{% endif %}>{{ package[0] }}</th>
+                                                                                <td>{% if package[3] != None  %}{{ package[3] }}{% else %}{{ status|safe }}{% endif %}</td>
+                                                                                <td>{{ status|safe }}</td>
+                                                                                <td>{{ fields.checkbox(label, value, package[1]) }}</td>
+                                                                            </tr>
+                                                                        {% endfor %}
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                                <div class="col-12 text-center">
+                                                                    <table class="table">
                                                                         <tr>
-                                                                            <th scope="col" class="align-middle text-center">Package</th>
-                                                                            <th scope="col" class="align-middle text-center">Version</th>
-                                                                            <th scope="col" class="align-middle text-center">Status</th>
-                                                                            <th scope="col" class="align-middle text-center">Update</th>
+                                                                            <td class="align-middle text-center">{{ fields.submit(label="Update state", id="division_name") }}</td>
                                                                         </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                    {% for package in data['packages'][division_name] %}
-                                                                        {% if package[2] == 'checked' %}
-                                                                            {% set label = '<i class="fa-solid fa-trash-can text-danger"></i> Delete' %}
-                                                                            {% set value = '-del' %}
-                                                                            {% set status = '<i class="fa-solid fa-circle-check text-success" aria-hidden="true"></i>' %}
-                                                                        {% else %}
-                                                                            {% set label = '<i class="fa-solid fa-circle-up text-success"></i> Setup' %}
-                                                                            {% set value = '+set' %}
-                                                                            {% set status = '<i class="fa-solid fa-minus text-secondary" aria-hidden="true"></i>' %}
-                                                                        {% endif %}
-                                                                        <tr>
-                                                                            <th scope="row"{% if package[2] %} class="table-success"{% endif %}>{{ package[0] }}</th>
-                                                                            <td>{% if package[3] != None  %}{{ package[3] }}{% else %}{{ status|safe }}{% endif %}</td>
-                                                                            <td>{{ status|safe }}</td>
-                                                                            <td>{{ fields.checkbox(label, value, package[1]) }}</td>
-                                                                        </tr>
-                                                                    {% endfor %}
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                            <div class="col-12 text-center">
-                                                                <table class="table">
-                                                                    <tr>
-                                                                        <td class="align-middle text-center">{{ fields.submit(label="Update state", id="division_name") }}</td>
-                                                                    </tr>
-                                                                </table>
-                                                            </div>
-    {#                                                        {{ fields.submit(label="Update state", name="submit") }}#}
-                                                            {{ fields.input_hidden(query, 'ip_address') }}
-                                                            {{ fields.input_hidden('true', 'update') }}
-                                                            {{ fields.csrf() }}
-                                                        </form>
+                                                                    </table>
+                                                                </div>
+                                                                {{ fields.input_hidden(query, 'ip_address') }}
+                                                                {{ fields.input_hidden('true', 'update') }}
+                                                                {{ fields.csrf() }}
+                                                            </form>
+                                                        </div>
                                                     </div>
                                                 </div>
+                                                {% endfor %}
                                             </div>
-                                            {% endfor %}
-                                        </div>
+                                        {% endif %}
+                                        {% if data['ports'] %}
+                                            <h5 class="pt-2">Ports listen:</h5>
+                                            <div class="col-12">
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col" class="align-middle">PID</th>
+                                                            <th scope="col" class="align-middle">Service</th>
+                                                            <th scope="col" class="align-middle">Port</th>
+                                                            <th scope="col" class="align-middle">User</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {% for port in data['ports'] %}
+                                                        <tr>
+                                                            <td><i class="fa-solid fa-trash-can text-muted"></i> {{ port["pid"] }}</td>
+                                                            <th scope="row">{{ port["name"] }}</th>
+                                                            <td>{{ port["port"] }}</td>
+                                                            <td>{{ port["user"] }}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        {% endif %}
                                     </div>
+                                    {% endif %}
                                 </div>
                             {% endif %}
-                            <div class="accordion my-4" id="accordionConsoleLog">
+
+                            <div class="accordion" id="accordionConsoleLog">
                                 <div class="accordion-item">
                                     <h2 class="accordion-header">
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ConsoleLog-collapseOne" aria-expanded="false" aria-controls="ConsoleLog-collapseOne">
@@ -158,62 +202,10 @@
                                 </div>
                             </div>
                         {% endif %}
-
-{#                            <table class="table table-striped table-bordered">#}
-{#                                <thead>#}
-{#                                    <tr>#}
-{#                                        <th class="align-middle text-center">ID</th>#}
-{#                                        <th class="align-middle text-center">IP address</th>#}
-{#                                        <th class="align-middle text-center">User / Executed</th>#}
-{#                                        <th class="align-middle text-center">User query</th>#}
-{#                                        <th class="align-middle text-center">Status</th>#}
-{#                                        <th class="align-middle text-center">Logs</th>#}
-{#                                    </tr>#}
-{#                                </thead>#}
-{#                                <tbody>#}
-{#                                {% for row in data['logs'] %}#}
-{#                                    <tr>#}
-{#                                        <td class="align-middle text-center">{{ row.id }}</td>#}
-{#                                        <td class="align-middle text-center">#}
-{#                                            {% if row.active %}#}
-{#                                                <i class="fa-solid fa-circle-check text-success"></i>#}
-{#                                            {% else %}#}
-{#                                                <i class="fa-solid fa-minus text-secondary"></i>#}
-{#                                            {% endif %}#}
-{#                                        </td>#}
-{#                                        <td class="align-middle">{{ row.name }}</td>#}
-{#                                        <td class="align-middle">{{ row.full_name }}</td>#}
-{#                                        <td class="align-middle text-center">{{ row.start_date|timestamp2date('%d.%m.%Y') }}</td>#}
-{#                                        <td class="align-middle text-center">{% if row.end_date == None %}<i class="fa-solid fa-minus text-secondary"></i>{% else %}{{ row.end_date|timestamp2date('%d.%m.%Y') }}{% endif %}</td>#}
-{#                                        <td class="align-middle text-center">#}
-{#                                            {% if row.pay_status == 1 %}#}
-{#                                                Pay#}
-{#                                            {% elif row.pay_status == 2 %}#}
-{#                                                Friend#}
-{#                                            {% elif row.pay_status == 3 %}#}
-{#                                                Not pay#}
-{#                                            {% else %}#}
-{#                                                ERROR#}
-{#                                            {% endif %}#}
-{#                                        </td>#}
-{#                                        <td class="align-middle text-center">{{ row.comments }}</td>#}
-{#                                        <td class="align-middle text-center">#}
-{#                                            {% if row.active %}#}
-{#                                            <a href="{{ url_for('general.update_status', subj='company', num_id=row.id, status=0) }}"><i class="fa-solid fa-toggle-on text-success"></i></a>#}
-{#                                            {% else %}#}
-{#                                            <a href="{{ url_for('general.update_status', subj='company', num_id=row.id, status=1) }}"><i class="fa-solid fa-toggle-off text-secondary"></i></a>#}
-{#                                            {% endif %}#}
-{#                                            <a href="{{ url_for('companies.company', way='edit', num_id=row.id) }}" class="btn-sm text-danger btn-outline-danger"><i class="fa-solid fa-pen-to-square"></i></a>#}
-{#                                        </td>#}
-{#                                    </tr>#}
-{#                                {% endfor %}#}
-{#                                </tbody>#}
-{#                            </table>#}
-{#                        {% endif %}#}
                     </div>
                     <!-- //Insert here -->
 {% endblock %}
 
-{#{% block main_bottom %}<h3>bottom</h3>{% endblock %}#}
+{#{% block main_bottom %}<h5>bottom</h5>{% endblock %}#}
 
 {% block custom_scripts %}{% endblock %}

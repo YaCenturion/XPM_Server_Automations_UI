@@ -11,7 +11,7 @@ def handler_facts(log):
     if not main_facts['family'].lower() in linux_packages_dict:
         return False, False
 
-    result_data = {
+    packages_facts = {
         'sys': [],
         'web': [],
         'db': [],
@@ -22,15 +22,18 @@ def handler_facts(log):
         for package, pkg_data in all_facts['msg'][1]['ansible_facts']['packages'].items():
             if name[1] == package:
                 unit = [name[0], name[1], 'checked', pkg_data[0]["version"]]
-                result_data[name[2]].append(unit)
+                packages_facts[name[2]].append(unit)
                 search_package = False
                 break
         if search_package:
             unit = [name[0], name[1], '', None]
-            result_data[name[2]].append(unit)
+            packages_facts[name[2]].append(unit)
 
-    # print(result_data)
-    return True, result_data
+    ips_facts = all_facts['msg'][2]
+    ports_facts = all_facts['msg'][3]
+    mounts_facts = all_facts['msg'][4]
+
+    return True, [main_facts, packages_facts, ips_facts, ports_facts, mounts_facts]
 
 
 def get_packages_changes(form_data):
@@ -71,10 +74,18 @@ def get_facts(front_data, ssh, target, username):
     if status_get_facts:
         result, data_pool = handler_facts(ssh_log_facts)
         if result:
-            front_data['packages'] = data_pool
+            front_data['system'] = data_pool[0]
+            front_data['packages'] = data_pool[1]
+            front_data['all_ipv4'] = data_pool[2]
+            front_data['ports'] = data_pool[3]
+            front_data['mounts'] = data_pool[4]
         else:
             status_get_facts = False
+            front_data['system'] = False
             front_data['packages'] = False
+            front_data['all_ipv4'] = False
+            front_data['ports'] = False
+            front_data['mounts'] = False
     front_data['get_facts'] = [status_get_facts, ssh_log_facts]
     if 'full_log' in front_data:
         print('=====================>>>', front_data['full_log'])
