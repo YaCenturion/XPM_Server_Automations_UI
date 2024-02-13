@@ -85,7 +85,6 @@ linux_packages_dict = {
         ['Python 3', 'python3', 'other'],
         ['Git', 'git', 'sys'],
         ['ElasticSearch', 'elasticsearch', 'other'],
-        # ['centos-release', 'centos-release', 'other'],
         ['Zabbix Agent 2', 'zabbix-agent2', 'other'],
         ['zip', 'zip', 'sys'],
         ['tar', 'tar', 'sys'],

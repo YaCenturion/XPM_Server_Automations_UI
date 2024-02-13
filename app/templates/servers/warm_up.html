@@ -66,6 +66,8 @@
                                                     <li class="list-group-item{% if disk["mount"] == "/" %} list-group-item-secondary{% endif %}">Disk: {{ disk['device'] }}<p>{% if free_percent > 45 %}<i class="fa-solid fa-circle-check text-success"></i>{% elif free_percent > 25 %}<i class="fa-solid fa-triangle-exclamation text-warning"></i>{% else %}<i class="fa-solid fa-triangle-exclamation text-danger"></i>{% endif %} Free: <strong>{{ '%.2f' % free_gb }} GB</strong> or <strong>~{{ '%.2f' % free_percent }}%</strong></p></li>
                                                 {% endfor %}{% endif %}
                                             </ul>
+
+{#                                        # TODO переход на NutanixVM#}
 {#                                            <div class="card-body">#}
 {#                                                <form method="POST" action="http://tools.expim.local/">#}
 {#                                                    {{  fields.csrf() }}#}
@@ -79,6 +81,7 @@
 {#                                                    {{  fields.submit(label="More about VM", id="submit_"+query, col='8') }}#}
 {#                                                </form>#}
 {#                                            </div>#}
+
                                         </div>
                                     </div>
                                     {% endif %}
@@ -170,7 +173,8 @@
                                                     <tbody>
                                                     {% for port in data['ports'] %}
                                                         <tr>
-                                                            <td><i class="fa-solid fa-trash-can text-muted"></i> {{ port["pid"] }}</td>
+{# {{ port["pid"] }} #}
+                                                            <td><i class="fa-solid fa-trash-can text-muted"></i> <span class="badge rounded-pill text-bg-{% if ':' not in port['address'] %}primary{% else %}warning{% endif %}">{% if ':' not in port['address'] %}IPv4{% else %}IPv6{% endif %}</span></td>
                                                             <th scope="row">{{ port["name"] }}</th>
                                                             <td>{{ port["port"] }}</td>
                                                             <td>{{ port["user"] }}</td>
