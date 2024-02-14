@@ -65,6 +65,25 @@ def install_packages_addon(packages, ssh, target, username):
     return True, logs
 
 
+def packages_cleaner(packages, ssh, target, username):
+    logs = ''
+    for package in packages:
+        if package in ('apache2', 'httpd'):
+            playbook = playbooks_lst["apache_cleaner"]
+        elif package == 'nginx':
+            playbook = playbooks_lst["nginx_cleaner"]
+        else:
+            playbook = False
+
+        if playbook:
+            command = f'{playbooks_lst["base"]}{playbook} -i {target}, -e "target={target}"'
+            status_install, ssh_log_install = exec_ansible_playbook(ssh, command, username)
+            logs += ssh_log_install
+            if not status_install:
+                return status_install, logs
+    return True, logs
+
+
 def update_server_packages(front_data, update_pool, ssh, target, username):
     full_log = ''
     front_data['update_delete'] = [True, 'Not used']
@@ -75,7 +94,12 @@ def update_server_packages(front_data, update_pool, ssh, target, username):
         command = first_block + f'{pkg_names_pool} action=absent"'
         status_remove, ssh_log_remove = exec_ansible_playbook(ssh, command, username)
         full_log += ssh_log_remove
-        front_data['update_delete'] = [status_remove, ssh_log_remove]
+        status_addons, ssh_log_addons = packages_cleaner(update_pool['delete'], ssh, target, username)
+        full_log += ssh_log_addons
+        status = True
+        if not status_remove or not status_addons:
+            status = False
+        front_data['update_delete'] = [status, ssh_log_remove+ssh_log_addons]
     if update_pool['install']:
         pkg_names_pool = ','.join(update_pool['install'])
         command = first_block + f'{pkg_names_pool} action=latest"'
@@ -86,7 +110,7 @@ def update_server_packages(front_data, update_pool, ssh, target, username):
         status = True
         if not status_install or not status_addons:
             status = False
-        front_data['update_install'] = [status, ssh_log_install]
+        front_data['update_install'] = [status, ssh_log_install+ssh_log_addons]
     return front_data, full_log
 
 

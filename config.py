@@ -69,6 +69,8 @@ playbooks_lst = {
     "action": 'packages_action.yml',
     "default_apache": 'default_apache_conf.yml',
     "default_nginx": 'default_nginx_conf.yml',
+    "apache_cleaner": 'apache_cleaner.yml',
+    "nginx_cleaner": 'nginx_cleaner.yml',
 }
 
 linux_packages_dict = {
