@@ -46,6 +46,25 @@ def get_packages_changes(form_data):
     return update_pool
 
 
+def install_packages_addon(packages, ssh, target, username):
+    logs = ''
+    for package in packages:
+        if package in ('apache2', 'httpd'):
+            playbook = playbooks_lst["default_apache"]
+        elif package == 'nginx':
+            playbook = playbooks_lst["default_nginx"]
+        else:
+            playbook = False
+
+        if playbook:
+            command = f'{playbooks_lst["base"]}{playbook} -i {target}, -e "target={target}"'
+            status_install, ssh_log_install = exec_ansible_playbook(ssh, command, username)
+            logs += ssh_log_install
+            if not status_install:
+                return status_install, logs
+    return True, logs
+
+
 def update_server_packages(front_data, update_pool, ssh, target, username):
     full_log = ''
     front_data['update_delete'] = [True, 'Not used']
@@ -62,7 +81,12 @@ def update_server_packages(front_data, update_pool, ssh, target, username):
         command = first_block + f'{pkg_names_pool} action=latest"'
         status_install, ssh_log_install = exec_ansible_playbook(ssh, command, username)
         full_log += ssh_log_install
-        front_data['update_install'] = [status_install, ssh_log_install]
+        status_addons, ssh_log_addons = install_packages_addon(update_pool['install'], ssh, target, username)
+        full_log += ssh_log_addons
+        status = True
+        if not status_install or not status_addons:
+            status = False
+        front_data['update_install'] = [status, ssh_log_install]
     return front_data, full_log
 
 

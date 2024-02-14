@@ -164,7 +164,8 @@
                                                 <table class="table table-hover">
                                                     <thead>
                                                         <tr>
-                                                            <th scope="col" class="align-middle">PID</th>
+                                                            <th scope="col" class="align-middle"></th>
+                                                            <th scope="col" class="align-middle">TCP</th>
                                                             <th scope="col" class="align-middle">Service</th>
                                                             <th scope="col" class="align-middle">Port</th>
                                                             <th scope="col" class="align-middle">User</th>
@@ -174,7 +175,8 @@
                                                     {% for port in data['ports'] %}
                                                         <tr>
 {# {{ port["pid"] }} #}
-                                                            <td><i class="fa-solid fa-trash-can text-muted"></i> <span class="badge rounded-pill text-bg-{% if ':' not in port['address'] %}primary{% else %}warning{% endif %}">{% if ':' not in port['address'] %}IPv4{% else %}IPv6{% endif %}</span></td>
+                                                            <td><i class="fa-solid fa-trash-can text-muted"></i></td>
+                                                            <td><span class="badge rounded-pill text-bg-{% if ':' not in port['address'] %}primary{% else %}warning{% endif %}">{% if ':' not in port['address'] %}IPv4{% else %}IPv6{% endif %}</span></td>
                                                             <th scope="row">{{ port["name"] }}</th>
                                                             <td>{{ port["port"] }}</td>
                                                             <td>{{ port["user"] }}</td>

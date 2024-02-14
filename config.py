@@ -67,6 +67,8 @@ playbooks_lst = {
     "base": 'ansible-playbook /etc/ansible/',
     "get_facts": 'get_facts.yml',
     "action": 'packages_action.yml',
+    "default_apache": 'default_apache_conf.yml',
+    "default_nginx": 'default_nginx_conf.yml',
 }
 
 linux_packages_dict = {
@@ -91,7 +93,7 @@ linux_packages_dict = {
         ['OpenSSH', 'openssh', 'sys'],
         ['OpenLDAP', 'openldap', 'sys'],
         ['Nginx', 'nginx-release-centos', 'web'],
-        ['Apache 2', 'httpd24u', 'web'],
+        ['Apache 2', 'httpd', 'web'],
         ['MySQL Server', 'mysql-community-server', 'db'],
         ['MySQL Client', 'mysql-community-client', 'db'],
     ],
