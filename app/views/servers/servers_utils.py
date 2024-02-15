@@ -46,13 +46,13 @@ def get_packages_changes(form_data):
     return update_pool
 
 
-def install_packages_addon(packages, ssh, target, username):
+def old_install_packages_addon(packages, ssh, target, username):
     logs = ''
     for package in packages:
         if package in ('apache2', 'httpd'):
-            playbook = playbooks_lst["default_apache"]
+            playbook = playbooks_lst["apache_default"]
         elif package == 'nginx':
-            playbook = playbooks_lst["default_nginx"]
+            playbook = playbooks_lst["nginx_default"]
         else:
             playbook = False
 
@@ -65,13 +65,42 @@ def install_packages_addon(packages, ssh, target, username):
     return True, logs
 
 
-def packages_cleaner(packages, ssh, target, username):
+def old_packages_cleaner(packages, ssh, target, username):
     logs = ''
     for package in packages:
         if package in ('apache2', 'httpd'):
             playbook = playbooks_lst["apache_cleaner"]
         elif package == 'nginx':
             playbook = playbooks_lst["nginx_cleaner"]
+        else:
+            playbook = False
+
+        if playbook:
+            command = f'{playbooks_lst["base"]}{playbook} -i {target}, -e "target={target}"'
+            status_install, ssh_log_install = exec_ansible_playbook(ssh, command, username)
+            logs += ssh_log_install
+            if not status_install:
+                return status_install, logs
+    return True, logs
+
+
+def add_packages_action(packages, action, ssh, target, username):
+    logs = ''
+    for package in packages:
+        if package in ('apache2', 'httpd'):
+            if action == 'absent':
+                playbook = playbooks_lst["apache_cleaner"]
+            elif action == 'latest':
+                playbook = playbooks_lst["apache_default"]
+            else:
+                playbook = False
+        elif package == 'nginx':
+            if action == 'absent':
+                playbook = playbooks_lst["nginx_cleaner"]
+            elif action == 'latest':
+                playbook = playbooks_lst["nginx_default"]
+            else:
+                playbook = False
         else:
             playbook = False
 
@@ -94,7 +123,7 @@ def update_server_packages(front_data, update_pool, ssh, target, username):
         command = first_block + f'{pkg_names_pool} action=absent"'
         status_remove, ssh_log_remove = exec_ansible_playbook(ssh, command, username)
         full_log += ssh_log_remove
-        status_addons, ssh_log_addons = packages_cleaner(update_pool['delete'], ssh, target, username)
+        status_addons, ssh_log_addons = add_packages_action(update_pool['delete'], 'absent', ssh, target, username)
         full_log += ssh_log_addons
         status = True
         if not status_remove or not status_addons:
@@ -105,7 +134,7 @@ def update_server_packages(front_data, update_pool, ssh, target, username):
         command = first_block + f'{pkg_names_pool} action=latest"'
         status_install, ssh_log_install = exec_ansible_playbook(ssh, command, username)
         full_log += ssh_log_install
-        status_addons, ssh_log_addons = install_packages_addon(update_pool['install'], ssh, target, username)
+        status_addons, ssh_log_addons = add_packages_action(update_pool['install'], 'latest', ssh, target, username)
         full_log += ssh_log_addons
         status = True
         if not status_install or not status_addons:

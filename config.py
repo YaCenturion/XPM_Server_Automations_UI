@@ -64,19 +64,19 @@ ansible_host = {
 }
 
 playbooks_lst = {
-    "base": 'ansible-playbook /etc/ansible/',
+    "base": 'ansible-playbook /etc/ansible/prod/',
     "get_facts": 'get_facts.yml',
     "action": 'packages_action.yml',
-    "default_apache": 'default_apache_conf.yml',
-    "default_nginx": 'default_nginx_conf.yml',
+    "apache_default": 'apache_default_conf.yml',
+    "nginx_default": 'nginx_default_conf.yml',
     "apache_cleaner": 'apache_cleaner.yml',
     "nginx_cleaner": 'nginx_cleaner.yml',
 }
 
 linux_packages_dict = {
     'redhat': [  # label name, package_name, type
-        ['yum', 'yum', 'sys'],
-        ['PHP 7.1 fpm', 'php71u-fpm', 'web'],
+        # ['yum', 'yum', 'sys'],
+        ['PHP 7.1 fpm', 'php71-fpm', 'web'],
         ['PHP 7.4 fpm', 'php74-php-fpm', 'web'],
         ['PHP 8.0', 'php80', 'web'],
         ['PHP 8.0 fpm', 'php80-php-fpm', 'web'],
@@ -94,18 +94,20 @@ linux_packages_dict = {
         ['tar', 'tar', 'sys'],
         ['OpenSSH', 'openssh', 'sys'],
         ['OpenLDAP', 'openldap', 'sys'],
-        ['Nginx', 'nginx-release-centos', 'web'],
+        ['Nginx', 'nginx', 'web'],
         ['Apache 2', 'httpd', 'web'],
-        ['MySQL Server', 'mysql-community-server', 'db'],
-        ['MySQL Client', 'mysql-community-client', 'db'],
+        ['MySQL Server', 'mysql-server', 'db'],
+        ['MySQL Client', 'mysql-client', 'db'],
     ],
     'debian': [
-        ['apt', 'apt', 'sys'],
+        # ['apt', 'apt', 'sys'],
         ['Python 2', 'python', 'other'],
         ['Python 3', 'python3', 'other'],
         ['Git', 'git', 'sys'],
         ['Apache 2', 'apache2', 'web'],
         ['Nginx', 'nginx', 'web'],
+        ['MySQL Server', 'mysql-server', 'db'],
+        ['MySQL Client', 'mysql-client', 'db'],
         ['Varnish', 'varnish', 'other'],
         ['OpenSSH', 'openssh', 'sys'],
         ['OpenLDAP', 'openldap', 'sys'],
