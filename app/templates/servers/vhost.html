@@ -26,16 +26,16 @@
                                 <div class="col-8 text-center">
                                     <form method="POST"  id="expim-form">
                                         <div class="row justify-content-center p-2">
-                                        <div class="input-group">
-                                            {% if query %}{% set value = query %}{% endif %}
-                                            {{ fields.input('IP address', 'ip_address', value, "input IP plz") }}
-                                        </div>
+                                            <div class="input-group">
+                                                {% if query %}{% set value = query %}{% endif %}
+                                                {{ fields.input('IP address', 'ip_address', value, "input IP plz") }}
+                                            </div>
                                         </div>
                                         <div class="row justify-content-center p-2">
-                                        <div class="input-group">
-                                            {{ fields.input('Domain name', 'domain_name', value, "input domain plz") }}
-                                            {{ fields.group_submit('<i class="fa-regular fa-square-check"></i> Setup') }}
-                                        </div>
+                                            <div class="input-group">
+                                                {{ fields.input('DB user', 'db_name', value, "input db username plz") }}
+                                                {{ fields.input('DB user', 'db_pass', value, "input db pass plz") }}
+                                            </div>
                                         </div>
                                         {{ fields.csrf() }}
                                     </form>
