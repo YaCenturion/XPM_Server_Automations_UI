@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
 import paramiko
+import random
+import string
 import socket
 from datetime import datetime
 from ..models import *
@@ -149,3 +151,9 @@ def close_ssh(ssh, user):
     ssh.close()
     printer(':: SSH Connection close\n', user)
     return
+
+
+def generate_password(length):
+    characters = string.ascii_letters + string.digits
+    password = ''.join(random.choice(characters) for i in range(length))
+    return password
