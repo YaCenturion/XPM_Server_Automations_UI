@@ -1,5 +1,6 @@
 # from flask import current_app
 import time
+from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from .. import db, login
@@ -76,3 +77,85 @@ class ExecuteLogs(db.Model):
     user_query = db.Column(db.String(255))
     console_log = db.Column(db.Text)
     comments = db.Column(db.Text)
+
+
+class VirtualIps(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    virtual_ip = db.Column(db.String(100))
+    internal_ip = db.Column(db.String(100))
+    name = db.Column(db.String(100))
+    os_type = db.Column(db.String(100), default=False)
+    login = db.Column(db.String(100), default=False)
+    marker = db.Column(db.String(100), default=False)
+    ws_type = db.Column(db.String(100), default=False)
+    confs_path = db.Column(db.String(300), default=False)
+    ansible = db.Column(db.String(300), default=False)
+    reserved = db.Column(db.String(300), default="NOT_USED")
+    comment = db.Column(db.String(300))
+    last_update = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+
+class NutanixVMs(db.Model):
+    __tablename__ = 'nutanix_vms'
+    id = db.Column(db.Integer, primary_key=True)
+    uuid = db.Column(db.String(36), nullable=False)
+    creation_time = db.Column(db.DateTime, nullable=False)
+    cluster_name = db.Column(db.String(255))
+    vm_name = db.Column(db.String(255))
+    description = db.Column(db.String(255))
+    company_id = db.Column(db.Integer)
+    contract_num = db.Column(db.String(255))
+    num_vcpus_per_socket = db.Column(db.Integer)
+    num_threads_per_core = db.Column(db.Integer)
+    hardware_virtualization_enabled = db.Column(db.Boolean)
+    num_sockets = db.Column(db.Integer)
+    is_agent_vm = db.Column(db.Boolean)
+    memory_size_mib = db.Column(db.Integer)
+    # disk_list = db.Column(db.String(255))
+    total_disks = db.Column(db.Integer)
+    total_disks_size_mib = db.Column(db.Integer)
+    gpu_list = db.Column(db.String(255))
+    internal_ip = db.Column(db.String(255))
+    subnet_reference = db.Column(db.String(255))
+    power_state = db.Column(db.Boolean)
+    machine_type = db.Column(db.String(50))
+
+    def __repr__(self):
+        return f"<Nutanix VM: {self.vm_name}>"
+
+
+class NutanixDetails(db.Model):
+    __tablename__ = 'nutanix_details'
+    id = db.Column(db.Integer, primary_key=True)
+    CUSTOMERS_CUSTNAME = db.Column(db.String(255))
+    DOCUMENTS_DOC = db.Column(db.Integer)
+    DOCUMENTS_DOCNO = db.Column(db.String(255))
+    PART_PARTNAME = db.Column(db.String(255))
+
+    def __repr__(self):
+        return f"<Nutanix details: {self.DOCUMENTS_DOCNO} - {self.PART_PARTNAME}>"
+
+
+class PriorityCompanies(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    custname = db.Column(db.String(64))  # company_id
+    cust = db.Column(db.Integer)
+    address = db.Column(db.String(128))
+    phone = db.Column(db.String(64))
+    custdes = db.Column(db.String(64))
+    vatflag = db.Column(db.String(64))
+    pay = db.Column(db.Integer)
+    fax = db.Column(db.String(64))
+    zip = db.Column(db.String(64))
+    state = db.Column(db.String(64))
+    monthly = db.Column(db.String(64))
+    account = db.Column(db.Integer)
+    ivtype = db.Column(db.String(64))
+    country = db.Column(db.Integer)
+    restricted = db.Column(db.String(64))
+    restrictdate = db.Column(db.Integer)
+    statea = db.Column(db.String(64))
+    createddate = db.Column(db.Integer)
+    tivcontact = db.Column(db.Integer)
+    edocuments = db.Column(db.String(64))
+    nonprofitorg = db.Column(db.String(64))

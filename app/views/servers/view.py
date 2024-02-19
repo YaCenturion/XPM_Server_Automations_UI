@@ -3,11 +3,25 @@ from flask_login import current_user, login_required  # login_user, logout_user
 # from sqlalchemy import desc  # func
 from app import ver
 from app.views.servers.servers_utils import *
-from config import ansible_host, playbooks_lst
+from config import ansible_host, playbooks_lst, nutanix, fortigate
 from app.utils.main_utils import *
+from app.views.servers.update_utils import *
 # from app import client_pay_status_lst
 
 servers = Blueprint('servers', __name__)
+
+
+@login_required
+@servers.route('/up/', methods=['GET', 'POST'])
+def update_db():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    if start_update(fortigate, nutanix):
+        text, cat = 'DB updated', 'success'
+    else:
+        text, cat = 'BAD UPDATE!', 'error'
+    flash(text, cat)
+    return redirect(url_for('servers.warm_up'))
 
 
 @login_required

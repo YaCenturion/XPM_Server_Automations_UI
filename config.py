@@ -52,8 +52,13 @@ class Config:
 
 user_app_role_lst = [
     ('0', 'Root'),
-    ('1', 'Admin'),
-    ('2', 'Operator'),
+    ('1', 'Kings'),  # no limits
+    ('2', 'OPs'),  # access only NOC menu
+    ('20', 'OPs [read only]'),  # like NOC and only look
+    ('3', 'Integration'),  # access only NOC menu
+    ('30', 'Integration [read only]'),  # like NOC and only look
+    ('4', 'Office'),  # access only Office menu
+    ('40', 'Office [read only]'),  # like Office and only look
 ]
 
 ansible_host = {
@@ -61,6 +66,18 @@ ansible_host = {
     'port': 22,
     'user': 'xpmadmin',
     'key_path': 'app/views/servers/ssh_keys/expim_ansible.pem',
+}
+
+fortigate = {
+    'host': '172.16.100.1',  # IP Fortigate
+    'token': '18mxw51txqG8p5GNt3r83rps3mgH0h',  # Token
+    'url': 'https://172.16.100.1/api/v2/cmdb/firewall/vip',
+}
+
+nutanix = {
+    'clusters_ip': ['172.16.16.40', '172.16.16.10', '172.16.16.60'],
+    'cluster_username': 'tools-expim-api',
+    'cluster_password': 'gj5098gHW4f3%',
 }
 
 playbooks_lst = {
@@ -90,8 +107,8 @@ linux_packages_dict = {
         ['Git', 'git', 'sys'],
         ['ElasticSearch', 'elasticsearch', 'other'],
         ['Zabbix Agent 2', 'zabbix-agent2', 'other'],
-        ['zip', 'zip', 'sys'],
-        ['tar', 'tar', 'sys'],
+        ['Zip', 'zip', 'sys'],
+        ['Tar', 'tar', 'sys'],
         ['OpenSSH', 'openssh', 'sys'],
         ['OpenLDAP', 'openldap', 'sys'],
         ['Nginx', 'nginx', 'web'],
@@ -103,6 +120,8 @@ linux_packages_dict = {
         # ['apt', 'apt', 'sys'],
         ['Python 2', 'python', 'other'],
         ['Python 3', 'python3', 'other'],
+        ['Zip', 'zip', 'sys'],
+        ['Tar', 'tar', 'sys'],
         ['Git', 'git', 'sys'],
         ['Apache 2', 'apache2', 'web'],
         ['Nginx', 'nginx', 'web'],
@@ -113,6 +132,7 @@ linux_packages_dict = {
         ['OpenLDAP', 'openldap', 'sys'],
         ['Memcached', 'memcached', 'other'],
         ['Pure-FTPd', 'pure-ftpd', 'web'],
+        ['ElasticSearch', 'elasticsearch', 'other'],
         ['Zabbix', 'zabbix-agent2', 'other'],
     ]
 }

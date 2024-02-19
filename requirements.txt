@@ -26,3 +26,6 @@ Werkzeug==3.0.1
 WTForms==3.1.2
 faker==22.7.0
 paramiko~=3.4.0
+pymssql==2.2.11
+requests==2.31.0
+pandas==2.2.0

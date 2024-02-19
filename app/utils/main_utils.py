@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 import os
 import paramiko
+import pymssql
 import random
 import string
-import socket
-from datetime import datetime
+# import socket
+# from datetime import datetime
 from ..models import *
 
 
@@ -157,3 +158,56 @@ def generate_password(length):
     characters = string.ascii_letters + string.digits
     password = ''.join(random.choice(characters) for i in range(length))
     return password
+
+
+def get_priority_detailed_info(cred, company_id):
+    company_id = "(" + company_id + ")"
+    # print(company_id)
+    query = f"""
+        SELECT DOCUMENTS.DOC, DOCUMENTS.DOCNO, DOCUMENTS.CUST, CUSTOMERS.CUSTNAME, CUSTOMERS.CUSTDES,
+            SERVCONT.PHONE, SERVCONTITEMS.CONTI, SERVCONTITEMS.CONT, SERVCONTITEMS.PART, PART.PARTNAME
+        FROM PART
+            INNER JOIN SERVCONTITEMS ON PART.PART = SERVCONTITEMS.PART
+            INNER JOIN DOCUMENTS ON DOCUMENTS.DOC = SERVCONTITEMS.CONT
+            INNER JOIN CUSTOMERS ON DOCUMENTS.CUST = CUSTOMERS.CUST
+            INNER JOIN SERVCONT ON DOCUMENTS.DOC = SERVCONT.DOC
+        WHERE SERVCONT.CONTSTATUS = 3
+            AND CUSTOMERS.RESTRICTED <> N'Y'
+            AND CUSTOMERS.CUSTNAME in {company_id} 
+        ORDER BY DOCUMENTS.DOC, CUSTOMERS.CUSTNAME, DOCUMENTS.DOCNO;
+    """
+
+    rows = priority_query(cred, query, company_id)
+    return rows
+
+
+def priority_query(cred, query, args=False):
+    conn, cursor = get_connect_priority_mssql(cred)
+    if args:
+        cursor.execute(query, (args,))
+    else:
+        cursor.execute(query)
+
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
+
+
+def get_connect_priority_mssql(cred):  # Connect to the MSSQL database
+    conn = pymssql.connect(
+        host=cred['DB_host_int'], user=cred['DB_user'], password=cred['DB_password'], database=cred['DB_name']
+    )
+    cursor = conn.cursor()
+    return conn, cursor
+
+
+def clear_table(table_name):
+    rows = len(table_name.query.all())
+    print(f'Table {table_name} contains {rows}')
+    while rows > 0:
+        db.session.query(table_name).delete()
+        db.session.commit()
+        time.sleep(1)
+        rows = len(table_name.query.all())
+    print(f'Table {table_name} truncated and contains {rows}')
+    return True

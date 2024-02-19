@@ -5,11 +5,11 @@
                             {% if user.is_authenticated %}
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Server settings
+                                    Services
                                 </a>
                                 <ul class="dropdown-menu">
 {#                                    <li><hr class="dropdown-divider"></li>#}
-                                    <li><a class="dropdown-item" href="{{ url_for('servers.warm_up') }}">Choose by IP</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('servers.warm_up') }}">IP info</a></li>
 {#                                    <li><a class="dropdown-item" href="{{ url_for('persons.person', way='add') }}">Person</a></li>#}
 {#                                    <li><a class="dropdown-item" href="{{ url_for('add_contract') }}">Contract</a></li>#}
 {#                                    <li><a class="dropdown-item" href="{{ url_for('add_hosting') }}">Hosting</a></li>#}
