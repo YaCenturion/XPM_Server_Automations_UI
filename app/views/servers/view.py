@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_login import current_user, login_required  # login_user, logout_user
 # from sqlalchemy import desc  # func
 from app import ver
+from app.views.servers.nutanix_utils import get_vms_like
 from app.views.servers.servers_utils import *
 from config import ansible_host, playbooks_lst, nutanix, fortigate
 from app.utils.main_utils import *
@@ -21,12 +22,12 @@ def update_db():
     else:
         text, cat = 'BAD UPDATE!', 'error'
     flash(text, cat)
-    return redirect(url_for('servers.warm_up'))
+    return redirect(url_for('servers.server'))
 
 
 @login_required
-@servers.route('/warm_up/', methods=['GET', 'POST'])
-def warm_up():
+@servers.route('/server/', methods=['GET', 'POST'])
+def server():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
     username = current_user.username
@@ -38,6 +39,8 @@ def warm_up():
         show_post_data(request.form.items())
         
         target = str(request.form['ip_address']).strip()
+        front_data['vms'] = get_vms_like(target)
+        # front_data['v_ips'] = get_vips_like(target)
         ssh, msg = get_ssh(ansible_host)
 
         if ssh:
@@ -67,7 +70,7 @@ def warm_up():
             flash(text, cat)
 
     return render_template(
-        'servers/warm_up.html', query=target, data=front_data, user=current_user, ver=ver)
+        'servers/server.html', query=target, data=front_data, user=current_user, ver=ver)
 
 
 @login_required

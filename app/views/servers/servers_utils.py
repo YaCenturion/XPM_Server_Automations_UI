@@ -43,45 +43,10 @@ def get_packages_changes(form_data):
             update_pool['install'].append(key)
         elif value == '-del':
             update_pool['delete'].append(key)
+    if 'httpd' in update_pool['delete']:
+        update_pool['delete'].append('httpd-tools')
+        update_pool['delete'].append('httpd-manual')
     return update_pool
-
-
-def old_install_packages_addon(packages, ssh, target, username):
-    logs = ''
-    for package in packages:
-        if package in ('apache2', 'httpd'):
-            playbook = playbooks_lst["apache_default"]
-        elif package == 'nginx':
-            playbook = playbooks_lst["nginx_default"]
-        else:
-            playbook = False
-
-        if playbook:
-            command = f'{playbooks_lst["base"]}{playbook} -i {target}, -e "target={target}"'
-            status_install, ssh_log_install = exec_ansible_playbook(ssh, command, username)
-            logs += ssh_log_install
-            if not status_install:
-                return status_install, logs
-    return True, logs
-
-
-def old_packages_cleaner(packages, ssh, target, username):
-    logs = ''
-    for package in packages:
-        if package in ('apache2', 'httpd'):
-            playbook = playbooks_lst["apache_cleaner"]
-        elif package == 'nginx':
-            playbook = playbooks_lst["nginx_cleaner"]
-        else:
-            playbook = False
-
-        if playbook:
-            command = f'{playbooks_lst["base"]}{playbook} -i {target}, -e "target={target}"'
-            status_install, ssh_log_install = exec_ansible_playbook(ssh, command, username)
-            logs += ssh_log_install
-            if not status_install:
-                return status_install, logs
-    return True, logs
 
 
 def add_packages_action(packages, action, ssh, target, username):

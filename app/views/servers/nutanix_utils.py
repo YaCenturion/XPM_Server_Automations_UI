@@ -2,13 +2,8 @@ import re
 import requests
 import ast
 import pandas as pd
-from config import nutanix
 from ...models import *
-from ...utils.main_utils import get_priority_detailed_info, clear_table
-
-
-# from utils.priority_utils import get_priority_detailed_info
-# from utils.main_utils import clear_table
+from ...utils.main_utils import get_priority_detailed_info
 
 
 def get_external_ips(ip_pool):
@@ -105,7 +100,6 @@ def details_count(vms):
     conditions_pool = []
     for vm in vms:
         conditions_pool.append((int(vm.company_id), vm.contract_num))
-    # print('conditions_pool:', conditions_pool)
     details_result_search = {}
     details_result_calc = {}
     for unit in set(conditions_pool):
@@ -118,7 +112,6 @@ def details_count(vms):
 
         data = NutanixDetails.query.filter(
             NutanixDetails.CUSTOMERS_CUSTNAME == unit[0], NutanixDetails.DOCUMENTS_DOCNO == unit[1]).all()
-        # print(len(data))
         for row in data:
             details_result_search[name+'_'+str(unit[0])].append(row.PART_PARTNAME)
         for item in details_result_search[name+'_'+str(unit[0])]:
@@ -128,10 +121,7 @@ def details_count(vms):
                     details_result_calc[name]['disks'] += 1
             else:
                 details_result_calc[name][item] = 1
-    # print('===' * 5)
-    # print(details_result_search)
     print(details_result_calc)
-    # print('===' * 5)
     return details_result_calc
 
 
@@ -195,13 +185,5 @@ def add_all_nutanix_details(lines):
 
 
 def bits_to_gb(bits):
-    # 1 байт = 8 бит
-    bytes_value = bits / 8
-    # 1 килобайт = 1024 байта
-    kb_value = bytes_value / 1024
-    # 1 мегабайт = 1024 килобайта
-    mb_value = kb_value / 1024
-    # 1 гигабайт = 1024 мегабайта
-    gb_value = mb_value / 1024
-
-    return round(gb_value, 2)
+    gb_value = round(bits / 8 / 1024 / 1024 / 1024, 2)
+    return gb_value
