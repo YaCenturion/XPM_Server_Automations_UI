@@ -2,25 +2,27 @@
 base_pattern = [
     {
         "name": None,
-        "hosts": "{{ target }}",
+        "hosts": None,
         "remote_user": "xpmans",
         "become": "yes",
         "vars": {
-            "state_action": "{{ state_action | default('___NOT_SET___') }}"
+            # Default vars
         },
-        "roles": []
+        "roles": [
+            # Insert roles with special vars
+        ]
     }
 ]
 
 r_system = {
-    'user': {'role': 'create_linux_user', 'vars': {'state_action': None}},  # absent|present
-    'directory': {'role': 'create_user_directory', 'vars': {'state_action': None}},  # absent|directory
+    'user': {'role': 'create_linux_user'},  # absent|present
+    'directory': {'role': 'create_user_directory'},  # absent|directory
 
     'install_mysql_module': {'role': 'install_mysql_module'},
 }
 r_db = {
-    'db': {'role': 'create_db', 'vars': {'state_action': None}},  # absent|present
-    'user': {'role': 'create_db_user', 'vars': {'state_action': None}},  # absent|present
+    'db': {'role': 'create_db'},  # absent|present
+    'user': {'role': 'create_db_user'},  # absent|present
 }
 r_web = {
     'create_php_fpm_sock': {'role': 'create_php_fpm_sock'},
