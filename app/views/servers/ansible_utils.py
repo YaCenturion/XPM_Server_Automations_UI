@@ -1,58 +1,64 @@
-
-def generate_role_line(role, vars_pool=None):  # gen role line
-    res = {'role': role}
-    if not vars_pool or vars_pool is not None:
-        res['vars'] = {}
-        for item in vars_pool:
-            if "directory" in role and item[0] == 'state_action' and item[1] == 'present':
-                item[1] = "directory"
-            res['vars'] = {
-                item[0]: item[1]
-            }
-    return res
+import yaml
+from app.views.servers.ansible_patterns.roles_pattern_pool import *
 
 
-def generate_playbook(pattern_name, pb_name, roles_block):
-    with open(f'ansible_patterns/{pattern_name}.yml', 'r') as pattern_file:
-        rows_list = pattern_file.readlines()
-        # print(rows_list[0])
-        print(type(rows_list))
-        rows_list[0] = rows_list[0].strip().replace('- name: NoName', f'- name: {pb_name}\n')
-        print()
-        print(rows_list[0])
-        print()
-        for role in roles_block:
-            role_line = f'    - {role}\n'
-            rows_list.append(role_line)
+def build_role_line(role_pattern, vars_update=None, state_action=None):
+    if vars_update is not None:
+        for var in vars_update:
+            for key, value in role_pattern['vars'].items():
+                if key == var[0]:
+                    # print(role_pattern)
+                    role_pattern['vars'][key] = var[1]
+            if var[0] not in role_pattern['vars']:
+                role_pattern['vars'][var[0]] = var[1]
 
-    return rows_list
+    if 'directory' in role_pattern['role'] and state_action is not None:
+        role_pattern['vars']['state_action'] = state_action
+    return role_pattern
 
 
-def save_playbook(ssh, filename, rows_list):
-    print(ssh)
-    with open(f'ansible_patterns/{filename}.yml', 'w') as output_file:
-        for row in rows_list:
-            output_file.write(row)
-    print('Done')
+def generate_playbook(base_pattern_pb, pb_name, roles_list, v_data=None):
+    base_pattern_pb[0]['name'] = pb_name
+    if v_data is not None:
+        base_pattern_pb[0]['vars'] = v_data
+    for role_set in roles_list:
+        state_action = None
+        if 'state_action' in base_pattern_pb[0]['vars']:
+            if base_pattern_pb[0]['vars']['state_action'] == 'present':
+                if 'directory' in role_set[0]['role']:
+                    state_action = 'directory'
+        role = build_role_line(role_set[0], role_set[1], state_action)
+        base_pattern_pb[0]['roles'].append(role)
+    return base_pattern_pb
+
+
+def save_playbook(ssh, filename, pb_data):
+    with open(f'ansible_patterns/temp/{filename}.yml', 'w', encoding='utf-8') as output_file:
+        yaml.dump(pb_data, output_file, default_flow_style=False, sort_keys=False)
+    # TODO save to db dict: pb_data.
+    print(f'Playbook {filename}.yml saved')
 
 
 if __name__ == '__main__':
     pool = [
-        ('create_linux_user', [['state_action', "present"], ['foo_action', "present"]]),
-        ('create_user_directory', [['state_action', "present"]]),
-        ('install_mysql_module', []),
-        ('create_db', [['state_action', "present"]]),
-        ('create_db_user', [['state_action', "present"]]),
-        ('create_php_fpm_sock', []),
-        ('create_self-signed_certificate', []),
-        ('create_apache_virtualhost', []),
-        ('create_ftp_user', []),
-        ('restart_apache', []),
+        (r_system['user'], [['state_action', "present"], ['foo_action', "present"]]),
+        (r_system['directory'], [['state_action', "present"]]),
+        (r_system['install_mysql_module'], None),
+        (r_db['db'], None),
+        (r_db['user'], None),
+        (r_web['create_php_fpm_sock'], None),
+        (r_web['SSL_certificate'], None),
+        (r_web['create_apache_virtualhost'], None),
+        (r_web['ftp_user'], None),
+        (r_web['restart_apache'], None),
     ]
-    roles = []
-    for task in pool:
-        roles.append(generate_role_line(task[0], task[1]))
 
-    print(roles)
-    result = generate_playbook('setup_new_web', 'THIS IS NAME', roles)
+    vars_data = {
+        "state_action": 'present',
+        "username": 'root',
+        "password": '<PASSWORD>',
+        "domain": 'domain.co.il'
+    }
+
+    result = generate_playbook(base_pattern, 'THIS IS NAME', pool, v_data=vars_data)
     save_playbook('will be ssh', 'new_filename', result)

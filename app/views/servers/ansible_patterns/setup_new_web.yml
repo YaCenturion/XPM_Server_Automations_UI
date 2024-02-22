@@ -1,4 +1,4 @@
-- name: NoName
+- name: NeedName
   hosts: "{{ target }}"
   remote_user: xpmans
   become: yes
