@@ -1,7 +1,7 @@
 {% extends 'base_sources/base.html' %}
 {% import 'base_sources/form-fields.html' as fields %}
 
-{% set title_text = "VHost management" %}
+{% set title_text = "Add new VHost" %}
 
 {% block page_title %}{{ title_text }}{% endblock %}
 
@@ -28,15 +28,28 @@
                                         <div class="row justify-content-center p-2">
                                             <div class="input-group">
                                                 {% if query %}{% set value = query %}{% endif %}
-                                                {{ fields.input('IP address', 'ip_address', value, "input IP plz") }}
+                                                {{ fields.input('IP address', 'ip_address', value, "Server IP") }}
                                             </div>
                                         </div>
                                         <div class="row justify-content-center p-2">
                                             <div class="input-group">
-                                                {{ fields.input('DB user', 'db_name', value, "input db username plz") }}
-                                                {{ fields.input('DB user', 'db_pass', value, "input db pass plz") }}
+                                                {{ fields.input('Domain', 'domain_name', value, "future domain for vhost") }}
                                             </div>
                                         </div>
+                                        <div class="row justify-content-center p-2">
+                                            <div class="input-group">
+                                                {{ fields.input('Service:', 'web_service', 'Apache', "", disabled='disabled') }}
+                                                {{ fields.input('PHP ver:', 'php_ver', '80', "") }}
+                                                {{ fields.input('Ports', 'vhost_port', '80,443', "", disabled='disabled') }}
+                                            </div>
+                                        </div>
+                                        <div class="row justify-content-center p-2">
+                                            <div class="input-group">
+                                                {{ fields.input('DB Name', 'db_name', value, "") }}
+                                                {{ fields.input('DB Password', 'db_pass', value, "") }}
+                                            </div>
+                                        </div>
+                                        {{ fields.submit(label="Update state", id="division_name") }}
                                         {{ fields.csrf() }}
                                     </form>
                                 </div>

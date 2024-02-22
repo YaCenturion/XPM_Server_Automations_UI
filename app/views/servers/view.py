@@ -2,9 +2,10 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_login import current_user, login_required  # login_user, logout_user
 # from sqlalchemy import desc  # func
 from app import ver
+from app.views.servers.ansible_utils import *
 from app.views.servers.nutanix_utils import get_vms_like
 from app.views.servers.servers_utils import *
-from config import ansible_host, playbooks_lst, nutanix, fortigate
+from config import ansible_host, nutanix, fortigate
 from app.utils.main_utils import *
 from app.views.servers.update_utils import *
 # from app import client_pay_status_lst
@@ -87,13 +88,46 @@ def create_vhost():
 
         target = str(request.form['ip_address']).strip()
         domain_name = str(request.form['domain_name']).strip().lower().replace('.', '_')
+        # web_service = str(request.form['web_service']).strip().lower()
+        php_ver = str(request.form['php_ver']).strip().lower()
+        # vhost_ports = str(request.form['vhost_ports']).strip().split(',')
+        db_name = str(request.form['db_name']).strip().lower().replace('.', '_')
+        db_pass = str(request.form['db_pass']).strip().lower().replace('.', '_')
         ssh, msg = get_ssh(ansible_host)
 
         if ssh:
             # Ansible: Setup vhost
-            # TODO here
-            print(domain_name)
-            print(generate_password(15))
+            pb_vars_data = {
+                "state_action": 'present',
+                "username": domain_name,
+                "mysql_user": db_name,
+                "mysql_pass": db_pass,
+                "php_ver": php_ver,
+                # "vhost_ports": vhost_ports,
+            }
+
+            add_vhost_tasks = [
+                (r_system['user'],),
+                (r_system['directory'],),
+                (r_system['install_mysql_module'],),
+                (r_db['db'],),
+                (r_db['user'],),
+                (r_web['create_php_fpm_sock'],),
+                (r_web['SSL_certificate'],),
+                (r_web['create_apache_virtualhost'],),
+                (r_web['ftp_user'],),
+                (r_web['restart_apache'],),
+            ]
+
+            playbook_filename = 'ansible_test'
+            playbook_name = '== THIS IS PLAYBOOK NAME. GENERATED FOR TEST =='
+
+            playbook_data = generate_playbook(base_pattern, target, playbook_name, add_vhost_tasks, pb_vars_data)
+            ssh_save_playbook(ssh, playbook_filename, playbook_data)
+
+            command = f'{playbooks_lst["base"]}{playbook_filename}.yml -i {target}, -e "target={target}"'
+            print(':::: command ::::\n', command)
+            # status, ssh_log_facts = exec_ansible_playbook(ssh, command, username)
 
             # Ansible: Get facts
             front_data = get_facts(front_data, ssh, target, username)

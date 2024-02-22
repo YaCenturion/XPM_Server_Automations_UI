@@ -40,45 +40,46 @@ def generate_playbook(playbook_data, target, name_value, roles_list, v_data=None
     return playbook_data
 
 
-def save_playbook(ssh, filename, pb_data):
-    print(ssh)
-    disclaimer = (
-        '# This playbook was generated ONLY for specific task.\n'
-        '# Do NOT use this for other tasks!\n'
-        '# It can cause SERIOUS harm!\n---\n'
-    )
-    with open(f'ansible_patterns/temp/{filename}.yml', 'w', encoding='utf-8') as output_file:
-        output_file.write(disclaimer)
-        yaml.dump(pb_data, output_file, default_flow_style=False, sort_keys=False)
+def ssh_save_playbook(ssh, filename, pb_data):
+    with ssh.open_sftp() as sftp:
+        disclaimer = (
+            '# This playbook was generated ONLY for specific task.\n'
+            '# Do NOT use this for other tasks!\n'
+            '# It can cause SERIOUS harm!\n---\n'
+        )
+        with sftp.open(f'/etc/ansible/prod/__{filename}.yml', 'w') as output_file:
+            output_file.write(disclaimer)
+            yaml.dump(pb_data, output_file, default_flow_style=False, sort_keys=False)
+
     # TODO save to db dict: pb_data.
-    print(f'Playbook {filename}.yml saved')
+    print(f'Playbook __{filename}.yml saved')
 
 
 if __name__ == '__main__':
-    tasks = [
-        # (r_system['user'], {'test1': "aaa", 'test2': "yes", 'test3': 8989898}),  # example for add specials role vars
-        (r_system['user'],),
-        (r_system['directory'],),
-        (r_system['install_mysql_module'],),
-        (r_db['db'],),
-        (r_db['user'],),
-        (r_web['create_php_fpm_sock'],),
-        (r_web['SSL_certificate'],),
-        (r_web['create_apache_virtualhost'],),
-        (r_web['ftp_user'],),
-        (r_web['restart_apache'],),
-    ]
+    print('Do!')
+    # tasks = [
+    #     # (r_system['user'], {'test1': "aaa", 'test2': "yes", 'test3': 8989898}),  # example for add specials role vars
+    #     (r_system['user'],),
+    #     (r_system['directory'],),
+    #     (r_system['install_mysql_module'],),
+    #     (r_db['db'],),
+    #     (r_db['user'],),
+    #     (r_web['create_php_fpm_sock'],),
+    #     (r_web['SSL_certificate'],),
+    #     (r_web['create_apache_virtualhost'],),
+    #     (r_web['ftp_user'],),
+    #     (r_web['restart_apache'],),
+    # ]
+    #
+    # target_query = '192.168.2.1'
+    # main_vars_data = {
+    #     "state_action": 'present',
+    #     "mysql_user": 'root',
+    #     "mysql_pass": '<PASSWORD>',
+    #     "username": 'domain.co.il',
+    # }
 
-    target_query = '192.168.2.1'
-    glob_vars_data = {
-
-        "state_action": 'present',
-        "mysql_user": 'root',
-        "mysql_pass": '<PASSWORD>',
-        "username": 'domain.co.il',
-    }
-
-    playbook_filename = 'ansible_test'
-    playbook_name = '== THIS IS PLAYBOOK NAME. GENERATED FOR TEST =='
-    result = generate_playbook(base_pattern, target_query, playbook_name, tasks, glob_vars_data)
-    save_playbook('will be ssh', playbook_filename, result)
+    # playbook_filename = 'ansible_test'
+    # playbook_name = '== THIS IS PLAYBOOK NAME. GENERATED FOR TEST =='
+    # # result = generate_playbook(base_pattern, target_query, playbook_name, tasks, main_vars_data)
+    # save_playbook('will be ssh', playbook_filename, result)
