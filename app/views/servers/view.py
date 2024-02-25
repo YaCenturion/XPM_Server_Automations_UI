@@ -130,7 +130,9 @@ def create_vhost():
             command = f'{playbooks_lst["yml_deploy"]}{playbook_filename}.yml -i {target}, -e "target={target}"'
             print(':::: command ::::\n', command)
             # status, ssh_log_facts = exec_ansible_playbook(ssh, command, username)
-            status, ssh_log_facts = exec_ansible_playbook(ssh, f'cat {playbooks_lst["yml_deploy"]}{playbook_filename}.yml', username)
+
+            # show generated playbook
+            exec_ansible_playbook(ssh, f'cat {playbooks_lst["yml_deploy"]}{playbook_filename}.yml', username)
 
             # Ansible: Get facts
             # front_data = get_facts(front_data, ssh, target, username)
