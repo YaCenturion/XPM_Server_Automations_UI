@@ -1,7 +1,0 @@
-- name: NeedName
-  hosts: "{{ target }}"
-  remote_user: xpmans
-  become: yes
-  vars:
-    state_action: "{{ state_action | default('___NOT_SET___') }}"
-  roles:
