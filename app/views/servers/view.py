@@ -2,10 +2,11 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash 
 from flask_login import current_user, login_required  # login_user, logout_user
 # from sqlalchemy import desc  # func
 from app import ver
+from config import ansible_host, nutanix, fortigate
 from app.views.servers.ansible_utils import *
 from app.views.servers.nutanix_utils import get_vms_like
 from app.views.servers.servers_utils import *
-from config import ansible_host, nutanix, fortigate
+from app.views.servers.ansible_patterns.roles_pattern_pool import *
 from app.utils.main_utils import *
 from app.views.servers.update_utils import *
 # from app import client_pay_status_lst
@@ -119,19 +120,22 @@ def create_vhost():
                 (r_web['restart_apache'],),
             ]
 
-            playbook_filename = f"gen_{domain_name.lower().replace('.', '_')}_{str(int(time.time()))}"
+            playbook_filename = f"{str(int(time.time()))}_{domain_name.lower().replace('.', '_')}"
             playbook_name = f'VHost setup: {domain_name}'
 
             playbook_data = generate_playbook(base_pattern, target, playbook_name, add_vhost_tasks, pb_vars_data)
             ssh_save_playbook(ssh, playbook_filename, playbook_data)
 
-            command = f'{playbooks_lst["base"]}{playbook_filename}.yml -i {target}, -e "target={target}"'
+            command = f'{playbooks_lst["yml_deploy"]}{playbook_filename}.yml -i {target}, -e "target={target}"'
             print(':::: command ::::\n', command)
             # status, ssh_log_facts = exec_ansible_playbook(ssh, command, username)
 
             # Ansible: Get facts
             front_data = get_facts(front_data, ssh, target, username)
             close_ssh(ssh, username)
+            text, cat = f'Well done! {playbook_filename}.yml ready!', 'success'
+            flash(text, cat)
+            return redirect(url_for('servers.server'))
         else:
             front_data['get_facts'] = [False, msg]
 

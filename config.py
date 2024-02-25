@@ -82,6 +82,7 @@ nutanix = {
 
 playbooks_lst = {
     "base": 'ansible-playbook /etc/ansible/prod/',
+    "yml_deploy": '/etc/ansible/prod/UI/',
     "get_facts": 'get_facts.yml',
     "action": 'packages_action.yml',
     "apache_default": 'apache_default_conf.yml',
