@@ -3,14 +3,10 @@ base_pattern = [
     {
         "name": None,
         "hosts": None,
-        "remote_user": "xpmans",
-        "become": "yes",
-        "vars": {
-            # Default vars
-        },
-        "roles": [
-            # Insert roles with special vars
-        ]
+        "remote_user": None,
+        "become": None,
+        "vars": {},
+        "roles": [],
     }
 ]
 

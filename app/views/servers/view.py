@@ -124,15 +124,17 @@ def create_vhost():
             playbook_name = f'VHost setup: {domain_name}'
 
             playbook_data = generate_playbook(base_pattern, target, playbook_name, add_vhost_tasks, pb_vars_data)
+            print(playbook_data)
             ssh_save_playbook(ssh, playbook_filename, playbook_data)
 
             command = f'{playbooks_lst["yml_deploy"]}{playbook_filename}.yml -i {target}, -e "target={target}"'
             print(':::: command ::::\n', command)
             # status, ssh_log_facts = exec_ansible_playbook(ssh, command, username)
+            status, ssh_log_facts = exec_ansible_playbook(ssh, f'cat {playbooks_lst["yml_deploy"]}{playbook_filename}.yml', username)
 
             # Ansible: Get facts
-            front_data = get_facts(front_data, ssh, target, username)
-            close_ssh(ssh, username)
+            # front_data = get_facts(front_data, ssh, target, username)
+            # close_ssh(ssh, username)
             text, cat = f'Well done! {playbook_filename}.yml ready!', 'success'
             flash(text, cat)
             return redirect(url_for('servers.server'))

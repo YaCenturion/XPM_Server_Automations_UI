@@ -20,6 +20,10 @@ def build_role_data(role_pattern, role_vars=None, state_action=None):
 def generate_playbook(playbook_data, target, name_value, roles_list, v_data=None):
     playbook_data[0]['name'] = name_value
     playbook_data[0]['hosts'] = target
+    playbook_data[0]['remote_user'] = 'xpmans'
+    playbook_data[0]['become'] = True
+    playbook_data[0]['vars'] = {'state_action': "{{ state_action | default('___NOT_SET___') }}"}
+    playbook_data[0]['roles'] = []
     if v_data is not None:
         playbook_data[0]['vars'] = v_data
 
@@ -36,6 +40,7 @@ def generate_playbook(playbook_data, target, name_value, roles_list, v_data=None
                     new_state_action = 'directory'
 
         role = build_role_data(role_preset, role_vars, new_state_action)
+        print(f"Append: {role}")
         playbook_data[0]['roles'].append(role)
     return playbook_data
 
