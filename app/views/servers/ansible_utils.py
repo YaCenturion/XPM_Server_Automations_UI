@@ -47,12 +47,12 @@ def ssh_save_playbook(ssh, filename, pb_data):
             '# Do NOT use this for other tasks!\n'
             '# It can cause SERIOUS harm!\n---\n'
         )
-        with sftp.open(f'/etc/ansible/prod/__{filename}.yml', 'w') as output_file:
+        with sftp.open(f'/etc/ansible/prod/UI/{filename}.yml', 'w') as output_file:
             output_file.write(disclaimer)
             yaml.dump(pb_data, output_file, default_flow_style=False, sort_keys=False)
 
     # TODO save to db dict: pb_data.
-    print(f'Playbook __{filename}.yml saved')
+    print(f'Playbook ui_{filename}.yml saved')
 
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
+from flask import Blueprint, render_template, request, redirect, url_for, flash  # abort
 from flask_login import current_user, login_required  # login_user, logout_user
 # from sqlalchemy import desc  # func
 from app import ver
@@ -119,8 +119,8 @@ def create_vhost():
                 (r_web['restart_apache'],),
             ]
 
-            playbook_filename = 'ansible_test'
-            playbook_name = '== THIS IS PLAYBOOK NAME. GENERATED FOR TEST =='
+            playbook_filename = f"gen_{domain_name.lower().replace('.', '_')}_{str(int(time.time()))}"
+            playbook_name = f'VHost setup: {domain_name}'
 
             playbook_data = generate_playbook(base_pattern, target, playbook_name, add_vhost_tasks, pb_vars_data)
             ssh_save_playbook(ssh, playbook_filename, playbook_data)
