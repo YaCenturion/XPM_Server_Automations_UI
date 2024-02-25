@@ -21,7 +21,6 @@ def index():
             print('query', search_query)
             # return render_template('index.html', user=current_user, ver=ver)
 
-    print('ddddddd')
     return render_template('index.html', user=current_user, ver=ver)
 
 
