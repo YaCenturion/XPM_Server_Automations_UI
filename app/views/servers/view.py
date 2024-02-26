@@ -89,7 +89,8 @@ def create_vhost():
 
         target = str(request.form['ip_address']).strip()
         domain_name = str(request.form['domain_name']).strip().lower().replace('.', '_')
-        # web_service = str(request.form['web_service']).strip().lower()
+        # web_server = str(request.form['web_service']).strip().lower()
+        web_server = "Apache".lower()
         php_ver = str(request.form['php_ver']).strip().lower()
         # vhost_ports = str(request.form['vhost_ports']).strip().split(',')
         db_user = str(request.form['db_user']).strip().lower().replace('.', '_')
@@ -104,6 +105,7 @@ def create_vhost():
                 "mysql_user": db_user,
                 "mysql_pass": db_pass,
                 "selected_php": php_ver,
+                "web_server": web_server,
                 # "vhost_ports": vhost_ports,
             }
 
@@ -116,9 +118,9 @@ def create_vhost():
                 (r_db['user'],),
                 (r_web['create_php_fpm_sock'],),
                 (r_web['SSL_certificate'],),
-                (r_web['create_apache_virtualhost'],),
+                (r_web[f'create_{web_server}_virtualhost'],),
                 (r_web['ftp_user'],),
-                (r_web['restart_apache'],),
+                (r_web[f'restart_{web_server}'],),
             ]
 
             playbook_filename = f"{str(int(time.time()))}_{domain_name.lower().replace('.', '_')}"
