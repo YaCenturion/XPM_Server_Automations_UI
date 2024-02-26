@@ -92,8 +92,8 @@ def create_vhost():
         # web_service = str(request.form['web_service']).strip().lower()
         php_ver = str(request.form['php_ver']).strip().lower()
         # vhost_ports = str(request.form['vhost_ports']).strip().split(',')
-        db_name = str(request.form['db_name']).strip().lower().replace('.', '_')
-        db_pass = str(request.form['db_pass']).strip().lower().replace('.', '_')
+        db_user = str(request.form['db_user']).strip().lower().replace('.', '_')
+        db_pass = str(request.form['db_pass']).strip()
         ssh, msg = get_ssh(ansible_host)
 
         if ssh:
@@ -101,15 +101,16 @@ def create_vhost():
             pb_vars_data = {
                 "state_action": 'present',
                 "username": domain_name,
-                "mysql_user": db_name,
+                "mysql_user": db_user,
                 "mysql_pass": db_pass,
-                "php_ver": php_ver,
+                "selected_php": php_ver,
                 # "vhost_ports": vhost_ports,
             }
 
             add_vhost_tasks = [
                 (r_system['user'],),
                 (r_system['directory'],),
+                (r_system['ssl_directory'],),
                 (r_system['install_mysql_module'],),
                 (r_db['db'],),
                 (r_db['user'],),

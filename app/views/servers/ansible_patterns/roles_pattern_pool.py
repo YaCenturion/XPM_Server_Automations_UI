@@ -13,6 +13,7 @@ base_pattern = [
 r_system = {
     'user': {'role': 'create_linux_user'},  # absent|present
     'directory': {'role': 'create_user_directory'},  # absent|directory
+    'ssl_directory': {'role': 'create_ssl_directory'},  # absent|directory
 
     'install_mysql_module': {'role': 'install_mysql_module'},
 }
