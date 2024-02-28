@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 __author__ = "Boris Drozdovski, TLV"
-__version__ = "0.92"
+__version__ = "0.97"
 
 from flask import Flask
 from flask_login import LoginManager
@@ -50,7 +50,7 @@ def create_app():
     login.init_app(app)
 
     if os.environ.get('FLASK_ENV') == 'production':  # Log to syslog
-        SSLify(app)  # Configure SSL if platform supports it
+        # SSLify(app)  # Configure SSL if platform supports it
         syslog_handler = SysLogHandler()
         syslog_handler.setLevel(logging.WARNING)
         app.logger.addHandler(syslog_handler)
