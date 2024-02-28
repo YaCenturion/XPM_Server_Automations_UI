@@ -7,26 +7,31 @@
 # 73 - just number tag version for docker when running container
 
 ################## GET VARS ######################
-if [[ $# -eq 3 ]]; then
-  folder=$1
-  num_version=$2
-  tag_version="${num_version}"
-  docker_name=$3
+#if [[ $# -eq 3 ]]; then
+folder="${1:-'/srv/SandBox'}"
+docker_name="${2:-'expim_NotSetName'}"
+tag_version="${3:-'_no_revision'}"
 
-  if [ "$folder" == "." ]; then
-    # Set folder to the current working directory if the first argument is "."
-    folder=$(pwd)
-  fi
-
-else
-  folder="/srv/SandBox"
-  docker_name="expim-NotSetName"
-  tag_version="_no_revision"
-
+if [ "$folder" == "." ]; then
+  # Set folder to the current working directory if the first argument is "."
+  folder=$(pwd)
+fi
+if [ "$docker_name" == "expim_NotSetName" ]; then
   echo -e "############ WARNING! ############"
   echo -e "FOLDER: $folder and TAG: $tag_version"
   echo -e "############# ###### #############"
 fi
+
+
+#else
+#  folder="/srv/SandBox"
+#  docker_name="expim-NotSetName"
+#  tag_version="_no_revision"
+#
+#  echo -e "############ WARNING! ############"
+#  echo -e "FOLDER: $folder and TAG: $tag_version"
+#  echo -e "############# ###### #############"
+#fi
 
 echo -e "############ Docker stop & clear ############"
 docker ps -a
