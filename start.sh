@@ -8,9 +8,9 @@ reset='\e[0m'
 ########################################
 
 ########## Config ################
-folder="/srv/ExpimToolsUI"
-git_url="https://github.com/ExpimLTD/XPM_ToolsUI.git"
-git_branch="master"
+folder="/srv/ExpimOpsUI/"
+git_url="https://github.com/ExpimLTD/XPM_Server_Automations_UI.git"
+git_branch="beta"
 jenkins_user="xpmadmin"
 
 echo -e "${yellow}############ PRESETS: ############${reset}"

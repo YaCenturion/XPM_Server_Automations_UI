@@ -9,8 +9,8 @@ green='\033[0;32m'
 ########################################
 
 docker ps -a
-docker stop expim-tools
-docker rm expim-tools
+docker stop expim-ops
+docker rm expim-ops
 docker container prune -f
 
 if [[ $# -eq 2 ]]; then
