@@ -40,6 +40,14 @@
         </datalist>
 {%- endmacro %}
 
+{# select #}
+{% macro select(label, name, lst, value='') -%}
+    <label class="input-group-text label-width" for="{{ name }}">{{ label }}</label>
+    <select class="form-select" id="{{ name }}" name="{{ name }}">
+        {% for option in lst %}<option value="{{ option[1] }}">{{ option[0] }}</option>{% endfor %}
+    </select>
+{%- endmacro %}
+
 {# date #}
 {% macro date(label, name, value='', required='', disabled='', type='date') -%}
     <label class="input-group-text label-width" for="date_{{ name }}">{{ label }}</label>

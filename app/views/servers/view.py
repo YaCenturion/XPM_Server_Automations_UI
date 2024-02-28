@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash 
 from flask_login import current_user, login_required  # login_user, logout_user
 # from sqlalchemy import desc  # func
 from app import ver
-from config import ansible_host, nutanix, fortigate
+from config import ansible_host, nutanix, fortigate, php_versions
 from app.views.servers.ansible_utils import *
 from app.views.servers.nutanix_utils import get_vms_like
 from app.views.servers.servers_utils import *
@@ -132,7 +132,9 @@ def create_vhost():
 
             command = f'{playbooks_lst["yml_deploy"]}{playbook_filename}.yml -i {target}, -e "target={target}"'
             print(':::: command ::::\n', command)
-            # status, ssh_log_facts = exec_ansible_playbook(ssh, command, username)
+
+            # TODO UNCOMMENT:
+            #  status, ssh_log_facts = exec_ansible_playbook(ssh, command, username)
 
             # show generated playbook
             exec_ansible_playbook(ssh, f'cat {playbooks_lst["yml_deploy"]}{playbook_filename}.yml', username)
@@ -151,4 +153,4 @@ def create_vhost():
             flash(text, cat)
 
     return render_template(
-        'servers/vhost.html', query=target, data=front_data, user=current_user, ver=ver)
+        'servers/vhost.html', query=target, data=front_data, php_lst=php_versions, user=current_user, ver=ver)

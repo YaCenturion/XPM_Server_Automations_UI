@@ -39,14 +39,14 @@
                                         <div class="row justify-content-center p-2">
                                             <div class="input-group">
                                                 {{ fields.input('Service:', 'web_service', 'Apache', "", disabled='disabled') }}
-                                                {{ fields.input('PHP ver:', 'php_ver', '80', "") }}
+                                                {{ fields.select('PHP ver:', 'php_ver', php_lst, "") }}
                                                 {{ fields.input('Ports', 'vhost_port', '80,443', "", disabled='disabled') }}
                                             </div>
                                         </div>
                                         <div class="row justify-content-center p-2">
                                             <div class="input-group">
                                                 {{ fields.input('DB User', 'db_user', value, "") }}
-                                                {{ fields.input('DB Password', 'db_pass', value, "") }}
+                                                {{ fields.input('DB Password', 'db_pass', value, "", type='password') }}
                                             </div>
                                         </div>
                                         {{ fields.submit(label="Update state", id="division_name") }}
