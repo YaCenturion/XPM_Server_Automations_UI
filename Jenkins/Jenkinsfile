@@ -1,0 +1,84 @@
+pipeline {
+    agent any
+
+    environment {
+        REMOTE_DEPLOY_DIRECTORY = "/srv/ExpimOpsUI"
+    }
+
+    stages {
+        stage('Get from GitHub') {
+            steps {
+                script {
+                    checkout scm
+                }
+            }
+        }
+
+        stage('Pre-Deploy Cleanup') {
+            steps {
+                sshPublisher(publishers: [
+                    sshPublisherDesc(configName: 'ops.expim.local (@Master)',
+                    transfers: [
+                        sshTransfer(
+                            cleanRemote: false, excludes: '',
+                            execCommand: "docker stop expim-ops && rm -rf ${REMOTE_DEPLOY_DIRECTORY}/* && ls ${REMOTE_DEPLOY_DIRECTORY}",
+                            execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false,
+                            patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false,
+                            removePrefix: '', sourceFiles: ''
+                            )
+                    ],
+                    usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)
+                ])
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    sshPublisher(publishers: [
+                        sshPublisherDesc(configName: 'ops.expim.local (@Master)',
+                        transfers: [
+                            sshTransfer(
+                                cleanRemote: false, excludes: '',
+                                execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false,
+                                noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '',
+                                remoteDirectorySDF: false, removePrefix: '',
+                                sourceFiles: '**/*'
+                                )
+                        ],
+                        usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)
+                    ])
+
+                    echo "Deploy directory is: ${REMOTE_DEPLOY_DIRECTORY}"
+                }
+            }
+        }
+
+        stage('Build & Run') {
+            steps {
+                sshPublisher(publishers: [
+                    sshPublisherDesc(configName: 'ops.expim.local (@Master)',
+                    transfers: [
+                        sshTransfer(
+                            cleanRemote: false, excludes: '',
+                            execCommand: "cd \"${env.REMOTE_DEPLOY_DIRECTORY}\" && chmod +x start.sh automation.sh && bash automation.sh . $BUILD_NUMBER",
+                            execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false,
+                            patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false,
+                            removePrefix: '', sourceFiles: ''
+                            )
+                    ],
+                    usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)
+                ])
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}
