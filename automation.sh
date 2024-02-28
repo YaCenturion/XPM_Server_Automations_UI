@@ -1,22 +1,17 @@
 #!/bin/bash
-# example: bash automation.sh . 73
+# sudo chmod a+x automation.sh
+
+# example: bash automation.sh . expim-ops 73
+# . - current folder
+# expim-ops - name for container
 # 73 - just number tag version for docker when running container
 
-############### COLOR SET ##############
-yellow='\e[1;33m'
-reset='\e[0m'
-green='\033[0;32m'
-########################################
-
-docker ps -a
-docker stop expim-ops
-docker rm expim-ops
-docker container prune -f
-
-if [[ $# -eq 2 ]]; then
+################## GET VARS ######################
+if [[ $# -eq 3 ]]; then
   folder=$1
   num_version=$2
   tag_version="${num_version}"
+  docker_name=$3
 
   if [ "$folder" == "." ]; then
     # Set folder to the current working directory if the first argument is "."
@@ -25,22 +20,29 @@ if [[ $# -eq 2 ]]; then
 
 else
   folder="/srv/SandBox"
+  docker_name="expim-NotSetName"
   tag_version="_no_revision"
 
-  echo -e "${yellow}############ WARNING! ############${reset}"
-  echo -e "${yellow}FOLDER: $folder and TAG: $tag_version${reset}"
-  echo -e "${yellow}############# ###### #############${reset}"
+  echo -e "############ WARNING! ############"
+  echo -e "FOLDER: $folder and TAG: $tag_version"
+  echo -e "############# ###### #############"
 fi
 
-echo -e "${yellow}############ Build container ############${reset}"
-docker build -t expim-tools:prod-v"$tag_version" .
+echo -e "############ Docker stop & clear ############"
+docker ps -a
+docker stop "$docker_name"
+docker rm "$docker_name"
+docker container prune -f
 
-echo -e "${yellow}############ Checking 172.27.0.0/16 docknet ############${reset}"
+echo -e "############ Build container $docker_name:prod-v$tag_version ############"
+docker build -t "$docker_name":prod-v"$tag_version" .
+
+echo -e "############ Checking 172.27.0.0/16 docknet ############"
 NETWORK_NAME="docknet"
 if docker network inspect $NETWORK_NAME &>/dev/null; then
   echo "Network '$NETWORK_NAME' already exist."
 else
-    # Создание сети
+    # Create docker network
     if docker network create --subnet=172.27.0.0/16 $NETWORK_NAME; then
         echo "Network '$NETWORK_NAME' created."
     else
@@ -49,8 +51,8 @@ else
     fi
 fi
 
-echo -e "${yellow}############ Run container ############${reset}"
-docker run -d -e APP_BUILD_VERSION="$tag_version" -v "$folder"/instance:/app/instance -p 80:5000 --network=docknet --name expim-tools --restart=unless-stopped expim-tools:prod-v"$tag_version"
+echo -e "############ Run container $docker_name:prod-v$tag_version ############"
+docker run -d -e APP_BUILD_VERSION="$tag_version" -v "$folder"/instance:/app/instance -p 80:5000 --network=docknet --name "$docker_name" --restart=unless-stopped "$docker_name":prod-v"$tag_version"
 
-echo -e "${green}############ Container started successfully ############${reset}"
+echo -e "############ Container started successfully ############"
 exit 0

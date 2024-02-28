@@ -1,17 +1,12 @@
 #!/bin/bash
-# sudo nano start.sh
-# chmod a+x start.sh
-# JlPlXu@+t!5Sw-b8
-############### COLOR SET ##############
-yellow='\e[1;33m'
-reset='\e[0m'
-########################################
+# sudo chmod a+x start.sh
 
 ########## Config ################
 folder="/srv/ExpimOpsUI/"
 git_url="https://github.com/ExpimLTD/XPM_Server_Automations_UI.git"
 git_branch="beta"
 jenkins_user="xpmadmin"
+docker_name="expim-ops"
 
 echo -e "${yellow}############ PRESETS: ############${reset}"
 echo -e "${yellow}>>> Folder for clone:   ${folder}${reset}"
@@ -49,4 +44,4 @@ else
 fi
 
 echo -e "${yellow}### Run automation ${reset}"
-./automation.sh "$folder" "$tag_version"
+./automation.sh "$folder" "$docker_name" "$tag_version"
