@@ -48,7 +48,7 @@ if docker network inspect $NETWORK_NAME &>/dev/null; then
   echo "Network '$NETWORK_NAME' already exist."
 else
     # Create docker network
-    if docker network create --subnet=172.27.0.0/16 $NETWORK_NAME; then
+    if docker network create --subnet=172.27.1.0/16 $NETWORK_NAME; then
         echo "Network '$NETWORK_NAME' created."
     else
         echo "Error when try create network: '$NETWORK_NAME'."
