@@ -87,7 +87,13 @@ def delete_files(path='static/report', n=5):
 
 
 def printer(text, user='N/A'):
-    log_file = "logs/logger.log"
+    # log_file = "logs/logger.log"
+    log_directory = "logs"
+    log_file = os.path.join(log_directory, "logger.log")
+
+    # Проверяем существование папки
+    if not os.path.exists(log_directory):
+        os.makedirs(log_directory)
 
     if os.path.exists(log_file) and os.path.getsize(log_file) > 200000:  # Проверяем размер файла логов
         backup_name = time.strftime("logs/backup-%Y%m%d-%H%M%S.log")
