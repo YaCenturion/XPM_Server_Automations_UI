@@ -144,6 +144,14 @@ body {
     --bs-btn-disabled-border-color: var(--bs-success-text-emphasis);
 }
 
+.nav-link.active {
+    background: linear-gradient(to bottom, rgb(206 206 206), rgba(128, 128, 128, 0));
+}
+
+.link-secondary {
+    text-decoration-style: dotted;
+}
+
 .card-header {
     --bs-card-cap-bg: #ffaa0040;
 }

@@ -118,55 +118,70 @@
                                 </div>
 {# TEST #}
                                 <div class="row justify-content-center p-2">
-                                    <div class="card text-center">
-                                        <div class="card-header">
-                                            <ul class="nav nav-pills card-header-pills">
-                                                <li class="nav-item"><a class="nav-link active" href="#">Active</a></li>
-                                                <li class="nav-item"><a class="nav-link" href="#">Link</a></li>
-                                                <li class="nav-item"><a class="nav-link disabled" aria-disabled="true">Disabled</a></li>
-                                            </ul>
-                                        </div>
-                                        <div class="card-body">
-                                            <h5 class="card-title">Special title treatment</h5>
-                                            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                                            <a href="#" class="btn btn-primary">Go somewhere</a>
-                                        </div>
-                                    </div>
-                                </div>
-{# TEST 2 #}
-                                <div class="row justify-content-center p-2">
                                     <div class="col-12">
-                                        <div class="card border-info mb-3" style="max-width: 18rem;">
-                                            <div class="card-header">
-                                                <strong>Fast actions:</strong>
-                                            </div>
-                                            <div class="card-body">
-                                                System
-                                            </div>
-                                            <ul class="list-group list-group-flush">
-                                                    <li class="list-group-item">LINK 1</li>
-                                                    <li class="list-group-item">LINK 2</li>
-                                                    <li class="list-group-item">LINK 3</li>
-                                                    <li class="list-group-item">LINK 4</li>
+                                        <div class="card text-center">
+                                            <ul class="nav nav-tabs m-3" id="myTab" role="tablist">
+                                                <li class="nav-item" role="presentation">
+                                                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Main Actions</button>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">DB actions</button>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false" disabled>Additions</button>
+                                                </li>
                                             </ul>
-                                        </div>
-                                        <div class="card border-info mb-3" style="max-width: 18rem;">
-                                            <div class="card-header">
-                                                <strong>Fast actions:</strong>
+                                            <div class="tab-content" id="myTabContent">
+                                                <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                                                    <div class="row justify-content-center p-2">
+                                                        <div class="col-4">
+                                                            <div class="card border-secondary-subtle mb-3" style="max-width: 18rem;">
+                                                                <div class="card-header text-light bg-danger">
+                                                                    <strong>Favorite:</strong>
+                                                                </div>
+                                                                <ul class="list-group list-group-flush">
+                                                                        <li class="list-group-item"><a href="{{ url_for('servers.create_vhost', target=query) }}" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Add new VirtualHost</a></li>
+                                                                        <li class="list-group-item">LINK 2</li>
+                                                                        <li class="list-group-item">LINK 3</li>
+                                                                        <li class="list-group-item">LINK 4</li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-4">
+                                                            <div class="card border-secondary-subtle mb-3" style="max-width: 18rem;">
+                                                                <div class="card-header bg-warning">
+                                                                    <strong>User & Folders:</strong>
+                                                                </div>
+                                                                <ul class="list-group list-group-flush">
+                                                                        <li class="list-group-item">LINK 5</li>
+                                                                        <li class="list-group-item">LINK 6</li>
+                                                                        <li class="list-group-item">LINK 7</li>
+                                                                        <li class="list-group-item">LINK 8</li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-4">
+                                                            <div class="card border-secondary-subtle mb-3" style="max-width: 18rem;">
+                                                                <div class="card-header bg-info-subtle">
+                                                                    <strong>Others:</strong>
+                                                                </div>
+                                                                <ul class="list-group list-group-flush">
+                                                                        <li class="list-group-item">LINK 9</li>
+                                                                        <li class="list-group-item">LINK 10</li>
+                                                                        <li class="list-group-item">LINK 11</li>
+                                                                        <li class="list-group-item">LINK 12</li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">Will be in future</div>
+                                                <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">Will be in future</div>
                                             </div>
-                                            <div class="card-body">
-                                                Web
-                                            </div>
-                                            <ul class="list-group list-group-flush">
-                                                    <li class="list-group-item">LINK 5</li>
-                                                    <li class="list-group-item">LINK 6</li>
-                                                    <li class="list-group-item">LINK 7</li>
-                                                    <li class="list-group-item">LINK 8</li>
-                                            </ul>
                                         </div>
                                     </div>
                                 </div>
-{# TEST OFF #}
+
                                 <div class="row justify-content-center p-2">
                                     {% if data['vms'] %}
                                     <div class="col-12 py-3">
