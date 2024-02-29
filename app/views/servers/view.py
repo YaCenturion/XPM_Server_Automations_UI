@@ -76,7 +76,7 @@ def server():
 
 
 @login_required
-@servers.route('/vhost/', methods=['GET', 'POST'])
+@servers.route('/add_vh/', methods=['GET', 'POST'])
 def create_vhost():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
@@ -98,51 +98,79 @@ def create_vhost():
         ssh, msg = get_ssh(ansible_host)
 
         if ssh:
-            # Ansible: Setup vhost
-            pb_vars_data = {
-                "state_action": 'present',
-                "username": domain_name,
-                "mysql_user": db_user,
-                "mysql_pass": db_pass,
-                "selected_php": php_ver,
-                "web_server": web_server,
-                # "vhost_ports": vhost_ports,
+            # Ansible: Setup new VirtualHost
+            playbook_sets = {
+                'target': target,
+                'vars': {
+                    "state_action": 'present',
+                    "username": domain_name,
+                    "mysql_user": db_user,
+                    "mysql_pass": db_pass,
+                    "selected_php": php_ver,
+                    "web_server": web_server,
+                    # "vhost_ports": vhost_ports,
+                },
+                'roles': [
+                    (r_system['user'],),
+                    (r_system['directory'],),
+                    (r_system['ssl_directory'],),
+                    (r_system['install_mysql_module'],),
+                    (r_db['db'],),
+                    (r_db['user'],),
+                    (r_web['create_php_fpm_sock'],),
+                    (r_web['SSL_certificate'],),
+                    (r_web[f'create_{web_server}_virtualhost'],),
+                    (r_web['ftp_user'],),
+                    (r_web[f'restart_{web_server}'],),
+                ],
+                'filename': f"{str(int(time.time()))}_{domain_name.lower().replace('.', '_')}",
+                'name': f'Add new VirtualHost for: {domain_name}',
             }
 
-            add_vhost_tasks = [
-                (r_system['user'],),
-                (r_system['directory'],),
-                (r_system['ssl_directory'],),
-                (r_system['install_mysql_module'],),
-                (r_db['db'],),
-                (r_db['user'],),
-                (r_web['create_php_fpm_sock'],),
-                (r_web['SSL_certificate'],),
-                (r_web[f'create_{web_server}_virtualhost'],),
-                (r_web['ftp_user'],),
-                (r_web[f'restart_{web_server}'],),
-            ]
+            # pb_vars_data = {
+            #     "state_action": 'present',
+            #     "username": domain_name,
+            #     "mysql_user": db_user,
+            #     "mysql_pass": db_pass,
+            #     "selected_php": php_ver,
+            #     "web_server": web_server,
+            #     # "vhost_ports": vhost_ports,
+            # }
 
-            playbook_filename = f"{str(int(time.time()))}_{domain_name.lower().replace('.', '_')}"
-            playbook_name = f'VHost setup: {domain_name}'
+            # add_vh_tasks = [
+            #     (r_system['user'],),
+            #     (r_system['directory'],),
+            #     (r_system['ssl_directory'],),
+            #     (r_system['install_mysql_module'],),
+            #     (r_db['db'],),
+            #     (r_db['user'],),
+            #     (r_web['create_php_fpm_sock'],),
+            #     (r_web['SSL_certificate'],),
+            #     (r_web[f'create_{web_server}_virtualhost'],),
+            #     (r_web['ftp_user'],),
+            #     (r_web[f'restart_{web_server}'],),
+            # ]
 
-            playbook_data = generate_playbook(base_pattern, target, playbook_name, add_vhost_tasks, pb_vars_data)
+            # playbook_filename = f"{str(int(time.time()))}_{domain_name.lower().replace('.', '_')}"
+            # playbook_name = f'VHost setup: {domain_name}'
+
+            playbook_data = generate_playbook(base_pattern, playbook_sets)
             print(playbook_data)
-            ssh_save_playbook(ssh, playbook_filename, playbook_data)
+            full_filename = ssh_save_playbook(ssh, playbook_sets['filename'], playbook_data)
 
-            command = f'{playbooks_lst["yml_deploy"]}{playbook_filename}.yml -i {target}, -e "target={target}"'
+            command = f'{playbooks_lst["base"]}{playbook_sets["filename"]}.yml -i {target}, -e "target={target}"'
             print(':::: command ::::\n', command)
 
             # TODO UNCOMMENT:
             #  status, ssh_log_facts = exec_ansible_playbook(ssh, command, username)
 
             # show generated playbook
-            exec_ansible_playbook(ssh, f'cat {playbooks_lst["yml_deploy"]}{playbook_filename}.yml', username)
+            exec_ansible_playbook(ssh, f'{playbooks_lst["show_me_yml"]}{playbook_sets["filename"]}.yml', username)
 
             # Ansible: Get facts
             # front_data = get_facts(front_data, ssh, target, username)
             # close_ssh(ssh, username)
-            text, cat = f'Well done! {playbook_filename}.yml ready!', 'success'
+            text, cat = f'Done: playbook ready!', 'success'
             flash(text, cat)
             return redirect(url_for('servers.server'))
         else:
@@ -153,4 +181,4 @@ def create_vhost():
             flash(text, cat)
 
     return render_template(
-        'servers/vhost.html', query=target, data=front_data, php_lst=php_versions, user=current_user, ver=ver)
+        'servers/add_new_vhost.html', query=target, data=front_data, php_lst=php_versions, user=current_user, ver=ver)

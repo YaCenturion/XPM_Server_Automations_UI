@@ -17,17 +17,18 @@ def build_role_data(role_pattern, role_vars=None, state_action=None):
     return role_pattern
 
 
-def generate_playbook(playbook_data, target, name_value, roles_list, v_data=None):
-    playbook_data[0]['name'] = name_value
-    playbook_data[0]['hosts'] = target
+# target, name_value, roles_list, v_data=None
+def generate_playbook(playbook_data, playbook_sets):
+    playbook_data[0]['name'] = playbook_sets['name']
+    playbook_data[0]['hosts'] = playbook_sets['target']
     playbook_data[0]['remote_user'] = 'xpmans'
     playbook_data[0]['become'] = True
     playbook_data[0]['vars'] = {'state_action': "{{ state_action | default('___NOT_SET___') }}"}
     playbook_data[0]['roles'] = []
-    if v_data is not None:
-        playbook_data[0]['vars'] = v_data
+    if 'vars' in playbook_sets:
+        playbook_data[0]['vars'] = playbook_sets['vars']
 
-    for role_set in roles_list:
+    for role_set in playbook_sets['roles']:
         role_vars = None
         if len(role_set) > 1:
             role_vars = role_set[1]
@@ -46,16 +47,20 @@ def generate_playbook(playbook_data, target, name_value, roles_list, v_data=None
 
 
 def ssh_save_playbook(ssh, filename, pb_data):
+    full_filename = f'{playbooks_lst["prod_deploy"]}{filename}.yml'
     with ssh.open_sftp() as sftp:
         disclaimer = (
+            f'# Generated in OpsUI app: {full_filename}\n'
             '# This playbook was generated ONLY for specific task.\n'
-            '# Do NOT use this for other tasks!\n'
-            '# It can cause SERIOUS harm!\n---\n'
+            '# Do NOT use this playbook for other tasks!\n'
+            '# Powerful witchcraft - using a level 99 spell!\n'
+            '# It can cause SERIOUS DAMAGE!\n#\n---\n'
         )
-        print(f'{playbooks_lst["yml_deploy"]}{filename}.yml')
-        with sftp.open(f'{playbooks_lst["yml_deploy"]}{filename}.yml', 'w') as output_file:
+        # print(f'{playbooks_lst["prod_deploy"]}{filename}.yml')
+        with sftp.open(full_filename, 'w') as output_file:
             output_file.write(disclaimer)
             yaml.dump(pb_data, output_file, default_flow_style=False, sort_keys=False)
 
     # TODO save to db dict: pb_data.
-    print(f'Playbook ui_{filename}.yml saved')
+    print(f'Playbook {full_filename} saved')
+    return full_filename

@@ -74,7 +74,6 @@ def delete_files(path='static/report', n=5):
 
 
 def printer(text, user='N/A'):
-    # log_file = "logs/logger.log"
     log_directory = "logs"
     log_file = os.path.join(log_directory, "latest.log")
 

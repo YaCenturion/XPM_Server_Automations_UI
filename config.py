@@ -2,7 +2,7 @@ import os
 
 cfg = {
     'sqlite_db_name': 'xpm_aui.db',
-    'from_zero': False,  # True for clear DB TODO
+    'from_zero': True,  # True for clear DB TODO
     'fake_data': 0  # num rows for fake generator
 }
 
@@ -82,7 +82,8 @@ nutanix = {
 
 playbooks_lst = {
     "base": 'ansible-playbook /etc/ansible/prod/',
-    "yml_deploy": '/etc/ansible/prod/UI/',
+    "show_me_yml": 'cat /etc/ansible/prod/',
+    "prod_deploy": '/etc/ansible/prod/',
     "get_facts": 'get_facts.yml',
     "action": 'packages_action.yml',
     "apache_default": 'apache_default_conf.yml',
@@ -138,7 +139,7 @@ linux_packages_dict = {
     ]
 }
 php_versions = [
-    ('8.0', '8.0'),
+    ('80', '80'),
     ('8.1', '8.1'),
     ('8.2', '8.2'),
     ('8.3', '8.3'),
