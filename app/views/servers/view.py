@@ -24,23 +24,24 @@ def update_db():
     else:
         text, cat = 'BAD UPDATE!', 'error'
     flash(text, cat)
-    return redirect(url_for('servers.server'))
+    return redirect(url_for('.server'))
 
 
 @login_required
-@servers.route('/server/', methods=['GET', 'POST'])
-def server():
+@servers.route('/server/<string:target>', methods=['GET', 'POST'])
+@servers.route('/server', methods=['GET', 'POST'])
+def server(target=False):
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
     username = current_user.username
-    target = False
     front_data = {}
     # full_log = ""
     if request.method == 'POST':
         printer(f'Get POST data from: /{request.endpoint}', username)
         show_post_data(request.form.items())
-        
         target = str(request.form['ip_address']).strip()
+
+    if target:
         front_data['vms'] = get_vms_like(target)
         # front_data['v_ips'] = get_vips_like(target)
         ssh, msg = get_ssh(ansible_host)
@@ -77,11 +78,12 @@ def server():
 
 @login_required
 @servers.route('/add_vh/', methods=['GET', 'POST'])
-def create_vhost():
+@servers.route('/add_vh/<target>', methods=['GET', 'POST'])
+def create_vhost(target=False):
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
     username = current_user.username
-    target = False
+    # target = False
     front_data = {}
     if request.method == 'POST':
         printer(f'Get POST data from: /{request.endpoint}', username)
@@ -135,19 +137,28 @@ def create_vhost():
             playbook_sets['command'] = f'{execute_pb} -i {target}, -e "target={target}"'
             current_task = add_task_to_db(playbook_data, playbook_sets)
 
-            print(':::: command ::::\n', playbook_sets['command'])
-            # TODO UNCOMMENT:
-            #  status, ssh_log_facts = exec_ansible_playbook(ssh, playbook_sets['command'], username)
+            # TODO UNCOMMENT FOR REAL TEST:
+            # if current_task:
+            #     status, ssh_log_facts = exec_ansible_playbook(ssh, playbook_sets['command'], username)
+            #     current_task.status = status
+            #     current_task.exec_log = ssh_log_facts
+            #     db.session.commit()
+            # else:
+            #     text, cat = f'ERROR: save task to DB', 'error'
+            #     flash(text, cat)
+            #     return redirect(url_for('servers.server'))
 
-            # show generated playbook
-            exec_ansible_playbook(ssh, f'{playbooks_lst["show_me_yml"]}{playbook_sets["filename"]}.yml', username)
+            # INFO: showing generated playbook
+            # exec_ansible_playbook(ssh, f'{playbooks_lst["show_me_yml"]}{playbook_sets["filename"]}.yml', username)
 
             # Ansible: Get facts
             # front_data = get_facts(front_data, ssh, target, username)
-            # close_ssh(ssh, username)
+            close_ssh(ssh, username)
             text, cat = f'Done: playbook ready!', 'success'
             flash(text, cat)
-            return redirect(url_for('servers.server'))
+            print(url_for('servers.server', target='EduCBAPremium'))
+            return redirect(url_for(f'.server', target=target))
+
         else:
             front_data['get_facts'] = [False, msg]
 

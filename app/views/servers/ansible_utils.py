@@ -43,7 +43,7 @@ def generate_playbook(playbook_data, playbook_sets):
                     new_state_action = 'directory'
 
         role = build_role_data(role_preset, role_vars, new_state_action)
-        print(f"Append: {role}")
+        # print(f"Append: {role}")
         playbook_data[0]['roles'].append(role)
     return playbook_data
 

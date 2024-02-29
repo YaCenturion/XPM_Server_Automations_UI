@@ -26,14 +26,19 @@
                                 <div class="col-8 text-center">
                                     <form method="POST"  id="expim-form">
                                         <div class="row justify-content-center p-2">
+                                            {% if query %}
+                                            <div class="text-center">
+                                                {{ fields.input_hidden(query, 'ip_address') }}
+                                                <span class="badge bg-secondary fs-5">{{ query }}</span>
+                                            {% else %}
                                             <div class="input-group">
-                                                {% if query %}{% set value = query %}{% endif %}
-                                                {{ fields.input('IP address', 'ip_address', value, "Server IP") }}
+                                                {{ fields.input('IP address', 'ip_address', '', "Server IP") }}
+                                            {% endif %}
                                             </div>
                                         </div>
                                         <div class="row justify-content-center p-2">
                                             <div class="input-group">
-                                                {{ fields.input('Domain', 'domain_name', value, "future domain for vhost") }}
+                                                {{ fields.input('Domain', 'domain_name', "", "future domain for vhost") }}
                                             </div>
                                         </div>
                                         <div class="row justify-content-center p-2">
