@@ -58,19 +58,19 @@ def update_status(subj, num_id, status):
         if subj == 'user':
             back_page = url_for('users.all_users')
             unit = Users.query.get_or_404(num_id)
-        elif subj == 'company':
-            back_page = url_for('companies.all_companies')
-            unit = Companies.query.get_or_404(num_id)
-            unit.active = status
-        elif subj == 'person':
-            back_page = url_for('persons.all_persons')
-            unit = Persons.query.get_or_404(num_id)
-        elif subj == 'domain':
-            back_page = url_for('domains.all_domains')
-            unit = Persons.query.get_or_404(num_id)
-        elif subj == 'hosting':
-            back_page = url_for('hostings.all_hostings')
-            unit = Persons.query.get_or_404(num_id)
+        # elif subj == 'company':
+        #     back_page = url_for('companies.all_companies')
+        #     unit = Companies.query.get_or_404(num_id)
+        #     unit.active = status
+        # elif subj == 'person':
+        #     back_page = url_for('persons.all_persons')
+        #     unit = Persons.query.get_or_404(num_id)
+        # elif subj == 'domain':
+        #     back_page = url_for('domains.all_domains')
+        #     unit = Persons.query.get_or_404(num_id)
+        # elif subj == 'hosting':
+        #     back_page = url_for('hostings.all_hostings')
+        #     unit = Persons.query.get_or_404(num_id)
         else:
             flash('Updated error!', 'error')
             back_page = url_for('general.index')
