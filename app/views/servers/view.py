@@ -146,9 +146,9 @@ def create_vhost(target=False):
             # else:
             #     text, cat = f'ERROR: save task to DB', 'error'
             #     flash(text, cat)
-            #     return redirect(url_for('servers.server'))
+            #     return redirect(url_for('.server'))
 
-            # INFO: showing generated playbook
+            # INFO-DELETE: showing generated playbook
             # exec_ansible_playbook(ssh, f'{playbooks_lst["show_me_yml"]}{playbook_sets["filename"]}.yml', username)
 
             # Ansible: Get facts
@@ -156,7 +156,6 @@ def create_vhost(target=False):
             close_ssh(ssh, username)
             text, cat = f'Done: playbook ready!', 'success'
             flash(text, cat)
-            print(url_for('servers.server', target='EduCBAPremium'))
             return redirect(url_for(f'.server', target=target))
 
         else:
