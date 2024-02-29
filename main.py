@@ -5,7 +5,7 @@
 from app import create_app, db
 from app.models import Users
 from config import *
-from app.views.filters import *
+# from app.views.filters import *
 
 
 # @manager.command
@@ -24,12 +24,6 @@ def run_shell():
     # manager.add_command('runserver', Server(host="0.0.0.0"))
 
 
-app = create_app()
-app.add_template_filter(timestamp_to_date, 'timestamp2date')
-app.add_template_filter(format_memory, 'convert_mib')
-app.add_template_filter(format_date, 'date_format')
-
-
 def starter():
     with app.app_context():
         if cfg['from_zero']:
@@ -42,6 +36,12 @@ def starter():
         if cfg['fake_data']:
             Users.generate_fake(count=cfg['fake_data'])
 
+
+app = create_app()
+# app.add_template_filter(timestamp_to_date, 'timestamp2date')
+# app.add_template_filter(format_memory, 'convert_mib')
+# app.add_template_filter(format_date, 'date_format')
+# register_template_utils(app)
 
 # manager = Manager(app)
 starter()
