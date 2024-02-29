@@ -5,7 +5,6 @@
 from app import create_app, db
 from app.models import Users
 from config import *
-# from app.views.filters import *
 
 
 # @manager.command
@@ -38,10 +37,6 @@ def starter():
 
 
 app = create_app()
-# app.add_template_filter(timestamp_to_date, 'timestamp2date')
-# app.add_template_filter(format_memory, 'convert_mib')
-# app.add_template_filter(format_date, 'date_format')
-# register_template_utils(app)
 
 # manager = Manager(app)
 starter()
