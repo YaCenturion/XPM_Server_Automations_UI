@@ -57,8 +57,7 @@ def create_app():
         syslog_handler.setLevel(logging.WARNING)
         app.logger.addHandler(syslog_handler)
 
-    # TODO here!
-    # Register Jinja template functions
+    # Register Jinja template functions/filters
     app.add_template_filter(timestamp_to_date, 'timestamp2date')
     app.add_template_filter(format_memory, 'convert_mib')
     app.add_template_filter(format_date, 'date_format')
