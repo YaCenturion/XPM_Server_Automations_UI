@@ -56,19 +56,6 @@ def get_form_errors(form):
             print(f"Error in field '{getattr(form, field).label.text}': {error}")
 
 
-# def get_timestamp_to_date(timestamp, view):
-#     if timestamp is None:
-#         return None
-#     if view == '%d.%m.%Y':
-#         normal_date = datetime.fromtimestamp(timestamp)
-#         return normal_date.strftime('%d.%m.%Y')
-#     elif view == '%Y-%m-%d':
-#         dt_object = datetime.utcfromtimestamp(timestamp)
-#         return dt_object.strftime('%Y-%m-%d')
-#     else:
-#         return None
-
-
 def delete_files(path='static/report', n=5):
     files = os.listdir(path)
     if len(files) <= n:
@@ -91,7 +78,6 @@ def printer(text, user='N/A'):
     log_directory = "logs"
     log_file = os.path.join(log_directory, "latest.log")
 
-    # Проверяем существование папки
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
 
@@ -168,7 +154,6 @@ def generate_password(length):
 
 def get_priority_detailed_info(cred, company_id):
     company_id = "(" + company_id + ")"
-    # print(company_id)
     query = f"""
         SELECT DOCUMENTS.DOC, DOCUMENTS.DOCNO, DOCUMENTS.CUST, CUSTOMERS.CUSTNAME, CUSTOMERS.CUSTDES,
             SERVCONT.PHONE, SERVCONTITEMS.CONTI, SERVCONTITEMS.CONT, SERVCONTITEMS.PART, PART.PARTNAME

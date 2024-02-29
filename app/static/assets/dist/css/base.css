@@ -144,6 +144,10 @@ body {
     --bs-btn-disabled-border-color: var(--bs-success-text-emphasis);
 }
 
+.card-header {
+    --bs-card-cap-bg: #ff830040;
+}
+
 .custom-code {
     color: var(--custom-xpm-primary-color);
     font-weight: bolder;
