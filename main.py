@@ -24,6 +24,12 @@ def run_shell():
     # manager.add_command('runserver', Server(host="0.0.0.0"))
 
 
+app = create_app()
+app.add_template_filter(timestamp_to_date, 'timestamp2date')
+app.add_template_filter(format_memory, 'convert_mib')
+app.add_template_filter(format_date, 'date_format')
+
+
 def starter():
     with app.app_context():
         if cfg['from_zero']:
@@ -37,10 +43,6 @@ def starter():
             Users.generate_fake(count=cfg['fake_data'])
 
 
-app = create_app()
-app.add_template_filter(timestamp_to_date, 'timestamp2date')
-app.add_template_filter(format_memory, 'convert_mib')
-app.add_template_filter(format_date, 'date_format')
 # manager = Manager(app)
 starter()
 # migrate = Migrate(app, db)
