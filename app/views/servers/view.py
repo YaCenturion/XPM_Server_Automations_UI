@@ -100,6 +100,9 @@ def create_vhost():
         if ssh:
             # Ansible: Setup new VirtualHost
             playbook_sets = {
+                'user_id': current_user.id,
+                'filename': f"{str(int(time.time()))}_{domain_name.lower().replace('.', '_')}",
+                'name': f'Add new VirtualHost for: {domain_name}',
                 'target': target,
                 'vars': {
                     "state_action": 'present',
@@ -123,46 +126,18 @@ def create_vhost():
                     (r_web['ftp_user'],),
                     (r_web[f'restart_{web_server}'],),
                 ],
-                'filename': f"{str(int(time.time()))}_{domain_name.lower().replace('.', '_')}",
-                'name': f'Add new VirtualHost for: {domain_name}',
             }
 
-            # pb_vars_data = {
-            #     "state_action": 'present',
-            #     "username": domain_name,
-            #     "mysql_user": db_user,
-            #     "mysql_pass": db_pass,
-            #     "selected_php": php_ver,
-            #     "web_server": web_server,
-            #     # "vhost_ports": vhost_ports,
-            # }
-
-            # add_vh_tasks = [
-            #     (r_system['user'],),
-            #     (r_system['directory'],),
-            #     (r_system['ssl_directory'],),
-            #     (r_system['install_mysql_module'],),
-            #     (r_db['db'],),
-            #     (r_db['user'],),
-            #     (r_web['create_php_fpm_sock'],),
-            #     (r_web['SSL_certificate'],),
-            #     (r_web[f'create_{web_server}_virtualhost'],),
-            #     (r_web['ftp_user'],),
-            #     (r_web[f'restart_{web_server}'],),
-            # ]
-
-            # playbook_filename = f"{str(int(time.time()))}_{domain_name.lower().replace('.', '_')}"
-            # playbook_name = f'VHost setup: {domain_name}'
-
             playbook_data = generate_playbook(base_pattern, playbook_sets)
-            print(playbook_data)
-            full_filename = ssh_save_playbook(ssh, playbook_sets['filename'], playbook_data)
+            # print(playbook_data)
+            playbook_sets['full_filename'] = ssh_save_playbook(ssh, playbook_data, playbook_sets)
+            execute_pb = f'{playbooks_lst["base"]}{playbook_sets["filename"]}.yml'
+            playbook_sets['command'] = f'{execute_pb} -i {target}, -e "target={target}"'
+            current_task = add_task_to_db(playbook_data, playbook_sets)
 
-            command = f'{playbooks_lst["base"]}{playbook_sets["filename"]}.yml -i {target}, -e "target={target}"'
-            print(':::: command ::::\n', command)
-
+            print(':::: command ::::\n', playbook_sets['command'])
             # TODO UNCOMMENT:
-            #  status, ssh_log_facts = exec_ansible_playbook(ssh, command, username)
+            #  status, ssh_log_facts = exec_ansible_playbook(ssh, playbook_sets['command'], username)
 
             # show generated playbook
             exec_ansible_playbook(ssh, f'{playbooks_lst["show_me_yml"]}{playbook_sets["filename"]}.yml', username)

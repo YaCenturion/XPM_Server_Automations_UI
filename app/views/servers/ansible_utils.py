@@ -1,5 +1,8 @@
 import yaml
+
+from app.utils.main_utils import save_in_db
 from config import playbooks_lst
+from app.models import *
 
 
 def build_role_data(role_pattern, role_vars=None, state_action=None):
@@ -17,7 +20,6 @@ def build_role_data(role_pattern, role_vars=None, state_action=None):
     return role_pattern
 
 
-# target, name_value, roles_list, v_data=None
 def generate_playbook(playbook_data, playbook_sets):
     playbook_data[0]['name'] = playbook_sets['name']
     playbook_data[0]['hosts'] = playbook_sets['target']
@@ -46,8 +48,8 @@ def generate_playbook(playbook_data, playbook_sets):
     return playbook_data
 
 
-def ssh_save_playbook(ssh, filename, pb_data):
-    full_filename = f'{playbooks_lst["prod_deploy"]}{filename}.yml'
+def ssh_save_playbook(ssh, pb_data, pb_sets):
+    full_filename = f'{playbooks_lst["prod_deploy"]}{pb_sets["filename"]}.yml'
     with ssh.open_sftp() as sftp:
         disclaimer = (
             f'# Generated in OpsUI app: {full_filename}\n'
@@ -60,7 +62,21 @@ def ssh_save_playbook(ssh, filename, pb_data):
         with sftp.open(full_filename, 'w') as output_file:
             output_file.write(disclaimer)
             yaml.dump(pb_data, output_file, default_flow_style=False, sort_keys=False)
-
-    # TODO save to db dict: pb_data.
-    print(f'Playbook {full_filename} saved')
     return full_filename
+
+
+def add_task_to_db(pb_data, pb_sets):
+    new_task = TasksHistory(
+        user_id=pb_sets['user_id'],
+        host=pb_sets['target'],
+        # status=None,
+        exec_time=int(time.time()),
+        exec_filename=pb_sets['filename'],
+        exec_command=pb_sets['command'],
+        exec_title=pb_sets['name'],
+        exec_code=yaml.dump(pb_data, default_flow_style=False, sort_keys=False),
+        # exec_log=exec_log,
+        # comments=comments
+    )
+    task = save_in_db(new_task)
+    return task

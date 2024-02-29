@@ -1,5 +1,5 @@
-import re
-import requests
+# import re
+# import requests
 import ast
 import pandas as pd
 from ...models import *

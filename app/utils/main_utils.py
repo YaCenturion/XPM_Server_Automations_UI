@@ -13,7 +13,7 @@ def save_in_db(item):
     try:
         db.session.add(item)
         db.session.commit()
-        result = True
+        result = item
     except Exception as e:
         printer(f'Error IN: save_in_db, MSG: {e}')
         result = False

@@ -67,15 +67,17 @@ class Users(UserMixin, db.Model):
                 db.session.rollback()
 
 
-class Logs(db.Model):
-    __tablename__ = 'logs'
+class TasksHistory(db.Model):
+    __tablename__ = 'tasks_history'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     host = db.Column(db.String(30))  # ip address
-    status = db.Column(db.Boolean, default=True)  # 0: error, 1: success
-    exec_time = db.Column(db.Integer, default=int(time.time()))
-    exec_command = db.Column(db.String(255))  # ssh command
-    exec_text = db.Column(db.Text)  # yaml
+    status = db.Column(db.Boolean, default=False)  # 0: error, 1: success
+    exec_time = db.Column(db.Integer)
+    exec_filename = db.Column(db.String(255))  # playbook filename
+    exec_command = db.Column(db.String(255))  # exec command
+    exec_title = db.Column(db.String(255))  # playbook title
+    exec_code = db.Column(db.Text)  # yaml text
     exec_log = db.Column(db.Text)  # console log
     comments = db.Column(db.Text)
 
