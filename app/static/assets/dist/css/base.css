@@ -152,8 +152,9 @@ body {
     text-decoration-style: dotted;
 }
 
-.card-header {
-    --bs-card-cap-bg: #ffaa0040;
+.card-header-block {
+    --bs-card-cap-bg: #4f565b;
+    color: #e4e4e4;
 }
 
 .custom-code {

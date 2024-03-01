@@ -15,7 +15,7 @@ servers = Blueprint('servers', __name__)
 
 
 @login_required
-@servers.route('/up/', methods=['GET', 'POST'])
+@servers.route('/update_db/', methods=['GET', 'POST'])
 def update_db():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))

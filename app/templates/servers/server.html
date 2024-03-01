@@ -37,7 +37,9 @@
                         {% endif %}
                         {% if data['get_facts'] %}
                             <div class="row justify-content-center p-2">
-                                <p class="text-center"><code>{{ query }}</code></p>
+                                <p class="text-center">
+                                    <span class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-2">{{ query }}</span>
+                                </p>
                             </div>
 
                             {% if data['system'] or data['packages'] %}
@@ -45,7 +47,7 @@
                                     {% if data['system'] %}
                                     <div class="col-5">
                                         <div class="card">
-                                            <div class="card-header">
+                                            <div class="card-header card-header-block">
                                                 <strong>Summary:</strong> <i class="fa-brands fa-{{ data['system']['family']|lower }} text-danger p-1"></i> {{ data['system']['family'] }} family
                                             </div>
                                             <div class="card-body">
@@ -81,7 +83,7 @@
                                     {% if data['ports'] %}
                                     <div class="col-7">
                                         <div class="card">
-                                            <div class="card-header">
+                                            <div class="card-header card-header-block">
                                                 <strong>Main Ports Listeners:</strong>
                                             </div>
                                             <div class="card-body">
@@ -120,26 +122,29 @@
                                 <div class="row justify-content-center p-2">
                                     <div class="col-12">
                                         <div class="card text-center">
-                                            <ul class="nav nav-tabs m-3" id="myTab" role="tablist">
+                                            <ul class="nav nav-tabs m-3" id="AnsibleTab" role="tablist">
                                                 <li class="nav-item" role="presentation">
-                                                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Main Actions</button>
+                                                    <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#header-tab-pane" type="button" role="tab" aria-controls="header-tab-pane" aria-selected="false" disabled>Ansible actions:</button>
                                                 </li>
                                                 <li class="nav-item" role="presentation">
-                                                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">DB actions</button>
+                                                    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Main Actions</button>
                                                 </li>
                                                 <li class="nav-item" role="presentation">
-                                                <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false" disabled>Additions</button>
+                                                    <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">DB actions</button>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false" disabled>Additions</button>
                                                 </li>
                                             </ul>
                                             <div class="tab-content" id="myTabContent">
                                                 <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
                                                     <div class="row justify-content-center p-2">
-                                                        <div class="col-4">
-                                                            <div class="card border-secondary-subtle mb-3" style="max-width: 18rem;">
+                                                        <div class="col-3">
+                                                            <div class="card border-secondary-subtle mb-3">
                                                                 <div class="card-header text-light bg-danger">
                                                                     <strong>Favorite:</strong>
                                                                 </div>
-                                                                <ul class="list-group list-group-flush">
+                                                                <ul class="list-group list-group-flush text-start">
                                                                         <li class="list-group-item"><a href="{{ url_for('servers.create_vhost', target=query) }}" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Add new VirtualHost</a></li>
                                                                         <li class="list-group-item">LINK 2</li>
                                                                         <li class="list-group-item">LINK 3</li>
@@ -147,29 +152,42 @@
                                                                 </ul>
                                                             </div>
                                                         </div>
-                                                        <div class="col-4">
-                                                            <div class="card border-secondary-subtle mb-3" style="max-width: 18rem;">
+                                                        <div class="col-3">
+                                                            <div class="card border-secondary-subtle mb-3">
                                                                 <div class="card-header bg-warning">
-                                                                    <strong>User & Folders:</strong>
+                                                                    <strong>Create user:</strong>
                                                                 </div>
-                                                                <ul class="list-group list-group-flush">
-                                                                        <li class="list-group-item">LINK 5</li>
-                                                                        <li class="list-group-item">LINK 6</li>
-                                                                        <li class="list-group-item">LINK 7</li>
-                                                                        <li class="list-group-item">LINK 8</li>
+                                                                <ul class="list-group list-group-flush text-start">
+                                                                        <li class="list-group-item">Add OS user</li>
+                                                                        <li class="list-group-item">Add PureFTPd user</li>
+                                                                        <li class="list-group-item">Add MySQL user</li>
+                                                                        <li class="list-group-item">LINK</li>
                                                                 </ul>
                                                             </div>
                                                         </div>
-                                                        <div class="col-4">
-                                                            <div class="card border-secondary-subtle mb-3" style="max-width: 18rem;">
-                                                                <div class="card-header bg-info-subtle">
-                                                                    <strong>Others:</strong>
+                                                        <div class="col-3">
+                                                            <div class="card border-secondary-subtle mb-3">
+                                                                <div class="card-header bg-warning">
+                                                                    <strong>Delete user:</strong>
                                                                 </div>
-                                                                <ul class="list-group list-group-flush">
-                                                                        <li class="list-group-item">LINK 9</li>
-                                                                        <li class="list-group-item">LINK 10</li>
-                                                                        <li class="list-group-item">LINK 11</li>
-                                                                        <li class="list-group-item">LINK 12</li>
+                                                                <ul class="list-group list-group-flush text-start">
+                                                                        <li class="list-group-item">Del OS user</li>
+                                                                        <li class="list-group-item">Del PureFTPd user</li>
+                                                                        <li class="list-group-item">Del MySQL user</li>
+                                                                        <li class="list-group-item">LINK</li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-3">
+                                                            <div class="card border-secondary-subtle mb-3">
+                                                                <div class="card-header bg-info-subtle">
+                                                                    <strong>Folders:</strong>
+                                                                </div>
+                                                                <ul class="list-group list-group-flush text-start">
+                                                                        <li class="list-group-item">Create folder</li>
+                                                                        <li class="list-group-item">Delete folder</li>
+                                                                        <li class="list-group-item">Permissions</li>
+                                                                        <li class="list-group-item">Change owner</li>
                                                                 </ul>
                                                             </div>
                                                         </div>
@@ -186,7 +204,7 @@
                                     {% if data['vms'] %}
                                     <div class="col-12 py-3">
                                         <div class="card">
-                                            <div class="card-header">
+                                            <div class="card-header card-header-block">
                                                 <strong>Nutanix:</strong>
                                             </div>
                                             <div class="card-body">
@@ -295,7 +313,7 @@
                                     {% if data['packages'] %}
                                         <div class="col-12 py-3">
                                             <div class="card">
-                                                <div class="card-header">
+                                                <div class="card-header card-header-block">
                                                     <strong>Packages:</strong>
                                                 </div>
                                                 <div class="card-body">
@@ -374,7 +392,7 @@
                                     {% if data['ports'] %}
                                         <div class="col-12 py-3">
                                             <div class="card">
-                                                <div class="card-header">
+                                                <div class="card-header card-header-block">
                                                     <strong>Ports listen:</strong>
                                                 </div>
                                                 <div class="card-body">
