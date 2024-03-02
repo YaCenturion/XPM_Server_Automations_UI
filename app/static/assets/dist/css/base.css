@@ -157,6 +157,18 @@ body {
     color: #e4e4e4;
 }
 
+.fa-centos {
+    color: #e153bd;
+}
+
+.fa-ubuntu {
+    color: #e95420;
+}
+
+.fa-redhat {
+    color: red;
+}
+
 .custom-code {
     color: var(--custom-xpm-primary-color);
     font-weight: bolder;

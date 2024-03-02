@@ -36,10 +36,8 @@
                             </div>
                         {% endif %}
                         {% if data['get_facts'] %}
-                            <div class="row justify-content-center p-2">
-                                <p class="text-center">
-                                    <span class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-2">{{ query }}</span>
-                                </p>
+                            <div class="mx-auto p-2 text-center">
+                                <span class="d-inline-flex px-2 py-1 fw-semibold text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-2">{{ query }}</span>
                             </div>
 
                             {% if data['system'] or data['packages'] %}
@@ -51,24 +49,35 @@
                                                 <strong>Summary:</strong> <i class="fa-brands fa-{{ data['system']['family']|lower }} text-danger p-1"></i> {{ data['system']['family'] }} family
                                             </div>
                                             <div class="card-body">
-                                                <span class="badge bg-secondary fs-5"><i class="fa-brands fa-{{ data['system']['dist']|lower }}"></i> {{ data['system']['dist'] }} v.{{ data['system']['ver'] }}</span> {{ data['system']['kernel'] }}
+                                                <span class="mb-3 px-2 py-1 fw-semibold text-secondary-emphasis bg-secondary-subtle border border-secondary-subtle rounded-2 fs-5"><i class="fa-brands fa-{{ data['system']['dist']|lower }}"></i> {{ data['system']['dist'] }} v.{{ data['system']['ver'] }}</span> {{ data['system']['kernel'] }}
 {#                                                <p class="card-text">{{ data['system']['kernel'] }}</p>#}
                                             </div>
                                             <ul class="list-group list-group-flush">
                                                 {% if data['all_ipv4'] %}
                                                     <li class="list-group-item">Uses External IP:
-                                                    {% for ip_adr in data['all_ipv4'] %}
-                                                        <span class="badge custom-info">will be here</span>
-                                                    {% endfor %}
+                                                    {% if data['v_ip'] %}
+                                                        {% for ip_adr in data['all_ipv4'] %}
+                                                            {% if ip_adr == data['v_ip'].internal_ip %}
+                                                                <span class="badge custom-info">{{ data['v_ip'].virtual_ip }}</span>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        <span class="badge custom-info">Not found</span>
+                                                    {% endif %}
                                                     </li>
                                                 {% endif %}
-                                                {% if data['all_ipv4'] %}
-                                                    <li class="list-group-item">Vlan:
-                                                    {% for ip_adr in data['all_ipv4'] %}
-                                                        <span class="badge custom-info">will be here</span>
-                                                    {% endfor %}
-                                                    </li>
-                                                {% endif %}
+                                                <li class="list-group-item">Vlan's:
+                                                    {% if data['vms'] %}
+                                                        {% for row in data['vms'] %}
+                                                            {% set row_list = row.subnet_reference.strip('[]').split(', ') %}
+                                                            {% for vlan in row_list %}
+                                                                <span class="badge custom-info">{{ vlan.strip("'") }}</span>
+                                                            {% endfor %}
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        <span class="badge custom-info">Not found</span>
+                                                    {% endif %}
+                                                </li>
                                                 <li class="list-group-item">vCPU: <strong>{{ data['system']['vCPU'] }}</strong></li>
                                                 <li class="list-group-item">RAM: <strong>{{ (data['system']['RAM']|int / 1000)|round(1) }} Gb</strong></li>
                                                 {% if data['mounts'] %}{% for disk in data['mounts'] %}

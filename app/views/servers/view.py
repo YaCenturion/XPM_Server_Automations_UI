@@ -17,6 +17,7 @@ servers = Blueprint('servers', __name__)
 @login_required
 @servers.route('/update_db/', methods=['GET', 'POST'])
 def update_db():
+    """ Update the forti and nutanix"""
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
     if start_update(fortigate, nutanix):
@@ -31,6 +32,7 @@ def update_db():
 @servers.route('/server/<string:target>', methods=['GET', 'POST'])
 @servers.route('/server', methods=['GET', 'POST'])
 def server(target=False):
+    """ Server details and actions """
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
     username = current_user.username
@@ -43,7 +45,8 @@ def server(target=False):
 
     if target:
         front_data['vms'] = get_vms_like(target)
-        # front_data['v_ips'] = get_vips_like(target)
+        front_data['v_ip'] = get_vip_like(target)
+        printer(f"Get VIP: {front_data['v_ip']}")
         ssh, msg = get_ssh(ansible_host)
 
         if ssh:

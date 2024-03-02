@@ -137,3 +137,13 @@ def get_facts(front_data, ssh, target, username):
         front_data['full_log'] = [status_get_facts, ssh_log_facts]
 
     return front_data
+
+
+def get_vip_like(ip_address):
+    results_vip = VirtualIps.query.filter(
+        (VirtualIps.virtual_ip.ilike(f"%{ip_address}%")) |
+        (VirtualIps.internal_ip.ilike(f"%{ip_address}%"))).first()
+    if results_vip is None:
+        results_vip = False
+    return results_vip
+    
