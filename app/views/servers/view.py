@@ -20,10 +20,16 @@ def update_db():
     """ Update the forti and nutanix"""
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
-    if start_update(fortigate, nutanix):
+    result, update_log = start_update(fortigate, nutanix)
+    if result:
+        print('Update DB - ok!')
         text, cat = 'DB updated', 'success'
     else:
         text, cat = 'BAD UPDATE!', 'error'
+        print(update_log)
+        print('Rows from Nutanix', len(NutanixVMs.query.all()))
+        print('Rows from Fortigate', len(VirtualIps.query.all()))
+    
     flash(text, cat)
     return redirect(url_for('.server'))
 

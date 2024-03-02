@@ -130,6 +130,7 @@ def get_nutanix_vms(nutanix):
         print(f'Table truncated before updating')
 
         for cluster_ip in nutanix['clusters_ip']:
+            print('Get data from Nutanix cluster:', cluster_ip)
             results = get_cluster_vms(cluster_ip, nutanix)
             # with open('all_nutanix.json', 'a', encoding='utf-8') as json_file:
             #     json_file.write(str(results).replace("'", '"'))
@@ -213,18 +214,21 @@ def save_vip_to_db(virtual_ip, internal_ip, name, comment):  # Save Fortigate VI
 
 
 def start_update(fortigate, nutanix):
+    update_result = True
     update_log = ''
     result, msg = get_virtual_ips(fortigate)  # Update Fortigate Virtual IPs
     update_log += msg + "\n"
     if not result:
-        return False, update_log
+        print('Error update virtual_ips')
+        update_result = False
 
     result, msg = get_nutanix_vms(nutanix)  # Update Nutanix VMs
     update_log += msg + "\n"
     if not result:
-        return False, update_log
+        print('Error update nutanix_vms')
+        update_result = False
 
     # cf_result, cf_msg = get_latest_cloudflare_ips()  # Update from CloudFlare range IPs
     # imp_result, imp_msg = get_latest_imperva_ips(cfg)  # Update from Imperva range IPs
 
-    return True, update_log
+    return update_result, update_log
