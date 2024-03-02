@@ -169,6 +169,11 @@ body {
     color: red;
 }
 
+.fa-almalinux {
+    content: url('/static/images/alma_linux_logo.svg');
+    width: 1rem;
+}
+
 .custom-code {
     color: var(--custom-xpm-primary-color);
     font-weight: bolder;
