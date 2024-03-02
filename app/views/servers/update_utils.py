@@ -207,7 +207,6 @@ def save_vip_to_db(virtual_ip, internal_ip, name, comment):  # Save Fortigate VI
     else:  # Если записи не существует, создать новую запись
         new_record = VirtualIps(virtual_ip=virtual_ip, internal_ip=internal_ip, name=name, comment=comment)
         db.session.add(new_record)
-        # print(f'New record for {virtual_ip} added successfully')
     db.session.commit()
     # print(f"Added {virtual_ip} | {internal_ip} to DB")
     return
