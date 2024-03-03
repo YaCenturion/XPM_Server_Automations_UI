@@ -86,6 +86,18 @@ body {
     border: var(--bs-border-width) solid var(--custom-border-color);
 }
 
+.custom-v_ips-info {
+    color: var(--custom-btn-color);
+    background-color: #ffd284;
+    font-weight: 600;
+    --bs-badge-border-radius: var(--bs-border-radius);
+    border-radius: var(--bs-badge-border-radius);
+    padding: 0 var(--bs-badge-padding-x);
+    border: var(--bs-border-width) solid var(--custom-border-color);
+    /*border: var(--bs-border-width) solid var(--custom-border-color);*/
+}
+
+
 /* Forms and buttons settings */
 .btn-outline-custom {
     border-color: var(--custom-border-color);
@@ -172,6 +184,11 @@ body {
 .fa-almalinux {
     content: url('/static/images/alma_linux_logo.svg');
     width: 1rem;
+}
+
+.fa-bg-white {
+    border-radius: 50%;
+    background-color: #fff8de;
 }
 
 .custom-code {

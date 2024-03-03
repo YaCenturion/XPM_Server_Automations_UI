@@ -37,7 +37,9 @@
                         {% endif %}
                         {% if data['get_facts'] %}
                             <div class="mx-auto p-2 text-center">
-                                <span class="d-inline-flex px-2 py-1 fw-semibold text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-2">{{ query }}</span>
+                                <button type="button" class="btn px-2 py-1 fw-semibold text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-2" onclick="toClipboard('{{ query }}')" id="copy-query-ip">
+                                    <i class="fa-regular fa-copy" aria-hidden="true"></i> {{ query }}
+                                </button>
                             </div>
 
                             {% if data['system'] or data['packages'] %}
@@ -46,7 +48,7 @@
                                     <div class="col-5">
                                         <div class="card">
                                             <div class="card-header card-header-block">
-                                                <strong>Summary:</strong> <i class="fa-brands fa-{{ data['system']['family']|lower }} text-danger p-1"></i> {{ data['system']['family'] }} family
+                                                <strong>Summary:</strong> <i class="fa-brands fa-{{ data['system']['family']|lower }} text-danger fa-bg-white p-1"></i> {{ data['system']['family'] }} family
                                             </div>
                                             <div class="card-body">
                                                 <span class="mb-3 px-2 py-1 fw-semibold text-secondary-emphasis bg-secondary-subtle border border-secondary-subtle rounded-2 fs-5"><i class="fa-brands fa-{{ data['system']['dist']|lower }}"></i> {{ data['system']['dist'] }} v.{{ data['system']['ver'] }}</span> {{ data['system']['kernel'] }}
@@ -58,7 +60,10 @@
                                                     {% if data['v_ip'] %}
                                                         {% for ip_adr in data['all_ipv4'] %}
                                                             {% if ip_adr == data['v_ip'].internal_ip %}
-                                                                <span class="badge custom-info">{{ data['v_ip'].virtual_ip }}</span>
+{#                                                                <span class="badge custom-info">{{ data['v_ip'].virtual_ip }}</span>#}
+                                                                <button type="button" class="btn-sm fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2" onclick="toClipboard('{{ data['v_ip'].virtual_ip }}')" id="copy-virtual-ip">
+                                                                    <i class="fa-regular fa-copy" aria-hidden="true"></i> {{ data['v_ip'].virtual_ip }}
+                                                                </button>
                                                             {% endif %}
                                                         {% endfor %}
                                                     {% else %}
@@ -246,16 +251,11 @@
                                                             {{ row.vm_name }} <a class="" data-bs-toggle="popover" title="VM uuid & created time:" data-bs-content="UUID>>>{{ row.uuid }} Created>>>{{ row.creation_time }}"><i class="fa-solid fa-circle-info text-secondary"></i></a><br>
                                                             {% set row_list = row.internal_ip.strip('[]').split(', ') %}
                                                             {% for int_ip in row_list %}
-                                                                {% if int_ip.strip("'") %}<span class="badge custom-info">{{ int_ip.strip("'") }}</span>
-{#                                                                    <form method="POST" action="{{ url_for('search_by_ip') }}" id="search_{{ int_ip.strip("'") }}">#}
-{#                                                                        <input type="hidden" name="stage" value="1">#}
-{#                                                                        <input type="hidden" id="ip" name="ip" value="{{ int_ip.strip("'") }}">#}
-{#                                                                        <span class="badge custom-info"><button class="button_search_ip" type="submit">{{ int_ip.strip("'") }}</button>#}
-{#                                                                        {% for v_ip in results['v_ips'] %}#}
-{#                                                                            {% if v_ip.internal_ip == int_ip.strip("'") %}<span class="custom-v_ips-info"><i class="fa-solid fa-globe"></i> {{ v_ip.virtual_ip }}</span>{% endif %}#}
-{#                                                                        {% endfor %}#}
-{#                                                                        </span>#}
-{#                                                                    </form>#}
+                                                                {% if int_ip.strip("'") %}<span class="badge custom-info">{{ int_ip.strip("'") }}
+                                                                    {% if data['v_ip'] %}
+                                                                        {% if int_ip.strip("'") == data['v_ip'].internal_ip %}<span class="custom-v_ips-info"><i class="fa-solid fa-globe"></i> {{ data['v_ip'].virtual_ip }}</span>{% endif %}
+                                                                    </span>
+                                                                    {% endif %}
                                                                 {% endif %}
                                                             {% endfor %}
                                                             {% set row_list = row.subnet_reference.strip('[]').split(', ') %}

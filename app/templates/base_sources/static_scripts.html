@@ -10,6 +10,11 @@
         loading.style.display = "block";
     }
 
+    // For link "Update DB"
+    let updateDbLink = document.getElementById("nav-update-db");
+    updateDbLink.addEventListener("click", showLoading);
+
+    // For FORM with id="expim-form"
     let forms = document.querySelectorAll("#expim-form");
     if (forms) {
         forms.forEach(function (form) {
@@ -23,13 +28,13 @@
 
 
 <script>
-function toClipboard(value) {
-    navigator.clipboard.writeText(value)
-        .then(() => {
-            console.log("Copied to clipboard: " + value);
-        })
-        .catch((error) => {
-            console.error("Unable to copy to clipboard. Error:", error);
-        });
+    function toClipboard(value) {
+        let textarea = document.createElement("textarea");
+        textarea.value = value;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        console.log("Copied to clipboard: " + value);
     }
 </script>
