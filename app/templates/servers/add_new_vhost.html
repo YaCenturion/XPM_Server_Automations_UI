@@ -43,7 +43,7 @@
                                         </div>
                                         <div class="row justify-content-center p-2">
                                             <div class="input-group">
-                                                {{ fields.input('Service:', 'web_service', 'Apache', "", disabled='disabled') }}
+                                                {{ fields.select('Service:', 'web_service', web_service_lst, "") }}
                                                 {{ fields.select('PHP ver:', 'php_ver', php_lst, "") }}
                                                 {{ fields.input('Ports', 'vhost_port', '80,443', "", disabled='disabled') }}
                                             </div>

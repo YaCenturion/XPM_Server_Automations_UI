@@ -68,6 +68,7 @@ def ssh_save_playbook(ssh, pb_data, pb_sets):
 def add_task_to_db(pb_data, pb_sets):
     new_task = TasksHistory(
         user_id=pb_sets['user_id'],
+        username=pb_sets['username'],
         host=pb_sets['target'],
         # status=None,
         exec_time=int(time.time()),

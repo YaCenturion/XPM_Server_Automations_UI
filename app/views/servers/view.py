@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash 
 from flask_login import current_user, login_required  # login_user, logout_user
 # from sqlalchemy import desc  # func
 from app import ver
-from config import ansible_host, nutanix, fortigate, php_versions
+from config import ansible_host, nutanix, fortigate, php_versions, web_services
 from app.views.servers.ansible_utils import *
 from app.views.servers.nutanix_utils import get_vms_like
 from app.views.servers.servers_utils import *
@@ -100,8 +100,7 @@ def create_vhost(target=False):
 
         target = str(request.form['ip_address']).strip()
         domain_name = str(request.form['domain_name']).strip().lower().replace('.', '_')
-        # web_server = str(request.form['web_service']).strip().lower()
-        web_server = "Apache".lower()
+        web_server = str(request.form['web_service']).strip().lower()
         php_ver = str(request.form['php_ver']).strip().lower()
         # vhost_ports = str(request.form['vhost_ports']).strip().split(',')
         db_user = str(request.form['db_user']).strip().lower().replace('.', '_')
@@ -109,9 +108,11 @@ def create_vhost(target=False):
         ssh, msg = get_ssh(ansible_host)
 
         if ssh:
-            # Ansible: Setup new VirtualHost
+            # Ansible:
+            # Setup new VirtualHost
             playbook_sets = {
                 'user_id': current_user.id,
+                'username': current_user.username,
                 'filename': f"{str(int(time.time()))}_{domain_name.lower().replace('.', '_')}",
                 'name': f'Add new VirtualHost for: {domain_name}',
                 'target': target,
@@ -121,27 +122,19 @@ def create_vhost(target=False):
                     "mysql_user": db_user,
                     "mysql_pass": db_pass,
                     "selected_php": php_ver,
-                    "web_server": web_server,
+                    "web_server_name": web_server,
                     # "vhost_ports": vhost_ports,
                 },
-                'roles': [
-                    (r_system['user'],),
-                    (r_system['directory'],),
-                    (r_system['ssl_directory'],),
-                    (r_system['install_mysql_module'],),
-                    (r_db['db'],),
-                    (r_db['user'],),
-                    (r_web['create_php_fpm_sock'],),
-                    (r_web['SSL_certificate'],),
-                    (r_web[f'create_{web_server}_virtualhost'],),
-                    (r_web['ftp_user'],),
-                    (r_web[f'restart_{web_server}'],),
-                ],
+                'roles': add_new_virtualhost(web_server),
             }
 
-            playbook_data = generate_playbook(base_pattern, playbook_sets)
-            # print(playbook_data)
+            # Generate playbook:
+            playbook_data = generate_playbook(base_pb_pattern, playbook_sets)
+
+            # Save playbook:
             playbook_sets['full_filename'] = ssh_save_playbook(ssh, playbook_data, playbook_sets)
+
+            # Add to DB & Execute playbook:
             execute_pb = f'{playbooks_lst["base"]}{playbook_sets["filename"]}.yml'
             playbook_sets['command'] = f'{execute_pb} -i {target}, -e "target={target}"'
             current_task = add_task_to_db(playbook_data, playbook_sets)
@@ -157,11 +150,15 @@ def create_vhost(target=False):
             #     flash(text, cat)
             #     return redirect(url_for('.server'))
 
-            # INFO-DELETE: showing generated playbook
-            # exec_ansible_playbook(ssh, f'{playbooks_lst["show_me_yml"]}{playbook_sets["filename"]}.yml', username)
+            # INFO-DELETE-ME: showing generated playbook:
+            # exec_ssh_command(ssh, f'{playbooks_lst["show_me_yml"]}{playbook_sets["filename"]}.yml', username)
+
+            # Delete playbook after execute:
+            exec_ssh_command(ssh, f'{playbooks_lst["delete_yml"]}{playbook_sets["filename"]}.yml', username)
 
             # Ansible: Get facts
             # front_data = get_facts(front_data, ssh, target, username)
+
             close_ssh(ssh, username)
             text, cat = f'Done: playbook ready!', 'success'
             flash(text, cat)
@@ -175,4 +172,5 @@ def create_vhost(target=False):
             flash(text, cat)
 
     return render_template(
-        'servers/add_new_vhost.html', query=target, data=front_data, php_lst=php_versions, user=current_user, ver=ver)
+        'servers/add_new_vhost.html', query=target, data=front_data,
+        php_lst=php_versions, web_service_lst=web_services, user=current_user, ver=ver)

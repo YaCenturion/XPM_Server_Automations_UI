@@ -103,7 +103,7 @@ def get_ssh(cred):
     key_path = cred['key_path']
     try:
         ssh.connect(host, port, user, key_filename=key_path, timeout=5, allow_agent=False, look_for_keys=False)
-        msg = printer(f':: SSH Authentication to ANSIBLE_SRV - OK!')
+        msg = printer(f':: ANSIBLE_SRV Authentication - OK!')
     except paramiko.AuthenticationException as e:
         ssh = False
         msg = printer(f'-- SSH Authentication to ANSIBLE_SRV - ERROR: {e}')
@@ -117,7 +117,7 @@ def exec_ansible_playbook(ssh, command, ui_user):
     result = True
     try:
         stdin, stdout, stderr = ssh.exec_command(command)
-        msg = printer(f":::: Executed SSH command:\n:::: {command}\n", ui_user)
+        msg = printer(f":::: Executed Ansible:\n:::: {command}\n", ui_user)
     except Exception as ex:
         msg = printer(f"---- Error executing playbook: {ex}")
         return False, msg
@@ -137,6 +137,29 @@ def exec_ansible_playbook(ssh, command, ui_user):
         msg += '\n---- Read the LOG! Somthing looks not good.\n'
 
     return result, msg
+
+
+def exec_ssh_command(ssh, command, ui_user):
+    try:
+        stdin, stdout, stderr = ssh.exec_command(command)
+        msg = printer(f":::: Executed SSH command:\n:::: {command}\n", ui_user)
+    except Exception as ex:
+        msg = printer(f"---- Error executing playbook: {ex}")
+        return False, msg
+    out = str(stdout.read().decode('utf-8')).strip()
+    err = str(stdout.read().decode('utf-8')).strip()
+
+    block_name = ":::: Execution result SUCCESS"
+    if out or err:
+        block_name += f"\nOutput: {out}\nError: {err}\n"
+    msg += printer(f"{block_name}")
+
+    if not err:
+        msg += '\n:::: Execute command success.\n'
+    else:
+        msg += '\n---- Read the LOG! Somthing looks not good.\n'
+        return False, msg
+    return True, msg
 
 
 def close_ssh(ssh, user):

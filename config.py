@@ -83,6 +83,7 @@ nutanix = {
 playbooks_lst = {
     "base": 'ansible-playbook /etc/ansible/prod/',
     "show_me_yml": 'cat /etc/ansible/prod/',
+    "delete_yml": 'rm -rf /etc/ansible/prod/',
     "prod_deploy": '/etc/ansible/prod/',
     "get_facts": 'get_facts.yml',
     "action": 'packages_action.yml',
@@ -139,9 +140,14 @@ linux_packages_dict = {
     ]
 }
 php_versions = [
-    ('80', '80'),
+    ('8.0', '8.0'),
     ('8.1', '8.1'),
     ('8.2', '8.2'),
     ('8.3', '8.3'),
     ('7.4', '7.4'),
+]
+
+web_services = [
+    ('Apache', 'apache'),
+    ('Nginx', 'nginx'),
 ]
