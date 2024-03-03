@@ -15,13 +15,14 @@ general = Blueprint('general', __name__)
 def index():
     if not current_user.is_authenticated:
         return redirect(url_for('general.login'))
-    if request.method == 'POST':
-        if request.form['index_form'] == '1':
-            search_query = request.form['global_search_string']
-            print('query', search_query)
-            # return render_template('index.html', user=current_user, ver=ver)
-
-    return render_template('index.html', user=current_user, ver=ver)
+    return redirect(url_for(f'servers.server'))
+    # if request.method == 'POST':
+    #     if request.form['index_form'] == '1':
+    #         search_query = request.form['global_search_string']
+    #         print('query', search_query)
+    #         # return render_template('index.html', user=current_user, ver=ver)
+    #
+    # return render_template('index.html', user=current_user, ver=ver)
 
 
 @general.route('/login', methods=['GET', 'POST'])
