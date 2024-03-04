@@ -25,6 +25,7 @@ roles = {
         'create_php_fpm_sock': {'role': 'create_php_fpm_sock'},
         'SSL_certificate': {'role': 'create_self-signed_certificate'},
         'create_apache_virtualhost': {'role': 'create_apache_virtualhost'},
+        'create_nginx_virtualhost': {'role': 'create_nginx_virtualhost'},
         'ftp_user': {'role': 'create_ftp_user'},
         'restart_apache': {'role': 'restart_apache'},
     },
