@@ -99,7 +99,7 @@ def create_vhost(target=False):
         show_post_data(request.form.items())
 
         target = str(request.form['ip_address']).strip()
-        domain_name = str(request.form['domain_name']).strip().lower().replace('.', '_')
+        domain_name = str(request.form['domain_name']).strip().lower()  # .replace('.', '_')
         web_server = str(request.form['web_service']).strip().lower()
         php_ver = str(request.form['php_ver']).strip().lower()
         # vhost_ports = str(request.form['vhost_ports']).strip().split(',')
