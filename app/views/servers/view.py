@@ -7,6 +7,7 @@ from app.views.servers.ansible_utils import *
 from app.views.servers.nutanix_utils import get_vms_like
 from app.views.servers.servers_utils import *
 from app.views.servers.ansible_patterns.roles_pattern_pool import *
+from app.views.servers.logs_utils import get_action_logs
 from app.utils.main_utils import *
 from app.views.servers.update_utils import *
 # from app import client_pay_status_lst
@@ -92,7 +93,6 @@ def create_vhost(target=False):
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
     username = current_user.username
-    # target = False
     front_data = {}
     if request.method == 'POST':
         printer(f'Get POST data from: /{request.endpoint}', username)
@@ -173,3 +173,20 @@ def create_vhost(target=False):
     return render_template(
         'servers/add_new_vhost.html', query=target, data=front_data,
         php_lst=php_versions, web_service_lst=web_services, user=current_user, ver=ver)
+
+
+@login_required
+@servers.route('/action_logs/', methods=['GET', 'POST'])
+@servers.route('/action_logs/<int:num_id>', methods=['GET', 'POST'])
+def action_logs(num_id=0):
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    username = current_user.username
+    front_data = {}
+    if request.method == 'POST':
+        printer(f'Get POST data from: /{request.endpoint}', username)
+        show_post_data(request.form.items())
+
+    front_data['action_logs'] = get_action_logs()
+    return render_template(
+        'servers/actions_log.html', data=front_data, user=current_user, ver=ver)
