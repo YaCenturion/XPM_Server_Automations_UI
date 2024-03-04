@@ -28,6 +28,7 @@ roles = {
         'create_nginx_virtualhost': {'role': 'create_nginx_virtualhost'},
         'ftp_user': {'role': 'create_ftp_user'},
         'restart_apache': {'role': 'restart_apache'},
+        'restart_nginx': {'role': 'restart_nginx'},
     },
 }
 
