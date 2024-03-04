@@ -102,7 +102,7 @@ def create_vhost(target=False):
         domain_name = str(request.form['domain_name']).strip().lower().replace('.', '_')
         web_server = str(request.form['web_service']).strip().lower()
         php_ver = str(request.form['php_ver']).strip().lower()
-        # vhost_ports = str(request.form['vhost_ports']).strip().split(',')
+        vhost_ports = str(request.form['vhost_ports']).strip().split(',')
         db_user = str(request.form['db_user']).strip().lower().replace('.', '_')
         db_pass = str(request.form['db_pass']).strip()
         ssh, msg = get_ssh(ansible_host)
@@ -139,16 +139,15 @@ def create_vhost(target=False):
             playbook_sets['command'] = f'{execute_pb} -i {target}, -e "target={target}"'
             current_task = add_task_to_db(playbook_data, playbook_sets)
 
-            # TODO UNCOMMENT FOR REAL TEST:
-            # if current_task:
-            #     status, ssh_log_facts = exec_ansible_playbook(ssh, playbook_sets['command'], username)
-            #     current_task.status = status
-            #     current_task.exec_log = ssh_log_facts
-            #     db.session.commit()
-            # else:
-            #     text, cat = f'ERROR: save task to DB', 'error'
-            #     flash(text, cat)
-            #     return redirect(url_for('.server'))
+            if current_task:
+                status, ssh_log_facts = exec_ansible_playbook(ssh, playbook_sets['command'], username)
+                current_task.status = status
+                current_task.exec_log = ssh_log_facts
+                db.session.commit()
+            else:
+                text, cat = f'ERROR: save task to DB', 'error'
+                flash(text, cat)
+                return redirect(url_for('.server'))
 
             # INFO-DELETE-ME: showing generated playbook:
             # exec_ssh_command(ssh, f'{playbooks_lst["show_me_yml"]}{playbook_sets["filename"]}.yml', username)
