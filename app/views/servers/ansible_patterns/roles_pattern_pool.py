@@ -12,6 +12,8 @@ base_pb_pattern = [
 
 roles = {
     'system': {
+        'get_ansible_control': {'role': 'injection_ansible_control'},
+        
         'user': {'role': 'create_linux_user'},  # absent|present
         'directory': {'role': 'create_user_directory'},  # absent|directory
         'ssl_directory': {'role': 'create_ssl_directory'},  # absent|directory
@@ -48,3 +50,7 @@ def add_new_virtualhost(web_server):
         (roles['web']['ftp_user'],),
         (roles['web'][f'restart_{web_server}'],),
     ]
+
+
+def get_ansible_control():
+    return [(roles['system']['get_ansible_control'],),]

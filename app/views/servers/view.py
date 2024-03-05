@@ -149,14 +149,95 @@ def create_vhost(target=False):
                 flash(text, cat)
                 return redirect(url_for('.server'))
 
-            # INFO-DELETE-ME: showing generated playbook:
+            # INFO: showing generated playbook:
             # exec_ssh_command(ssh, f'{playbooks_lst["show_me_yml"]}{playbook_sets["filename"]}.yml', username)
 
             # Delete playbook after execute:
             exec_ssh_command(ssh, f'{playbooks_lst["delete_yml"]}{playbook_sets["filename"]}.yml', username)
 
-            # Ansible: Get facts
-            # front_data = get_facts(front_data, ssh, target, username)
+            close_ssh(ssh, username)
+            text, cat = f'Done: playbook ready!', 'success'
+            flash(text, cat)
+            return redirect(url_for(f'.server', target=target))
+
+        else:
+            front_data['get_facts'] = [False, msg]
+
+        if not front_data['get_facts'][0]:
+            text, cat = 'Warning! Read LOG carefully!', 'error'
+            flash(text, cat)
+
+    return render_template(
+        'servers/add_new_vhost.html', query=target, data=front_data,
+        php_lst=php_versions, web_service_lst=web_services, user=current_user, ver=ver)
+
+
+@login_required
+@servers.route('/get_ansible_control/', methods=['GET', 'POST'])
+@servers.route('/get_ansible_control/<target>', methods=['GET', 'POST'])
+def create_vhost(target=False):
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    username = current_user.username
+    front_data = {}
+    if request.method == 'POST':
+        printer(f'Get POST data from: /{request.endpoint}', username)
+        show_post_data(request.form.items())
+
+        target = str(request.form['ip_address']).strip()
+        remote_user_login = str(request.form['remote_user_login']).strip()
+        remote_user_pass = str(request.form['remote_user_login']).strip()
+        inv_group = str(request.form['inv_group']).strip()
+        sub_groups_selected = []
+        sub_group_keys = [key for key in request.form.keys() if key.startswith('sub_group_')]
+        for key in sub_group_keys:
+            value = request.form[key]
+            sub_groups_selected.append(value)
+
+        ssh, msg = get_ssh(ansible_host)
+
+        if ssh:
+            # Ansible:
+            # Get ansible control under server
+            playbook_sets = {
+                'user_id': current_user.id,
+                'username': current_user.username,
+                'filename': f"{str(int(time.time()))}_injection_{target.lower().replace('.', '_')}",
+                'name': f'Get control under: {target}',
+                'target': target,
+                'vars': {
+                    "remote_user_login": remote_user_login,
+                    "remote_user_pass": remote_user_pass,
+                },
+                'roles': get_ansible_control(),
+            }
+
+            # Generate playbook:
+            playbook_data = generate_playbook(base_pb_pattern, playbook_sets)
+
+            # Save playbook:
+            playbook_sets['full_filename'] = ssh_save_playbook(ssh, playbook_data, playbook_sets)
+
+            # Add to DB & Execute playbook:
+            execute_pb = f'{playbooks_lst["base"]}{playbook_sets["filename"]}.yml'
+            playbook_sets['command'] = f'{execute_pb} -i {target},"'
+            current_task = add_task_to_db(playbook_data, playbook_sets)
+
+            if current_task:
+                status, ssh_log_facts = exec_ansible_playbook(ssh, playbook_sets['command'], username)
+                current_task.status = status
+                current_task.exec_log = ssh_log_facts
+                db.session.commit()
+            else:
+                text, cat = f'ERROR: save task to DB', 'error'
+                flash(text, cat)
+                return redirect(url_for('.server'))
+
+            # INFO: showing generated playbook:
+            # exec_ssh_command(ssh, f'{playbooks_lst["show_me_yml"]}{playbook_sets["filename"]}.yml', username)
+
+            # Delete playbook after execute:
+            exec_ssh_command(ssh, f'{playbooks_lst["delete_yml"]}{playbook_sets["filename"]}.yml', username)
 
             close_ssh(ssh, username)
             text, cat = f'Done: playbook ready!', 'success'
