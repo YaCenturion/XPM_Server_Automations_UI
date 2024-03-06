@@ -201,10 +201,10 @@ def get_ansible_control(target=False):
         if ssh:
             # Ansible:
             # Get inventory
-            inventory_json = get_ansible_inventory(ssh)
-            if inventory_json:
-                current_inventory = json.loads(inventory_json)
-                del current_inventory['_meta']
+            inventory_yaml = get_ansible_inventory(ssh)
+            if inventory_yaml:
+                current_inventory = yaml.safe_load(inventory_yaml)
+                print(current_inventory)
 
                 file = "ansible_inventory_backup"
                 with open(f'{file}.json', "w", encoding='utf-8') as f_json:
@@ -260,9 +260,7 @@ def get_ansible_control(target=False):
 
             # Update inventory
             sub_inv = generate_inventory(inv_group, target, host_desc, inv_sub_groups)
-            # current_inventory.update(generate_inventory(inv_group, target, host_desc, inv_sub_groups))
             inventory = merge_inventory(current_inventory, sub_inv)
-            del inventory['all']
             deploy_updated_inventory(ssh, inventory, username)
 
             with open('ansible_inventory_updated.yaml', 'w') as file:

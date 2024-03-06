@@ -88,7 +88,7 @@ def generate_inventory(inv_group, host_ip_address, host_desc, inv_sub_groups):
 
     # Add children group
     children_group = f"{inv_group}:children"
-    sub_inventory[children_group] = [f"{inv_group}{sub_group}" for sub_group in inv_sub_groups]
+    sub_inventory[children_group] = {f"{inv_group}{sub_group}" for sub_group in inv_sub_groups}
 
     # Add sub inventory groups
     for sub_group in inv_sub_groups:

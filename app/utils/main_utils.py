@@ -116,7 +116,7 @@ def get_ssh(cred):
 
 
 def get_ansible_inventory(ssh):
-    stdin, stdout, stderr = ssh.exec_command('ansible-inventory --export --list')
+    stdin, stdout, stderr = ssh.exec_command('ansible-inventory -y --list')
     if stderr:
         printer(f'GET Inventory from ANSIBLE_SRV: {stderr.read()}')
     result = stdout.read().decode('utf-8')
@@ -131,8 +131,8 @@ def deploy_updated_inventory(ssh, inventory, ui_user):
     # Save updated inventory_ui
     file = '/etc/ansible/prod/inv/inventory_ui'
     with ssh.open_sftp() as sftp:
-        with sftp.file(f'{file}.json', 'w') as f_json:
-            json.dump(inventory, f_json, indent=2)
+        # with sftp.file(f'{file}.json', 'w') as f_json:
+        #     json.dump(inventory, f_json, indent=2)
         with sftp.file(f'{file}.yaml', 'w') as f_yaml:
             yaml.dump(inventory, f_yaml, default_flow_style=False)
 
