@@ -81,3 +81,37 @@ def add_task_to_db(pb_data, pb_sets):
     )
     task = save_in_db(new_task)
     return task
+
+
+def generate_inventory(inv_group, host_ip_address, host_desc, inv_sub_groups):
+    sub_inventory = {}
+
+    # Add children group
+    children_group = f"{inv_group}:children"
+    sub_inventory[children_group] = [f"{inv_group}{sub_group}" for sub_group in inv_sub_groups]
+
+    # Add sub inventory groups
+    for sub_group in inv_sub_groups:
+        sub_group_name = f"{inv_group}{sub_group}"
+        sub_inventory[sub_group_name] = {
+            "hosts": {
+                host_ip_address: {
+                    "name": host_desc
+                }
+            }
+        }
+
+    return sub_inventory
+
+
+def merge_inventory(current_inventory, sub_inv):
+    updated_inventory = current_inventory.copy()
+    for key, value in sub_inv.items():
+        if key in updated_inventory:
+            if isinstance(value, dict) and isinstance(updated_inventory[key], dict):
+                updated_inventory[key] = merge_inventory(updated_inventory[key], value)
+            else:
+                updated_inventory[key] = value
+        else:
+            updated_inventory[key] = value
+    return updated_inventory

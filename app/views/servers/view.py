@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash  # abort
 from flask_login import current_user, login_required  # login_user, logout_user
 # from sqlalchemy import desc  # func
+# import yaml
 from app import ver
 from config import ansible_host, nutanix, fortigate, php_versions, web_services
 from app.views.servers.ansible_utils import *
@@ -175,7 +176,7 @@ def create_vhost(target=False):
 @login_required
 @servers.route('/get_ansible_control/', methods=['GET', 'POST'])
 @servers.route('/get_ansible_control/<target>', methods=['GET', 'POST'])
-def create_vhost(target=False):
+def get_ansible_control(target=False):
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
     username = current_user.username
@@ -184,20 +185,37 @@ def create_vhost(target=False):
         printer(f'Get POST data from: /{request.endpoint}', username)
         show_post_data(request.form.items())
 
-        target = str(request.form['ip_address']).strip()
+        target = str(request.form['host_ip_address']).strip()
+        host_desc = str(request.form['host_desc']).strip()
         remote_user_login = str(request.form['remote_user_login']).strip()
         remote_user_pass = str(request.form['remote_user_login']).strip()
         inv_group = str(request.form['inv_group']).strip()
-        sub_groups_selected = []
+        inv_sub_groups = []
         sub_group_keys = [key for key in request.form.keys() if key.startswith('sub_group_')]
         for key in sub_group_keys:
             value = request.form[key]
-            sub_groups_selected.append(value)
+            inv_sub_groups.append(value)
 
         ssh, msg = get_ssh(ansible_host)
 
         if ssh:
             # Ansible:
+            # Get inventory
+            inventory_json = get_ansible_inventory(ssh)
+            if inventory_json:
+                current_inventory = json.loads(inventory_json)
+                # inventory_json.pop('_meta')
+
+                file = "ansible_inventory_backup"
+                with open(f'{file}.json', "w", encoding='utf-8') as f_json:
+                    json.dump(current_inventory, f_json, indent=2)
+                with open(f'{file}.yaml', 'w') as file:
+                    yaml.dump(current_inventory, file, default_flow_style=False)
+            else:
+                text, cat = f'ERROR when get inventory', 'error'
+                flash(text, cat)
+                return redirect(url_for('.get_ansible_control'))
+
             # Get ansible control under server
             playbook_sets = {
                 'user_id': current_user.id,
@@ -209,7 +227,7 @@ def create_vhost(target=False):
                     "remote_user_login": remote_user_login,
                     "remote_user_pass": remote_user_pass,
                 },
-                'roles': get_ansible_control(),
+                'roles': injection_ansible_control(),
             }
 
             # Generate playbook:
@@ -224,7 +242,8 @@ def create_vhost(target=False):
             current_task = add_task_to_db(playbook_data, playbook_sets)
 
             if current_task:
-                status, ssh_log_facts = exec_ansible_playbook(ssh, playbook_sets['command'], username)
+                # TODO status, ssh_log_facts = exec_ansible_playbook(ssh, playbook_sets['command'], username)
+                status, ssh_log_facts = True, 'test'
                 current_task.status = status
                 current_task.exec_log = ssh_log_facts
                 db.session.commit()
@@ -234,15 +253,24 @@ def create_vhost(target=False):
                 return redirect(url_for('.server'))
 
             # INFO: showing generated playbook:
-            # exec_ssh_command(ssh, f'{playbooks_lst["show_me_yml"]}{playbook_sets["filename"]}.yml', username)
+            exec_ssh_command(ssh, f'{playbooks_lst["show_me_yml"]}{playbook_sets["filename"]}.yml', username)
 
             # Delete playbook after execute:
             exec_ssh_command(ssh, f'{playbooks_lst["delete_yml"]}{playbook_sets["filename"]}.yml', username)
 
+            # Update inventory
+            sub_inv = generate_inventory(inv_group, target, host_desc, inv_sub_groups)
+            # current_inventory.update(generate_inventory(inv_group, target, host_desc, inv_sub_groups))
+            inventory = merge_inventory(current_inventory, sub_inv)
+            deploy_updated_inventory(ssh, inventory, username)
+
+            with open('ansible_inventory_updated.yaml', 'w') as file:
+                yaml.dump(inventory, file, default_flow_style=False)
+
             close_ssh(ssh, username)
-            text, cat = f'Done: playbook ready!', 'success'
+            text, cat = f'Done: Inventory updated!', 'success'
             flash(text, cat)
-            return redirect(url_for(f'.server', target=target))
+            return redirect(url_for('.server', target=target))
 
         else:
             front_data['get_facts'] = [False, msg]
@@ -252,7 +280,7 @@ def create_vhost(target=False):
             flash(text, cat)
 
     return render_template(
-        'servers/add_new_vhost.html', query=target, data=front_data,
+        'servers/get_ansible_control.html', query=target, data=front_data,
         php_lst=php_versions, web_service_lst=web_services, user=current_user, ver=ver)
 
 
@@ -262,6 +290,8 @@ def create_vhost(target=False):
 def action_logs(num_id=0):
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
+    if num_id:
+        print(num_id)
     username = current_user.username
     front_data = {}
     if request.method == 'POST':

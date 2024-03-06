@@ -57,13 +57,13 @@
 {# radio #}
 {% macro radio(label, value, name, checked='', required='', disabled='', type='radio') -%}
     <input type="{{ type }}" class="btn-check" name="{{ name }}" value="{{ value }}" id="radio_{{ value }}" {{ checked }} {{ required }} {{ disabled }} autocomplete="off">
-    <label class="btn btn-outline-secondary" for="radio_{{ value }}">{{ label }}</label>
+    <label class="btn btn-outline-secondary" for="radio_{{ value }}">{{ label|safe }}</label>
 {%- endmacro %}
 
 {# checkbox #}
 {% macro checkbox(label, value, name, checked='', required='', disabled='', type='checkbox') -%}
-        <input class="form-check-input" type="{{ type }}" name="{{ name }}" value="{{ value }}" id="checkbox_{{ name }}" {{ checked }} {{ required }} {{ disabled }} autocomplete="off">
-        <label class="form-check-label" for="checkbox_{{ name }}">{{ label|safe }}</label>
+    <input class="form-check-input" type="{{ type }}" name="{{ name }}" value="{{ value }}" id="checkbox_{{ name }}" {{ checked }} {{ required }} {{ disabled }} autocomplete="off">
+    <label class="form-check-label" for="checkbox_{{ name }}">{{ label|safe }}</label>
 {%- endmacro %}
 
 {# textarea #}
