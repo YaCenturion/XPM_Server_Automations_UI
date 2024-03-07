@@ -207,8 +207,8 @@ def get_ansible_control(target=False):
                 print(current_inventory)
 
                 file = "ansible_inventory_backup"
-                with open(f'{file}.json', "w", encoding='utf-8') as f_json:
-                    json.dump(current_inventory, f_json, indent=2)
+                # with open(f'{file}.json', "w", encoding='utf-8') as f_json:
+                #     json.dump(current_inventory, f_json, indent=2)
                 with open(f'{file}.yaml', 'w') as file:
                     yaml.dump(current_inventory, file, default_flow_style=False)
             else:
@@ -242,8 +242,8 @@ def get_ansible_control(target=False):
             current_task = add_task_to_db(playbook_data, playbook_sets)
 
             if current_task:
-                # TODO status, ssh_log_facts = exec_ansible_playbook(ssh, playbook_sets['command'], username)
-                status, ssh_log_facts = True, 'test'
+                status, ssh_log_facts = exec_ansible_playbook(ssh, playbook_sets['command'], username)
+                # status, ssh_log_facts = True, 'test'
                 current_task.status = status
                 current_task.exec_log = ssh_log_facts
                 db.session.commit()
