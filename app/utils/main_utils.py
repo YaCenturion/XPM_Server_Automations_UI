@@ -115,8 +115,8 @@ def get_ssh(cred):
     return ssh, msg
 
 
-def get_ansible_inventory(ssh):
-    stdin, stdout, stderr = ssh.exec_command('ansible-inventory -y --list')
+def get_ansible_inventory(ssh, output):
+    stdin, stdout, stderr = ssh.exec_command(f'ansible-inventory --{output} --list')
     if stderr:
         printer(f'ERROR GET Inventory from ANSIBLE_SRV: {stderr.read()}')
     result = stdout.read().decode('utf-8')

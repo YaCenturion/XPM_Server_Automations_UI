@@ -36,7 +36,7 @@
     <label class="input-group-text label-width" for="{{ name }}">{{ label }}</label>
     <input class="form-control" placeholder="Type to search..." list="datalist_{{ name }}" id="{{ name }}" name="{{ name }}" value="{% for row in lst %}{% if value == row[0] %}{{ row[1]|e }}{% endif %}{% endfor %}">
         <datalist id="datalist_{{ name }}">
-            {% for option in lst %}<option value="{{ option[1] }} #{{ option[0] }}">{% endfor %}
+            {% for option in lst %}<option value="{{ option }}">{% endfor %}
         </datalist>
 {%- endmacro %}
 

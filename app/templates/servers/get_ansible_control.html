@@ -25,6 +25,12 @@
                             <div class="row justify-content-center p-2">
                                 <div class="col-8 text-center">
                                     <form method="POST" class="row g-3" id="expim-form">
+                                        {% if query %}
+                                        <div class="text-center">
+                                            {{ fields.input_hidden(query, 'host_ip_address') }}
+                                            <span class="badge bg-secondary fs-5">{{ query }}</span>
+                                        </div>
+                                        {% endif %}
                                         <div class="row justify-content-center p-2">
                                             <div class="input-group">
                                                 {{ fields.datalist('Inventory Group [...]:', 'inv_group', ansible_groups) }}
@@ -32,7 +38,7 @@
                                         </div>
                                         <div class="row justify-content-center p-2">
                                             <div class="input-group text-start">
-                                                {{ fields.input('Host IP:', 'host_ip_address', '', "internal ip") }}
+                                                {% if not query %}{{ fields.input('Host IP:', 'host_ip_address', '', "internal ip") }}{% endif %}
                                                 {{ fields.input('Host name:', 'host_desc', '', "host description") }}
                                             </div>
                                         </div>

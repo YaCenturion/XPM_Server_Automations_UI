@@ -1,4 +1,5 @@
 import json
+from flask import redirect, url_for, flash
 from app.utils.main_utils import *
 from config import linux_packages_dict, playbooks_lst
 
@@ -112,7 +113,7 @@ def get_facts(front_data, ssh, target, username):
     front_data['packages'] = False
     command = f'{playbooks_lst["base"]}{playbooks_lst["get_facts"]} -i {target}, -e "target={target}"'
     status_get_facts, ssh_log_facts = exec_ansible_playbook(ssh, command, username)
-    
+    print('@#@#@#@#@#', status_get_facts)
     if status_get_facts:
         result, data_pool = handler_facts(ssh_log_facts)
         if result:
@@ -128,6 +129,10 @@ def get_facts(front_data, ssh, target, username):
             front_data['all_ipv4'] = False
             front_data['ports'] = False
             front_data['mounts'] = False
+    else:
+        text, cat = f'Error SSH to server: {target}!', 'error'
+        flash(text, cat)
+    
     front_data['get_facts'] = [status_get_facts, ssh_log_facts]
     if 'full_log' in front_data:
         print('=====================>>>', front_data['full_log'])

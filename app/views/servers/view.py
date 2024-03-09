@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash  # abort
+from flask import Blueprint, render_template, request  # , redirect, url_for, flash  # abort
 from flask_login import current_user, login_required  # login_user, logout_user
 # from sqlalchemy import desc  # func
 # import yaml
@@ -50,6 +50,10 @@ def server(target=False):
         printer(f'Get POST data from: /{request.endpoint}', username)
         show_post_data(request.form.items())
         target = str(request.form['ip_address']).strip()
+        if not check_ip_address(target):
+            text, cat = f'ERROR in IP-address: {target}', 'error'
+            flash(text, cat)
+            return redirect(url_for('.server'))
 
     if target:
         front_data['vms'] = get_vms_like(target)
@@ -80,16 +84,17 @@ def server(target=False):
             front_data['get_facts'] = [False, msg]
 
         if not front_data['get_facts'][0]:
-            text, cat = 'Warning! Read LOG carefully!', 'error'
+            text, cat = 'Maybe not under Ansible control yet.', 'error'
             flash(text, cat)
+            return redirect(url_for('.get_ansible_control', target=target))
 
     return render_template(
         'servers/server.html', query=target, data=front_data, user=current_user, ver=ver)
 
 
 @login_required
-@servers.route('/add_vh/', methods=['GET', 'POST'])
 @servers.route('/add_vh/<target>', methods=['GET', 'POST'])
+@servers.route('/add_vh/', methods=['GET', 'POST'])
 def create_vhost(target=False):
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
@@ -174,13 +179,19 @@ def create_vhost(target=False):
 
 
 @login_required
-@servers.route('/get_ansible_control/', methods=['GET', 'POST'])
 @servers.route('/get_ansible_control/<target>', methods=['GET', 'POST'])
+@servers.route('/get_ansible_control/', methods=['GET', 'POST'])
 def get_ansible_control(target=False):
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
     username = current_user.username
     front_data = {}
+    ssh, msg = get_ssh(ansible_host)
+    if not ssh:
+        text, cat = 'Error SSH to Ansible SRV!', 'error'
+        flash(text, cat)
+        return redirect(url_for('.get_ansible_control'))
+    
     if request.method == 'POST':
         printer(f'Get POST data from: /{request.endpoint}', username)
         show_post_data(request.form.items())
@@ -200,100 +211,96 @@ def get_ansible_control(target=False):
             value = request.form[key]
             inv_sub_groups.append(value)
 
-        ssh, msg = get_ssh(ansible_host)
+        # Ansible:
+        # Get inventory
+        inventory_yaml = get_ansible_inventory(ssh, 'yaml')
+        filename_inv = "ansible_inventory"
+        if inventory_yaml:
+            current_inventory = yaml.safe_load(inventory_yaml)
 
-        if ssh:
-            # Ansible:
-            # Get inventory
-            inventory_yaml = get_ansible_inventory(ssh)
-            filename_inv = "ansible_inventory"
-            if inventory_yaml:
-                current_inventory = yaml.safe_load(inventory_yaml)
-
-                # Save backup Local
-                with open(f'{filename_inv}_backup.yaml', 'w') as file:
-                    yaml.dump(current_inventory, file, default_flow_style=False)
-            else:
-                text, cat = f'ERROR when get inventory', 'error'
-                flash(text, cat)
-                return redirect(url_for('.get_ansible_control'))
-
-            # Get ansible control under server
-            playbook_sets = {
-                'user_id': current_user.id,
-                'username': current_user.username,
-                'filename': f"{str(int(time.time()))}_injection_{target.lower().replace('.', '_')}",
-                'name': f'Get control under: {target}',
-                'target': target,
-                'vars': {
-                    "remote_user_login": remote_user_login,
-                    "remote_user_pass": remote_user_pass,
-                },
-                'roles': injection_ansible_control(),
-            }
-
-            # Generate playbook:
-            playbook_data = generate_playbook(base_pb_pattern, playbook_sets)
-
-            # Save playbook:
-            playbook_sets['full_filename'] = ssh_save_playbook(ssh, playbook_data, playbook_sets)
-
-            # Add to DB & Execute playbook:
-            execute_pb = f'{playbooks_lst["base"]}{playbook_sets["filename"]}.yml'
-            playbook_sets['command'] = f'{execute_pb} -i {target},"'
-            current_task = add_task_to_db(playbook_data, playbook_sets)
-
-            if current_task:
-                status, ssh_log_facts = exec_ansible_playbook(ssh, playbook_sets['command'], username)
-                # status, ssh_log_facts = True, 'test'
-                current_task.status = status
-                current_task.exec_log = ssh_log_facts
-                db.session.commit()
-            else:
-                text, cat = f'ERROR: save task to DB', 'error'
-                flash(text, cat)
-                return redirect(url_for('.server'))
-
-            # INFO: showing generated playbook:
-            exec_ssh_command(ssh, f'{playbooks_lst["show_me_yml"]}{playbook_sets["filename"]}.yml', username)
-
-            # Delete playbook after execute:
-            exec_ssh_command(ssh, f'{playbooks_lst["delete_yml"]}{playbook_sets["filename"]}.yml', username)
-
-            # Update inventory
-            sub_inv = generate_sub_inventory(inv_group, target, host_desc, inv_sub_groups)
-            inventory = merge_inventory(current_inventory, sub_inv)
-            
-            # Convert to INI and deploy
-            inventory_ini = '\n'.join(inventory_to_ini(inventory, [])) + '\n'
-            deploy_updated_inventory(ssh, inventory_ini, username)
-
-            with open(f'{filename_inv}_updated.yaml', 'w') as file:
-                yaml.dump(inventory, file, default_flow_style=False)
-            with open(f'{filename_inv}_updated.ini', 'w') as file:
-                file.write(inventory_ini)
-
-            close_ssh(ssh, username)
-            text, cat = f'Done: Inventory updated!', 'success'
-            flash(text, cat)
-            return redirect(url_for('.server', target=target))
-
+            # Save backup Local
+            with open(f'{filename_inv}_backup.yaml', 'w') as file:
+                yaml.dump(current_inventory, file, default_flow_style=False)
         else:
-            front_data['get_facts'] = [False, msg]
-
-        if not front_data['get_facts'][0]:
-            text, cat = 'Warning! Read LOG carefully!', 'error'
+            text, cat = f'ERROR when get inventory', 'error'
             flash(text, cat)
+            return redirect(url_for('.get_ansible_control'))
 
+        # Get ansible control under server
+        playbook_sets = {
+            'user_id': current_user.id,
+            'username': current_user.username,
+            'filename': f"{str(int(time.time()))}_injection_{target.lower().replace('.', '_')}",
+            'name': f'Get control under: {target}',
+            'target': target,
+            'vars': {
+                "remote_user_login": remote_user_login,
+                "remote_user_pass": remote_user_pass,
+            },
+            'roles': injection_ansible_control(),
+        }
+
+        # Generate playbook:
+        playbook_data = generate_playbook(base_pb_pattern, playbook_sets)
+
+        # Save playbook:
+        playbook_sets['full_filename'] = ssh_save_playbook(ssh, playbook_data, playbook_sets)
+
+        # Add to DB & Execute playbook:
+        execute_pb = f'{playbooks_lst["base"]}{playbook_sets["filename"]}.yml'
+        playbook_sets['command'] = f'{execute_pb} -i {target},"'
+        current_task = add_task_to_db(playbook_data, playbook_sets)
+
+        if current_task:
+            status, ssh_log_facts = exec_ansible_playbook(ssh, playbook_sets['command'], username)
+            # status, ssh_log_facts = True, 'test'
+            current_task.status = status
+            current_task.exec_log = ssh_log_facts
+            db.session.commit()
+        else:
+            text, cat = f'ERROR: save task to DB', 'error'
+            flash(text, cat)
+            return redirect(url_for('.server'))
+
+        # INFO: showing generated playbook:
+        exec_ssh_command(ssh, f'{playbooks_lst["show_me_yml"]}{playbook_sets["filename"]}.yml', username)
+
+        # Delete playbook after execute:
+        exec_ssh_command(ssh, f'{playbooks_lst["delete_yml"]}{playbook_sets["filename"]}.yml', username)
+
+        # Update inventory
+        sub_inv = generate_sub_inventory(inv_group, target, host_desc, inv_sub_groups)
+        inventory = merge_inventory(current_inventory, sub_inv)
+        
+        # Convert to INI and deploy
+        inventory_ini = '\n'.join(inventory_to_ini(inventory, [])) + '\n'
+        deploy_updated_inventory(ssh, inventory_ini, username)
+
+        with open(f'{filename_inv}_updated.yaml', 'w') as file:
+            yaml.dump(inventory, file, default_flow_style=False)
+        with open(f'{filename_inv}_updated.ini', 'w') as file:
+            file.write(inventory_ini)
+
+        close_ssh(ssh, username)
+        text, cat = f'Done: Inventory updated!', 'success'
+        flash(text, cat)
+        return redirect(url_for('.server', target=target))
+    
+    else:
+        inventory_json = json.loads(get_ansible_inventory(ssh, 'export'))
+        ansible_groups = inventory_json['all']['children']
+        print(ansible_groups, type(ansible_groups))
+        
     return render_template(
         'servers/get_ansible_control.html', query=target, data=front_data,
-        php_lst=php_versions, web_service_lst=web_services, user=current_user, ver=ver)
+        ansible_groups=ansible_groups, php_lst=php_versions, web_service_lst=web_services,
+        user=current_user, ver=ver)
 
 
 @login_required
 @servers.route('/action_logs/', methods=['GET', 'POST'])
 @servers.route('/action_logs/<int:num_id>', methods=['GET', 'POST'])
-def action_logs(num_id=0):
+def action_logs(num_id=False):
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
     if num_id:
