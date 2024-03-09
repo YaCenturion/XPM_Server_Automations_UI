@@ -1,4 +1,5 @@
 import yaml
+import configparser
 
 from app.utils.main_utils import save_in_db
 from config import playbooks_lst
@@ -83,24 +84,30 @@ def add_task_to_db(pb_data, pb_sets):
     return task
 
 
-def generate_inventory(inv_group, host_ip_address, host_desc, inv_sub_groups):
-    sub_inventory = {}
-
+def generate_sub_inventory(inv_group, host_ip_address, host_desc, inv_suffix_groups):
     # Add children group
-    children_group = f"{inv_group}:children"
-    sub_inventory[children_group] = {f"{inv_group}{sub_group}" for sub_group in inv_sub_groups}
-
-    # Add sub inventory groups
-    for sub_group in inv_sub_groups:
-        sub_group_name = f"{inv_group}{sub_group}"
-        sub_inventory[sub_group_name] = {
-            "hosts": {
-                host_ip_address: {
-                    "name": host_desc
+    sub_inventory = {
+        "all": {
+            'children': {
+                inv_group: {
+                    'children': {}
                 }
             }
         }
-
+    }
+    
+    # Add sub inventory groups
+    for suffix in inv_suffix_groups:
+        group_name = f"{inv_group}{suffix}"
+        sub_inventory["all"]["children"][inv_group]["children"][group_name] = {
+            "hosts": {
+                host_ip_address: {
+                    "name": host_desc,
+                    "tag": suffix.replace("_", ""),
+                }
+            }
+        }
+    
     return sub_inventory
 
 
@@ -115,3 +122,38 @@ def merge_inventory(current_inventory, sub_inv):
         else:
             updated_inventory[key] = value
     return updated_inventory
+
+
+def inventory_to_ini(data, inventory_ini):
+    for key, value in data.items():
+        br = ''
+        if key != 'all':
+            br = '\n'
+        if 'children' in data[key]:
+            inventory_ini.append(f"{br}[{key}:children]")
+            for child in data[key]['children'].keys():
+                inventory_ini.append(f"{child}")
+            
+            inventory_ini = inventory_to_ini(value['children'], inventory_ini)
+        if 'hosts' in data[key]:
+            inventory_ini.append(f"\n[{key}]")
+            for child_key, child_value in data[key]['hosts'].items():
+                params = ''
+                for opt, val in child_value.items():
+                    params += f" {opt}={val}"
+                inventory_ini.append(f"{child_key}{params}")
+    
+    return inventory_ini
+
+
+def check_ip_address(ip_adr):
+    if ip_adr.count('.') != 3 or ip_adr.count(' ') != 0:
+        return False
+    if len(str(ip_adr).split('.')) != 4:
+        return False
+    else:
+        tmp = str(ip_adr).split('.')
+        for i in tmp:
+            if len(i) > 3 or not i.isdigit():
+                return False
+    return True

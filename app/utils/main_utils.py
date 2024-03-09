@@ -4,7 +4,7 @@ import paramiko
 import pymssql
 import random
 import string
-import json
+# import json
 import yaml
 # import socket
 # from datetime import datetime
@@ -118,23 +118,23 @@ def get_ssh(cred):
 def get_ansible_inventory(ssh):
     stdin, stdout, stderr = ssh.exec_command('ansible-inventory -y --list')
     if stderr:
-        printer(f'GET Inventory from ANSIBLE_SRV: {stderr.read()}')
+        printer(f'ERROR GET Inventory from ANSIBLE_SRV: {stderr.read()}')
     result = stdout.read().decode('utf-8')
     return result
 
 
 def deploy_updated_inventory(ssh, inventory, ui_user):
-    # Backup inventory_ui.json
+    # Backup inventory_ui
     command = 'cp -f /etc/ansible/prod/inv/inventory_ui.* /etc/ansible/prod/inv/backup/'
     exec_ssh_command(ssh, command, ui_user)
 
     # Save updated inventory_ui
     file = '/etc/ansible/prod/inv/inventory_ui'
     with ssh.open_sftp() as sftp:
-        # with sftp.file(f'{file}.json', 'w') as f_json:
-        #     json.dump(inventory, f_json, indent=2)
-        with sftp.file(f'{file}.yaml', 'w') as f_yaml:
-            yaml.dump(inventory, f_yaml, default_flow_style=False)
+        # with sftp.file(f'{file}.yaml', 'w') as f_yaml:
+        #     yaml.dump(inventory, f_yaml, default_flow_style=False)
+        with sftp.file(f'{file}.ini', 'w') as f_ini:
+            f_ini.write(inventory)
 
 
 def exec_ansible_playbook(ssh, command, ui_user):

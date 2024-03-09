@@ -186,10 +186,14 @@ def get_ansible_control(target=False):
         show_post_data(request.form.items())
 
         target = str(request.form['host_ip_address']).strip()
-        host_desc = str(request.form['host_desc']).strip()
+        if not check_ip_address(target):
+            text, cat = f'ERROR in IP-address', 'error'
+            flash(text, cat)
+            return redirect(url_for('.get_ansible_control'))
+        host_desc = str(request.form['host_desc']).strip().replace('-', '_').replace(' ', '_')
         remote_user_login = str(request.form['remote_user_login']).strip()
         remote_user_pass = str(request.form['remote_user_login']).strip()
-        inv_group = str(request.form['inv_group']).strip()
+        inv_group = str(request.form['inv_group']).strip().replace('-', '_').replace(' ', '_')
         inv_sub_groups = []
         sub_group_keys = [key for key in request.form.keys() if key.startswith('sub_group_')]
         for key in sub_group_keys:
@@ -202,14 +206,12 @@ def get_ansible_control(target=False):
             # Ansible:
             # Get inventory
             inventory_yaml = get_ansible_inventory(ssh)
+            filename_inv = "ansible_inventory"
             if inventory_yaml:
                 current_inventory = yaml.safe_load(inventory_yaml)
-                print(current_inventory)
 
-                file = "ansible_inventory_backup"
-                # with open(f'{file}.json', "w", encoding='utf-8') as f_json:
-                #     json.dump(current_inventory, f_json, indent=2)
-                with open(f'{file}.yaml', 'w') as file:
+                # Save backup Local
+                with open(f'{filename_inv}_backup.yaml', 'w') as file:
                     yaml.dump(current_inventory, file, default_flow_style=False)
             else:
                 text, cat = f'ERROR when get inventory', 'error'
@@ -259,12 +261,17 @@ def get_ansible_control(target=False):
             exec_ssh_command(ssh, f'{playbooks_lst["delete_yml"]}{playbook_sets["filename"]}.yml', username)
 
             # Update inventory
-            sub_inv = generate_inventory(inv_group, target, host_desc, inv_sub_groups)
+            sub_inv = generate_sub_inventory(inv_group, target, host_desc, inv_sub_groups)
             inventory = merge_inventory(current_inventory, sub_inv)
-            deploy_updated_inventory(ssh, inventory, username)
+            
+            # Convert to INI and deploy
+            inventory_ini = '\n'.join(inventory_to_ini(inventory, [])) + '\n'
+            deploy_updated_inventory(ssh, inventory_ini, username)
 
-            with open('ansible_inventory_updated.yaml', 'w') as file:
+            with open(f'{filename_inv}_updated.yaml', 'w') as file:
                 yaml.dump(inventory, file, default_flow_style=False)
+            with open(f'{filename_inv}_updated.ini', 'w') as file:
+                file.write(inventory_ini)
 
             close_ssh(ssh, username)
             text, cat = f'Done: Inventory updated!', 'success'
