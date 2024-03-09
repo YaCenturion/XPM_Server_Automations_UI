@@ -1,7 +1,7 @@
                     <!-- Messenger -->
                     {% for cat, msg in get_flashed_messages(True) %}
                         <div class="row justify-content-center">
-                            <div class="col-md-4 pb-4">
+                            <div class="col-6 pb-4">
                                 <div class="alert alert-{% if cat == 'error' %}danger{% else %}{{ cat }}{% endif %} alert-dismissible fade show" role="alert">
                                     {% if cat == 'error' %}<i class="fa-solid fa-triangle-exclamation"></i>{% else %}<i class="fa-solid fa-circle-check"></i>{% endif %} {{ msg }}
                                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>

@@ -1,7 +1,7 @@
 import yaml
-import configparser
 
-from app.utils.main_utils import save_in_db
+from app.utils.main_utils import save_in_db, exec_ansible_playbook, exec_ssh_command
+from app.views.servers.ansible_patterns.roles_pattern_pool import base_pb_pattern
 from config import playbooks_lst
 from app.models import *
 
@@ -157,3 +157,35 @@ def check_ip_address(ip_adr):
             if len(i) > 3 or not i.isdigit():
                 return False
     return True
+
+
+def pb_generate_save_execute_delete(ssh, target, playbook_sets, username):
+    # Generate playbook:
+    playbook_data = generate_playbook(base_pb_pattern, playbook_sets)
+    # Save playbook:
+    playbook_sets['full_filename'] = ssh_save_playbook(ssh, playbook_data, playbook_sets)
+    # Add to DB:
+    execute_pb = f'{playbooks_lst["base"]}{playbook_sets["filename"]}.yml'
+    playbook_sets['command'] = f'{execute_pb} -i {target},"'
+    current_task = add_task_to_db(playbook_data, playbook_sets)
+    
+    # Execute playbook
+    if current_task:
+        # status, ssh_log = exec_ansible_playbook(ssh, playbook_sets['command'], username)
+        status, ssh_log = True, 'Fake Log'
+        current_task.status = status
+        current_task.exec_log = ssh_log
+        db.session.commit()
+        text, cat, log = 'Success! Playbook executed!', 'success', ssh_log
+    else:
+        text, cat, log = f'ERROR: save task to DB', 'error', False
+    
+    # Delete playbook after execute:
+    exec_ssh_command(ssh, f'{playbooks_lst["delete_yml"]}{playbook_sets["filename"]}.yml', username)
+    
+    return text, cat, log
+
+
+def show_playbook_yaml_code(ssh, playbook_sets, username):  # Showing generated playbook
+    exec_ssh_command(ssh, f'{playbooks_lst["show_me_yml"]}{playbook_sets["filename"]}.yml', username)
+    

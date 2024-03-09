@@ -5,8 +5,8 @@ import pymssql
 import random
 import string
 # import json
-import yaml
-# import socket
+# import yaml
+import socket
 # from datetime import datetime
 from ..models import *
 
@@ -104,7 +104,7 @@ def get_ssh(cred):
     user = cred['user']
     key_path = cred['key_path']
     try:
-        ssh.connect(host, port, user, key_filename=key_path, timeout=5, allow_agent=False, look_for_keys=False)
+        ssh.connect(host, port, user, key_filename=key_path, timeout=2, allow_agent=False, look_for_keys=False)
         msg = printer(f':: ANSIBLE_SRV Authentication - OK!')
     except paramiko.AuthenticationException as e:
         ssh = False
@@ -112,6 +112,12 @@ def get_ssh(cred):
     except paramiko.SSHException as e:
         ssh = False
         msg = printer(f'-- SSH Connection to ANSIBLE_SRV - ERROR: {e}')
+    except socket.timeout as e:
+        ssh = False
+        msg = printer(f'-- Connection to ANSIBLE_SRV timed out: {e}')
+    except Exception as e:
+        ssh = False
+        msg = printer(f'-- An unexpected error occurred: {e}')
     return ssh, msg
 
 

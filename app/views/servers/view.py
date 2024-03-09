@@ -103,7 +103,8 @@ def create_vhost(target=False):
     if request.method == 'POST':
         printer(f'Get POST data from: /{request.endpoint}', username)
         show_post_data(request.form.items())
-
+        
+        # Vars from form
         target = str(request.form['ip_address']).strip()
         domain_name = str(request.form['domain_name']).strip().lower()  # .replace('.', '_')
         web_server = str(request.form['web_service']).strip().lower()
@@ -111,8 +112,8 @@ def create_vhost(target=False):
         # vhost_ports = str(request.form['vhost_ports']).strip().split(',')
         db_user = str(request.form['db_user']).strip().lower().replace('.', '_')
         db_pass = str(request.form['db_pass']).strip()
+        
         ssh, msg = get_ssh(ansible_host)
-
         if ssh:
             # Ansible:
             # Setup new VirtualHost
@@ -133,36 +134,15 @@ def create_vhost(target=False):
                 },
                 'roles': add_new_virtualhost(web_server),
             }
-
-            # Generate playbook:
-            playbook_data = generate_playbook(base_pb_pattern, playbook_sets)
-
-            # Save playbook:
-            playbook_sets['full_filename'] = ssh_save_playbook(ssh, playbook_data, playbook_sets)
-
-            # Add to DB & Execute playbook:
-            execute_pb = f'{playbooks_lst["base"]}{playbook_sets["filename"]}.yml'
-            playbook_sets['command'] = f'{execute_pb} -i {target}, -e "target={target}"'
-            current_task = add_task_to_db(playbook_data, playbook_sets)
-
-            if current_task:
-                status, ssh_log_facts = exec_ansible_playbook(ssh, playbook_sets['command'], username)
-                current_task.status = status
-                current_task.exec_log = ssh_log_facts
-                db.session.commit()
-            else:
-                text, cat = f'ERROR: save task to DB', 'error'
-                flash(text, cat)
+            
+            text, cat, log = pb_generate_save_execute_delete(ssh, target, playbook_sets, username)
+            flash(text, cat)
+            if cat in ('error', 'warning'):
                 return redirect(url_for('.server'))
 
-            # INFO: showing generated playbook:
-            # exec_ssh_command(ssh, f'{playbooks_lst["show_me_yml"]}{playbook_sets["filename"]}.yml', username)
-
-            # Delete playbook after execute:
-            exec_ssh_command(ssh, f'{playbooks_lst["delete_yml"]}{playbook_sets["filename"]}.yml', username)
+            # show_playbook_yaml_code(ssh, playbook_sets, username)  # Showing generated playbook
 
             close_ssh(ssh, username)
-            text, cat = f'Done: playbook ready!', 'success'
             flash(text, cat)
             return redirect(url_for(f'.server', target=target))
 
@@ -179,7 +159,7 @@ def create_vhost(target=False):
 
 
 @login_required
-@servers.route('/get_ansible_control/<target>', methods=['GET', 'POST'])
+@servers.route('/get_ansible_control/<string:target>', methods=['GET', 'POST'])
 @servers.route('/get_ansible_control/', methods=['GET', 'POST'])
 def get_ansible_control(target=False):
     if not current_user.is_authenticated:
@@ -188,14 +168,15 @@ def get_ansible_control(target=False):
     front_data = {}
     ssh, msg = get_ssh(ansible_host)
     if not ssh:
-        text, cat = 'Error SSH to Ansible SRV!', 'error'
-        flash(text, cat)
-        return redirect(url_for('.get_ansible_control'))
+        flash('Error SSH to Ansible server! Impossible use services...', 'error')
+        flash(f'Error log: {msg}', 'error')
+        return redirect(url_for('.server'))
     
     if request.method == 'POST':
         printer(f'Get POST data from: /{request.endpoint}', username)
         show_post_data(request.form.items())
-
+        
+        # Vars from form
         target = str(request.form['host_ip_address']).strip()
         if not check_ip_address(target):
             text, cat = f'ERROR in IP-address', 'error'
@@ -239,34 +220,13 @@ def get_ansible_control(target=False):
             },
             'roles': injection_ansible_control(),
         }
-
-        # Generate playbook:
-        playbook_data = generate_playbook(base_pb_pattern, playbook_sets)
-
-        # Save playbook:
-        playbook_sets['full_filename'] = ssh_save_playbook(ssh, playbook_data, playbook_sets)
-
-        # Add to DB & Execute playbook:
-        execute_pb = f'{playbooks_lst["base"]}{playbook_sets["filename"]}.yml'
-        playbook_sets['command'] = f'{execute_pb} -i {target},"'
-        current_task = add_task_to_db(playbook_data, playbook_sets)
-
-        if current_task:
-            status, ssh_log_facts = exec_ansible_playbook(ssh, playbook_sets['command'], username)
-            # status, ssh_log_facts = True, 'test'
-            current_task.status = status
-            current_task.exec_log = ssh_log_facts
-            db.session.commit()
-        else:
-            text, cat = f'ERROR: save task to DB', 'error'
-            flash(text, cat)
+        
+        text, cat, log = pb_generate_save_execute_delete(ssh, target, playbook_sets, username)
+        flash(text, cat)
+        if cat in ('error', 'warning'):
             return redirect(url_for('.server'))
 
-        # INFO: showing generated playbook:
-        exec_ssh_command(ssh, f'{playbooks_lst["show_me_yml"]}{playbook_sets["filename"]}.yml', username)
-
-        # Delete playbook after execute:
-        exec_ssh_command(ssh, f'{playbooks_lst["delete_yml"]}{playbook_sets["filename"]}.yml', username)
+        # show_playbook_yaml_code(ssh, playbook_sets, username)  # Showing generated playbook
 
         # Update inventory
         sub_inv = generate_sub_inventory(inv_group, target, host_desc, inv_sub_groups)
@@ -282,14 +242,15 @@ def get_ansible_control(target=False):
             file.write(inventory_ini)
 
         close_ssh(ssh, username)
-        text, cat = f'Done: Inventory updated!', 'success'
+        text += ' Inventory updated!'
         flash(text, cat)
         return redirect(url_for('.server', target=target))
     
     else:
         inventory_json = json.loads(get_ansible_inventory(ssh, 'export'))
         ansible_groups = inventory_json['all']['children']
-        print(ansible_groups, type(ansible_groups))
+        close_ssh(ssh, username)
+        # print(ansible_groups, type(ansible_groups))
         
     return render_template(
         'servers/get_ansible_control.html', query=target, data=front_data,
@@ -299,18 +260,16 @@ def get_ansible_control(target=False):
 
 @login_required
 @servers.route('/action_logs/', methods=['GET', 'POST'])
-@servers.route('/action_logs/<int:num_id>', methods=['GET', 'POST'])
-def action_logs(num_id=False):
+@servers.route('/action_logs/<int:limiter>', methods=['GET', 'POST'])
+def action_logs(limiter=100):
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
-    if num_id:
-        print(num_id)
     username = current_user.username
     front_data = {}
     if request.method == 'POST':
         printer(f'Get POST data from: /{request.endpoint}', username)
         show_post_data(request.form.items())
 
-    front_data['action_logs'] = get_action_logs()
+    front_data['action_logs'] = get_action_logs(limiter)
     return render_template(
         'servers/actions_log.html', data=front_data, user=current_user, ver=ver)
