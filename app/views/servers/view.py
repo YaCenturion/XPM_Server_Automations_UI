@@ -109,7 +109,9 @@ def create_vhost(target=False):
         ssh, msg = get_ssh(ansible_host)
         front_data = get_facts(front_data, ssh, target, username)
 
+        print(front_data['php_fpm_versions'])
         php_fpm_lst = get_php_fpm_installed(front_data['php_fpm_versions'])
+        print(php_fpm_lst)
     if request.method == 'POST':
         printer(f'Get POST data from: /{request.endpoint}', username)
         show_post_data(request.form.items())

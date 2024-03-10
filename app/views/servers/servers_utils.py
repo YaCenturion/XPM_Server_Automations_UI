@@ -123,7 +123,7 @@ def get_facts(front_data, ssh, target, username):
             front_data['all_ipv4'] = data_pool[2]
             front_data['ports'] = data_pool[3]
             front_data['mounts'] = data_pool[4]
-            front_data['php_fpm_versions'] = data_pool[4]
+            front_data['php_fpm_versions'] = data_pool[5]
         else:
             status_get_facts = False
             front_data['system'] = False

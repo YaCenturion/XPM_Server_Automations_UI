@@ -270,8 +270,8 @@ def get_php_fpm_installed(php_fpm_versions):
             if 'php' in str(version):
                 for i in ('php', 'fpm', '-', '.'):  # D:php8.0-fpm , RH:php80-php-fpm
                     version = str(version).replace(i, '')
-                    if len(version) == 2:
-                        dot_version = f"{version[0]}.{version[1]}"
-                        php_fpm_lst.append((dot_version, dot_version, version, f'PHP-FPM {dot_version}'))
+                if len(version) == 2:
+                    dot_version = f"{version[0]}.{version[1]}"
+                    php_fpm_lst.append((dot_version, dot_version, version, f'PHP-FPM {dot_version}'))
         return php_fpm_lst
     return False
