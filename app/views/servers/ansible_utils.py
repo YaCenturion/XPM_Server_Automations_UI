@@ -166,7 +166,7 @@ def pb_generate_save_execute_delete(ssh, target, playbook_sets, username):
     playbook_sets['full_filename'] = ssh_save_playbook(ssh, playbook_data, playbook_sets)
     # Add to DB:
     execute_pb = f'{playbooks_lst["base"]}{playbook_sets["filename"]}.yml'
-    playbook_sets['command'] = f'{execute_pb} -i {target},"'
+    playbook_sets['command'] = f'{execute_pb} -i {target},'
     current_task = add_task_to_db(playbook_data, playbook_sets)
     
     # Execute playbook
