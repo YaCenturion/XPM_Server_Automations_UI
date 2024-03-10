@@ -100,16 +100,29 @@ def create_vhost(target=False):
         return redirect(url_for('login'))
     username = current_user.username
     front_data = {}
+    php_fpm_lst = php_versions
+    if target:
+        if not check_ip_address(target):
+            text, cat = f'ERROR in IP-address', 'error'
+            flash(text, cat)
+            return redirect(url_for('.add_vhost'))
+        ssh, msg = get_ssh(ansible_host)
+        front_data = get_facts(front_data, ssh, target, username)
+
+        php_fpm_lst = get_php_fpm_installed(front_data['php_fpm_versions'])
     if request.method == 'POST':
         printer(f'Get POST data from: /{request.endpoint}', username)
         show_post_data(request.form.items())
         
         # Vars from form
         target = str(request.form['ip_address']).strip()
+        if not check_ip_address(target):
+            text, cat = f'ERROR in IP-address', 'error'
+            flash(text, cat)
+            return redirect(url_for('.add_vhost'))
         domain_name = str(request.form['domain_name']).strip().lower()  # .replace('.', '_')
         web_server = str(request.form['web_service']).strip().lower()
         php_ver = str(request.form['php_ver']).strip().lower()
-        # vhost_ports = str(request.form['vhost_ports']).strip().split(',')
         db_user = str(request.form['db_user']).strip().lower().replace('.', '_')
         db_pass = str(request.form['db_pass']).strip()
         
@@ -130,7 +143,6 @@ def create_vhost(target=False):
                     "mysql_pass": db_pass,
                     "selected_php": php_ver,
                     "web_server_name": web_server,
-                    # "vhost_ports": vhost_ports,
                 },
                 'roles': add_new_virtualhost(web_server),
             }
@@ -155,7 +167,7 @@ def create_vhost(target=False):
 
     return render_template(
         'servers/add_new_vhost.html', query=target, data=front_data,
-        php_lst=php_versions, web_service_lst=web_services, user=current_user, ver=ver)
+        php_lst=php_fpm_lst, web_service_lst=web_services, user=current_user, ver=ver)
 
 
 @login_required
