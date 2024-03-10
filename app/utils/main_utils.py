@@ -5,7 +5,7 @@ import pymssql
 import random
 import string
 # import json
-# import yaml
+import yaml
 import socket
 # from datetime import datetime
 from ..models import *
@@ -254,3 +254,10 @@ def clear_table(table_name):
         rows = len(table_name.query.all())
     print(f'Table {table_name} truncated and contains {rows}')
     return True
+
+
+def save_inventory_local(filename_inv, inventory, inventory_ini):
+    with open(f'{filename_inv}_updated.yaml', 'w') as file:
+        yaml.dump(inventory, file, default_flow_style=False)
+    with open(f'{filename_inv}_updated.ini', 'w') as file:
+        file.write(inventory_ini)

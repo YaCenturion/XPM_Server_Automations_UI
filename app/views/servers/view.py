@@ -195,12 +195,11 @@ def get_ansible_control(target=False):
         # Ansible:
         # Get inventory
         inventory_yaml = get_ansible_inventory(ssh, 'yaml')
-        filename_inv = "ansible_inventory"
+        filename_inv = "backups/inventory/ansible_inventory"
         if inventory_yaml:
             current_inventory = yaml.safe_load(inventory_yaml)
 
-            # Save backup Local
-            with open(f'{filename_inv}_backup.yaml', 'w') as file:
+            with open(f'{filename_inv}_backup.yaml', 'w') as file:  # Save backup Local
                 yaml.dump(current_inventory, file, default_flow_style=False)
         else:
             text, cat = f'ERROR when get inventory', 'error'
@@ -212,7 +211,7 @@ def get_ansible_control(target=False):
             'user_id': current_user.id,
             'username': current_user.username,
             'filename': f"{str(int(time.time()))}_injection_{target.lower().replace('.', '_')}",
-            'name': f'Get control under: {target}',
+            'name': f'Get Ansible control under server: {target}',
             'target': target,
             'vars': {
                 "remote_user_login": remote_user_login,
@@ -236,10 +235,8 @@ def get_ansible_control(target=False):
         inventory_ini = '\n'.join(inventory_to_ini(inventory, [])) + '\n'
         deploy_updated_inventory(ssh, inventory_ini, username)
 
-        with open(f'{filename_inv}_updated.yaml', 'w') as file:
-            yaml.dump(inventory, file, default_flow_style=False)
-        with open(f'{filename_inv}_updated.ini', 'w') as file:
-            file.write(inventory_ini)
+        # Local saving inventory
+        save_inventory_local(filename_inv, inventory, inventory_ini)
 
         close_ssh(ssh, username)
         text += ' Inventory updated!'

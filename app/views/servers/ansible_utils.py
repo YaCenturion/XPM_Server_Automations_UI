@@ -171,8 +171,8 @@ def pb_generate_save_execute_delete(ssh, target, playbook_sets, username):
     
     # Execute playbook
     if current_task:
-        # status, ssh_log = exec_ansible_playbook(ssh, playbook_sets['command'], username)
-        status, ssh_log = True, 'Fake Log'
+        status, ssh_log = exec_ansible_playbook(ssh, playbook_sets['command'], username)
+        # status, ssh_log = True, 'Fake Log'  # Only for tests
         current_task.status = status
         current_task.exec_log = ssh_log
         db.session.commit()
