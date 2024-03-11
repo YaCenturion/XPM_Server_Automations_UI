@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import re
 import paramiko
 import pymssql
 import random
@@ -274,4 +275,15 @@ def get_php_fpm_installed(php_fpm_versions):
                     dot_version = f"{version[0]}.{version[1]}"
                     php_fpm_lst.append((dot_version, dot_version, version, f'PHP-FPM {dot_version}'))
         return php_fpm_lst
+    return False
+
+
+def get_php_fpm_path(php_fpm_services):  # D:php8.0-fpm.service  Rh:php81-php-fpm.service
+    def digits_inside(item):
+        return bool(re.search(r'\d', item))
+
+    if len(php_fpm_services) == 1:
+        for row in php_fpm_services:
+            if not digits_inside(row):
+                return True
     return False

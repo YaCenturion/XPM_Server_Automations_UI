@@ -101,6 +101,7 @@ def create_vhost(target=False):
     username = current_user.username
     front_data = {}
     php_fpm_lst = php_versions
+    php_fpm_old_path = False
     if target:
         if not check_ip_address(target):
             text, cat = f'ERROR in IP-address', 'error'
@@ -112,6 +113,7 @@ def create_vhost(target=False):
         php_fpm_lst = get_php_fpm_installed(front_data['php_fpm_versions'])
         if not php_fpm_lst:
             php_fpm_lst = php_versions
+        php_fpm_old_path = get_php_fpm_path(front_data['php_fpm_services'])
 
     if request.method == 'POST':
         printer(f'Get POST data from: /{request.endpoint}', username)
@@ -145,6 +147,7 @@ def create_vhost(target=False):
                     "mysql_user": db_user,
                     "mysql_pass": db_pass,
                     "selected_php": php_ver,
+                    "use_php_fpm_old_path": php_fpm_old_path,
                     "web_server_name": web_server,
                 },
                 'roles': add_new_virtualhost(web_server),

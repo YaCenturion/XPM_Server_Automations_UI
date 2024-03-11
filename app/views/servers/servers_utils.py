@@ -30,12 +30,16 @@ def handler_facts(log):
             unit = [name[0], name[1], '', None]
             packages_facts[name[2]].append(unit)
 
-    ips_facts = all_facts['msg'][2]
-    ports_facts = all_facts['msg'][3]
-    mounts_facts = all_facts['msg'][4]
-    php_fpm_facts = all_facts['msg'][5]
-
-    return True, [main_facts, packages_facts, ips_facts, ports_facts, mounts_facts, php_fpm_facts]
+    data = [
+        main_facts,
+        packages_facts,
+        all_facts['msg'][2],
+        all_facts['msg'][3],
+        all_facts['msg'][4],
+        all_facts['msg'][5],
+        all_facts['msg'][6],
+    ]
+    return True, data
 
 
 def get_packages_changes(form_data):
@@ -124,6 +128,7 @@ def get_facts(front_data, ssh, target, username):
             front_data['ports'] = data_pool[3]
             front_data['mounts'] = data_pool[4]
             front_data['php_fpm_versions'] = data_pool[5]
+            front_data['php_fpm_services'] = data_pool[6]
         else:
             status_get_facts = False
             front_data['system'] = False
@@ -132,6 +137,7 @@ def get_facts(front_data, ssh, target, username):
             front_data['ports'] = False
             front_data['mounts'] = False
             front_data['php_fpm_versions'] = False
+            front_data['php_fpm_services'] = False
     else:
         text, cat = f'Error SSH to server: {target}!', 'error'
         flash(text, cat)
