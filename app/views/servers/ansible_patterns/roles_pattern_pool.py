@@ -18,6 +18,8 @@ roles = {
         'directory': {'role': 'create_user_directory'},  # absent|directory
         'ssl_directory': {'role': 'create_ssl_directory'},  # absent|directory
         'install_mysql_module': {'role': 'install_mysql_module'},
+        
+        'packages_action': {'role': 'packages_action'},
     },
     'db': {
         'db': {'role': 'create_db'},  # absent|present
@@ -31,6 +33,11 @@ roles = {
         'ftp_user': {'role': 'create_ftp_user'},
         'restart_apache': {'role': 'restart_apache'},
         'restart_nginx': {'role': 'restart_nginx'},
+        
+        'apache_cleaner': {'role': 'apache_cleaner'},
+        'apache_default': {'role': 'apache_cleaner'},
+        'nginx_cleaner': {'role': 'nginx_cleaner'},
+        'nginx_default': {'role': 'nginx_cleaner'},
     },
 }
 
@@ -54,3 +61,12 @@ def add_new_virtualhost(web_server):
 
 def injection_ansible_control():
     return [(roles['system']['injection_ansible_control'],),]
+
+
+def packages_action(additional_role):
+    if additional_role:
+        return [
+            (roles['system']['packages_action'],),
+            additional_role,
+                ]
+    return [(roles['system']['packages_action'],),]

@@ -102,7 +102,7 @@ def generate_sub_inventory(inv_group, host_ip_address, host_desc, inv_suffix_gro
         sub_inventory["all"]["children"][inv_group]["children"][group_name] = {
             "hosts": {
                 host_ip_address: {
-                    "name": host_desc,
+                    "name": host_desc + suffix,
                     "tag": suffix.replace("_", ""),
                 }
             }

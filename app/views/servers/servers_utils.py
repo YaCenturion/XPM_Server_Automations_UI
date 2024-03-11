@@ -1,6 +1,8 @@
 import json
 from flask import redirect, url_for, flash
 from app.utils.main_utils import *
+from app.views.servers.ansible_patterns.roles_pattern_pool import packages_action, roles
+from app.views.servers.ansible_utils import pb_generate_save_execute_delete
 from config import linux_packages_dict, playbooks_lst
 
 
@@ -55,62 +57,70 @@ def get_packages_changes(form_data):
     return update_pool
 
 
-def add_packages_action(packages, action, ssh, target, username):
-    logs = ''
+def add_packages_action(packages, action):
+    additional_role = False
     for package in packages:
         if package in ('apache2', 'httpd'):
             if action == 'absent':
-                playbook = playbooks_lst["apache_cleaner"]
+                additional_role = roles['web']["apache_cleaner"]
             elif action == 'latest':
-                playbook = playbooks_lst["apache_default"]
+                additional_role = roles['web']["apache_default"]
             else:
-                playbook = False
+                additional_role = False
         elif package == 'nginx':
             if action == 'absent':
-                playbook = playbooks_lst["nginx_cleaner"]
+                additional_role = roles['web']["nginx_cleaner"]
             elif action == 'latest':
-                playbook = playbooks_lst["nginx_default"]
+                additional_role = roles['web']["nginx_default"]
             else:
-                playbook = False
-        else:
-            playbook = False
+                additional_role = False
 
-        if playbook:
-            command = f'{playbooks_lst["base"]}{playbook} -i {target}, -e "target={target}"'
-            status_install, ssh_log_install = exec_ansible_playbook(ssh, command, username)
-            logs += ssh_log_install
-            if not status_install:
-                return status_install, logs
-    return True, logs
+    return additional_role
 
 
 def update_server_packages(front_data, update_pool, ssh, target, username):
+    def packages_action_playbook(host, state, pkg_pool, user, addons=False):
+        pb_sets = {
+            'username': user,
+            'filename': f"{str(int(time.time()))}_{host}",
+            'name': f'Update packages for: {host}',
+            'target': host,
+            'vars': {
+                "packages": pkg_pool,
+                "action": state,
+            },
+            'roles': packages_action(addons),
+        }
+        return pb_sets
+    
     full_log = ''
     front_data['update_delete'] = [True, 'Not used']
     front_data['update_install'] = [True, 'Not used']
-    first_block = f'{playbooks_lst["base"]}{playbooks_lst["action"]} -i {target}, -e "target={target} packages='
+
     if update_pool['delete']:
+        action = "absent"
         pkg_names_pool = ','.join(update_pool['delete'])
-        command = first_block + f'{pkg_names_pool} action=absent"'
-        status_remove, ssh_log_remove = exec_ansible_playbook(ssh, command, username)
-        full_log += ssh_log_remove
-        status_addons, ssh_log_addons = add_packages_action(update_pool['delete'], 'absent', ssh, target, username)
-        full_log += ssh_log_addons
+        additional_role = add_packages_action(update_pool['delete'], action)
+        playbook_sets = packages_action_playbook(target, action, pkg_names_pool, username, additional_role)
+        text, cat, ssh_log = pb_generate_save_execute_delete(ssh, target, playbook_sets, username)
+        full_log += ssh_log
+        
         status = True
-        if not status_remove or not status_addons:
+        if cat == 'error':
             status = False
-        front_data['update_delete'] = [status, ssh_log_remove+ssh_log_addons]
+        front_data['update_delete'] = [status, ssh_log]
     if update_pool['install']:
+        action = "latest"
         pkg_names_pool = ','.join(update_pool['install'])
-        command = first_block + f'{pkg_names_pool} action=latest"'
-        status_install, ssh_log_install = exec_ansible_playbook(ssh, command, username)
-        full_log += ssh_log_install
-        status_addons, ssh_log_addons = add_packages_action(update_pool['install'], 'latest', ssh, target, username)
-        full_log += ssh_log_addons
+        additional_role = add_packages_action(update_pool['install'], action)
+        playbook_sets = packages_action_playbook(target, action, pkg_names_pool, username, additional_role)
+        text, cat, ssh_log = pb_generate_save_execute_delete(ssh, target, playbook_sets, username)
+        full_log += ssh_log
+
         status = True
-        if not status_install or not status_addons:
+        if cat == 'error':
             status = False
-        front_data['update_install'] = [status, ssh_log_install+ssh_log_addons]
+        front_data['update_install'] = [status, ssh_log]
     return front_data, full_log
 
 
