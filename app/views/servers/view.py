@@ -249,7 +249,7 @@ def get_ansible_control(target=False):
         sub_inv = generate_sub_inventory(inv_group, target, host_desc, inv_sub_groups)
         inventory = merge_inventory(current_inventory, sub_inv)
         
-        # Convert to INI and deploy
+        # Convert to INI and deploy TODO yaml
         inventory_ini = '\n'.join(inventory_to_ini(inventory, [])) + '\n'
         deploy_updated_inventory(ssh, inventory_ini, username)
 
