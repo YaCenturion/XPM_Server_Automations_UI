@@ -132,7 +132,7 @@ def get_ansible_inventory(ssh, output):
 
 def deploy_updated_inventory(ssh, inventory_dict, inventory_ini, ui_user):
     # Backup inventory_ui
-    command = 'cp -f /etc/ansible/hosts/inventory_ui.* /etc/ansible/hosts/backups/'
+    command = 'cp -f /etc/ansible/hosts/inventory_ui.* /etc/ansible/hosts-backups/'
     exec_ssh_command(ssh, command, ui_user)
 
     # Save updated inventory_ui
