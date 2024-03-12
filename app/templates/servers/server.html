@@ -45,16 +45,17 @@
                             {% if data['system'] or data['packages'] %}
                                 <div class="row justify-content-center p-2">
                                     {% if data['system'] %}
-                                    <div class="col-5">
+                                    <div class="col-4">
                                         <div class="card">
                                             <div class="card-header card-header-block">
                                                 <strong>Summary:</strong> <i class="fa-brands fa-{{ data['system']['family']|lower }} text-danger fa-bg-white p-1"></i> {{ data['system']['family'] }} family
                                             </div>
                                             <div class="card-body">
-                                                <span class="mb-3 px-2 py-1 fw-semibold text-secondary-emphasis bg-secondary-subtle border border-secondary-subtle rounded-2 fs-5"><i class="fa-brands fa-{{ data['system']['dist']|lower }}"></i> {{ data['system']['dist'] }} v.{{ data['system']['ver'] }}</span> {{ data['system']['kernel'] }}
+                                                <span class="mb-3 px-2 py-1 fw-semibold text-secondary-emphasis bg-secondary-subtle border border-secondary-subtle rounded-2 fs-5"><i class="fa-brands fa-{{ data['system']['dist']|lower }}"></i> {{ data['system']['dist'] }} v.{{ data['system']['ver'] }}</span>
 {#                                                <p class="card-text">{{ data['system']['kernel'] }}</p>#}
                                             </div>
                                             <ul class="list-group list-group-flush">
+                                                <li class="list-group-item">Kernel: {{ data['system']['kernel'] }}</li>
                                                 {% if data['all_ipv4'] %}
                                                     <li class="list-group-item">Uses External IP:
                                                     {% if data['v_ip'] %}
@@ -95,7 +96,7 @@
                                     {% endif %}
 
                                     {% if data['ports'] %}
-                                    <div class="col-7">
+                                    <div class="col-8">
                                         <div class="card">
                                             <div class="card-header card-header-block">
                                                 <strong>Main Ports Listeners:</strong>
@@ -105,11 +106,14 @@
                                                     <thead>
                                                         <tr>
                                                             <th scope="col" class="align-middle text-center">Services/ports</th>
-                                                            <th scope="col" class="align-middle text-center">...:80</th>
-                                                            <th scope="col" class="align-middle text-center">...:443</th>
-                                                            <th scope="col" class="align-middle text-center">...:21</th>
-                                                            <th scope="col" class="align-middle text-center">...:3306</th>
-                                                            <th scope="col" class="align-middle text-center">...:8011</th>
+                                                            <th scope="col" class="align-middle text-center">:80</th>
+                                                            <th scope="col" class="align-middle text-center">:443</th>
+                                                            <th scope="col" class="align-middle text-center">:21</th>
+                                                            <th scope="col" class="align-middle text-center">:3306</th>
+                                                            <th scope="col" class="align-middle text-center">:8011</th>
+                                                            <th scope="col" class="align-middle text-center">:8443</th>
+                                                            <th scope="col" class="align-middle text-center">:11211</th>
+                                                            <th scope="col" class="align-middle text-center">:6081</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -122,6 +126,9 @@
                                                             <td class="align-middle text-center">{% if port['port'] == 21 %}<i class="fa-solid fa-square-check text-success"></i>{% endif %}</td>
                                                             <td class="align-middle text-center">{% if port['port'] == 3306 %}<i class="fa-solid fa-square-check text-success"></i>{% endif %}</td>
                                                             <td class="align-middle text-center">{% if port['port'] == 8011 %}<i class="fa-solid fa-square-check text-success"></i>{% endif %}</td>
+                                                            <td class="align-middle text-center">{% if port['port'] == 8443 %}<i class="fa-solid fa-square-check text-success"></i>{% endif %}</td>
+                                                            <td class="align-middle text-center">{% if port['port'] == 11211 %}<i class="fa-solid fa-square-check text-success"></i>{% endif %}</td>
+                                                            <td class="align-middle text-center">{% if port['port'] == 6081 %}<i class="fa-solid fa-square-check text-success"></i>{% endif %}</td>
                                                         </tr>
                                                         {% endif %}
                                                     {% endfor %}
