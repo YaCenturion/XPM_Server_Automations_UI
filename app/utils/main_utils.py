@@ -130,18 +130,18 @@ def get_ansible_inventory(ssh, output):
     return result
 
 
-def deploy_updated_inventory(ssh, inventory, ui_user):
+def deploy_updated_inventory(ssh, inventory_dict, inventory_ini, ui_user):
     # Backup inventory_ui
-    command = 'cp -f /etc/ansible/prod/inv/inventory_ui.* /etc/ansible/prod/inv/backup/'
+    command = 'cp -f /etc/ansible/hosts/inventory_ui.* /etc/ansible/hosts/backups/'
     exec_ssh_command(ssh, command, ui_user)
 
     # Save updated inventory_ui
-    file = '/etc/ansible/prod/inv/inventory_ui'
+    file = '/etc/ansible/hosts/inventory_ui'
     with ssh.open_sftp() as sftp:
-        # with sftp.file(f'{file}.yaml', 'w') as f_yaml:
-        #     yaml.dump(inventory, f_yaml, default_flow_style=False)
-        with sftp.file(f'{file}.ini', 'w') as f_ini:
-            f_ini.write(inventory)
+        with sftp.file(f'{file}.yaml', 'w') as f_yaml:
+            yaml.dump(inventory_dict, f_yaml, default_flow_style=False)
+        with sftp.file(f'not_in_use_copy.ini', 'w') as f_ini:
+            f_ini.write(inventory_ini)
 
 
 def exec_ansible_playbook(ssh, command, ui_user):

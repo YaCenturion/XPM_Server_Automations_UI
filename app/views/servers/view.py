@@ -258,9 +258,11 @@ def get_ansible_control(target=False):
         sub_inv = generate_sub_inventory(inv_group, target, host_desc, inv_sub_groups)
         inventory = merge_inventory(current_inventory, sub_inv)
         
-        # Convert to INI and deploy TODO yaml
+        # Convert to INI
         inventory_ini = '\n'.join(inventory_to_ini(inventory, [])) + '\n'
-        deploy_updated_inventory(ssh, inventory_ini, ui_usr['name'])
+
+        # BackUp & Deploy inventory
+        deploy_updated_inventory(ssh, inventory, inventory_ini, ui_usr['name'])
 
         # Local saving inventory
         save_inventory_local(filename_inv, inventory, inventory_ini)
