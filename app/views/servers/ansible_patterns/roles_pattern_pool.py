@@ -67,6 +67,6 @@ def packages_action(additional_role):
     if additional_role:
         return [
             (roles['system']['packages_action'],),
-            additional_role,
+            (additional_role,),
                 ]
     return [(roles['system']['packages_action'],),]

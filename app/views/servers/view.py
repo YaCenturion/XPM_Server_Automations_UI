@@ -43,11 +43,14 @@ def server(target=False):
     """ Server details and actions """
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
-    username = current_user.username
+    ui_usr = {
+        'name': current_user.username,
+        'id': current_user.id,
+    }
     front_data = {}
     # full_log = ""
     if request.method == 'POST':
-        printer(f'Get POST data from: /{request.endpoint}', username)
+        printer(f'Get POST data from: /{request.endpoint}', ui_usr['name'])
         show_post_data(request.form.items())
         target = str(request.form['ip_address']).strip()
         if not check_ip_address(target):
@@ -66,9 +69,9 @@ def server(target=False):
             # Ansible: Update packages
             if 'update' in request.form:
                 if request.form['update'] == 'true':
-                    printer(f'Update tyt')
+                    printer(f'User starting to update packages')
                     update_pool = get_packages_changes(request.form.items())
-                    front_data, update_logs = update_server_packages(front_data, update_pool, ssh, target, username)
+                    front_data, update_logs = update_server_packages(front_data, update_pool, ssh, target, ui_usr)
                     full_log += update_logs + "=" * 30 + "\n"
                     if not front_data['update_delete'][0] or not front_data['update_install'][0]:
                         text, cat = 'Warning! Read LOG carefully!', 'error'
@@ -78,8 +81,8 @@ def server(target=False):
                     flash(text, cat)
                     
             # Ansible: Get facts
-            front_data = get_facts(front_data, ssh, target, username)
-            close_ssh(ssh, username)
+            front_data = get_facts(front_data, ssh, target, ui_usr['name'])
+            close_ssh(ssh, ui_usr['name'])
         else:
             front_data['get_facts'] = [False, msg]
 
@@ -98,7 +101,10 @@ def server(target=False):
 def create_vhost(target=False):
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
-    username = current_user.username
+    ui_usr = {
+        'name': current_user.username,
+        'id': current_user.id,
+    }
     front_data = {}
     php_fpm_lst = php_versions
     php_fpm_old_path = False
@@ -108,7 +114,7 @@ def create_vhost(target=False):
             flash(text, cat)
             return redirect(url_for('.add_vhost'))
         ssh, msg = get_ssh(ansible_host)
-        front_data = get_facts(front_data, ssh, target, username)
+        front_data = get_facts(front_data, ssh, target, ui_usr['name'])
 
         php_fpm_lst = get_php_fpm_installed(front_data['php_fpm_versions'])
         if not php_fpm_lst:
@@ -116,7 +122,7 @@ def create_vhost(target=False):
         php_fpm_old_path = get_php_fpm_path(front_data['php_fpm_services'])
 
     if request.method == 'POST':
-        printer(f'Get POST data from: /{request.endpoint}', username)
+        printer(f'Get POST data from: /{request.endpoint}', ui_usr['name'])
         show_post_data(request.form.items())
         
         # Vars from form
@@ -153,14 +159,14 @@ def create_vhost(target=False):
                 'roles': add_new_virtualhost(web_server),
             }
             
-            text, cat, log = pb_generate_save_execute_delete(ssh, target, playbook_sets, username)
+            text, cat, log = pb_generate_save_execute_delete(ssh, target, playbook_sets, ui_usr['name'])
             flash(text, cat)
             if cat in ('error', 'warning'):
                 return redirect(url_for('.server'))
 
             # show_playbook_yaml_code(ssh, playbook_sets, username)  # Showing generated playbook
 
-            close_ssh(ssh, username)
+            close_ssh(ssh, ui_usr['name'])
             flash(text, cat)
             return redirect(url_for(f'.server', target=target))
 
@@ -182,7 +188,10 @@ def create_vhost(target=False):
 def get_ansible_control(target=False):
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
-    username = current_user.username
+    ui_usr = {
+        'name': current_user.username,
+        'id': current_user.id,
+    }
     front_data = {}
     ssh, msg = get_ssh(ansible_host)
     if not ssh:
@@ -191,7 +200,7 @@ def get_ansible_control(target=False):
         return redirect(url_for('.server'))
     
     if request.method == 'POST':
-        printer(f'Get POST data from: /{request.endpoint}', username)
+        printer(f'Get POST data from: /{request.endpoint}', ui_usr['name'])
         show_post_data(request.form.items())
         
         # Vars from form
@@ -238,7 +247,7 @@ def get_ansible_control(target=False):
             'roles': injection_ansible_control(),
         }
         
-        text, cat, log = pb_generate_save_execute_delete(ssh, target, playbook_sets, username)
+        text, cat, log = pb_generate_save_execute_delete(ssh, target, playbook_sets, ui_usr['name'])
         flash(text, cat)
         if cat in ('error', 'warning'):
             return redirect(url_for('.server'))
@@ -251,12 +260,12 @@ def get_ansible_control(target=False):
         
         # Convert to INI and deploy TODO yaml
         inventory_ini = '\n'.join(inventory_to_ini(inventory, [])) + '\n'
-        deploy_updated_inventory(ssh, inventory_ini, username)
+        deploy_updated_inventory(ssh, inventory_ini, ui_usr['name'])
 
         # Local saving inventory
         save_inventory_local(filename_inv, inventory, inventory_ini)
 
-        close_ssh(ssh, username)
+        close_ssh(ssh, ui_usr['name'])
         text += ' Inventory updated!'
         flash(text, cat)
         return redirect(url_for('.server', target=target))
@@ -264,7 +273,7 @@ def get_ansible_control(target=False):
     else:
         inventory_json = json.loads(get_ansible_inventory(ssh, 'export'))
         ansible_groups = inventory_json['all']['children']
-        close_ssh(ssh, username)
+        close_ssh(ssh, ui_usr['name'])
         # print(ansible_groups, type(ansible_groups))
         
     return render_template(
@@ -279,10 +288,13 @@ def get_ansible_control(target=False):
 def action_logs(limiter=100):
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
-    username = current_user.username
+    ui_usr = {
+        'name': current_user.username,
+        'id': current_user.id,
+    }
     front_data = {}
     if request.method == 'POST':
-        printer(f'Get POST data from: /{request.endpoint}', username)
+        printer(f'Get POST data from: /{request.endpoint}', ui_usr['name'])
         show_post_data(request.form.items())
 
     front_data['action_logs'] = get_action_logs(limiter)

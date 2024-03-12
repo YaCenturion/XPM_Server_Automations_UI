@@ -31,6 +31,7 @@ def generate_playbook(playbook_data, playbook_sets):
     if 'vars' in playbook_sets:
         playbook_data[0]['vars'] = playbook_sets['vars']
 
+    print('*-*' * 40 + '\n', playbook_sets['roles'])
     for role_set in playbook_sets['roles']:
         role_vars = None
         if len(role_set) > 1:

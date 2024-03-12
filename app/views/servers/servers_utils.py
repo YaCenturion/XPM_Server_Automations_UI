@@ -7,7 +7,7 @@ from config import linux_packages_dict, playbooks_lst
 
 
 def handler_facts(log):
-    facts_str = log.split("[Display RESULT]")[1].split("=> ")[1].split("PLAY RECAP")[0].strip()
+    facts_str = log.split("Display RESULT")[1].split("=> ")[1].split("PLAY RECAP")[0].strip()
     all_facts = json.loads(facts_str)
     main_facts = all_facts['msg'][0]
 
@@ -78,13 +78,14 @@ def add_packages_action(packages, action):
     return additional_role
 
 
-def update_server_packages(front_data, update_pool, ssh, target, username):
-    def packages_action_playbook(host, state, pkg_pool, user, addons=False):
+def update_server_packages(front_data, update_pool, ssh, target, ui_usr):
+    def packages_action_playbook(state, pkg_pool, addons=False):
         pb_sets = {
-            'username': user,
-            'filename': f"{str(int(time.time()))}_{host}",
-            'name': f'Update packages for: {host}',
-            'target': host,
+            'user_id': ui_usr['id'],
+            'username': ui_usr['name'],
+            'filename': f"{str(int(time.time()))}_{target}",
+            'name': f'Update packages for: {target}',
+            'target': target,
             'vars': {
                 "packages": pkg_pool,
                 "action": state,
@@ -101,8 +102,8 @@ def update_server_packages(front_data, update_pool, ssh, target, username):
         action = "absent"
         pkg_names_pool = ','.join(update_pool['delete'])
         additional_role = add_packages_action(update_pool['delete'], action)
-        playbook_sets = packages_action_playbook(target, action, pkg_names_pool, username, additional_role)
-        text, cat, ssh_log = pb_generate_save_execute_delete(ssh, target, playbook_sets, username)
+        playbook_sets = packages_action_playbook(action, pkg_names_pool, additional_role)
+        text, cat, ssh_log = pb_generate_save_execute_delete(ssh, target, playbook_sets, ui_usr['name'])
         full_log += ssh_log
         
         status = True
@@ -113,8 +114,8 @@ def update_server_packages(front_data, update_pool, ssh, target, username):
         action = "latest"
         pkg_names_pool = ','.join(update_pool['install'])
         additional_role = add_packages_action(update_pool['install'], action)
-        playbook_sets = packages_action_playbook(target, action, pkg_names_pool, username, additional_role)
-        text, cat, ssh_log = pb_generate_save_execute_delete(ssh, target, playbook_sets, username)
+        playbook_sets = packages_action_playbook(action, pkg_names_pool, additional_role)
+        text, cat, ssh_log = pb_generate_save_execute_delete(ssh, target, playbook_sets, ui_usr['name'])
         full_log += ssh_log
 
         status = True
