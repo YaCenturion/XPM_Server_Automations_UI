@@ -18,7 +18,7 @@
 {% block main_content %}
                     <!-- Insert here -->
                     <div class="container">
-                        <div class="mx-auto text-center">
+                        <div class="mx-auto text-center p-3">
                             <h2>{{ title_text }}</h2>
                         </div>
                         {% if not data %}
@@ -38,51 +38,29 @@
                                         </div>
                                         <div class="row justify-content-center p-2">
                                             <div class="input-group text-start">
-                                                {% if not query %}{{ fields.input('Host IP:', 'host_ip_address', '', "internal ip") }}{% endif %}
-                                                {{ fields.input('Host name:', 'host_desc', '', "host description") }}
+                                                {% if not query %}{{ fields.input('IP adr:', 'host_ip_address', '', "internal ip") }}{% endif %}
+                                                {{ fields.input('Port:', 'host_port', '22', "if non standard", min_width="") }}
+                                                {{ fields.input('Name:', 'host_desc', '', "host description", min_width="") }}
                                             </div>
                                         </div>
                                         <div class="row justify-content-center p-2">
-                                            <div class="col-4">
-                                                Choose subgroup:
+                                            <div class="input-group">
+                                                <span class="input-group-text">Host mode:</span>
+                                                {{ fields.group_radio('Prod', '_prod', 'host_mode') }}
+                                                {{ fields.group_radio('Stg', '_stg', 'host_mode') }}
+                                                {{ fields.group_radio('Dev', '_dev', 'host_mode') }}
+{#                                                <span class="input-group-text" id="addon-wrapping"></span>#}
                                             </div>
-                                            <div class="col-2">
-                                                <ul class="list-group">
-                                                    <li class="list-group-item">
-                                                        {{ fields.checkbox('web', '_web', 'sub_group_web') }}
-{#                                                        <input class="form-check-input me-1" type="checkbox" value="_web" id="sub_group_web" name="sub_group_web">#}
-{#                                                        <label class="form-check-label stretched-link" for="sub_group_web">web</label>#}
-                                                    </li>
-                                                    <li class="list-group-item">
-                                                        {{ fields.checkbox('db', '_db', 'sub_group_db') }}
-{#                                                        <input class="form-check-input me-1" type="checkbox" value="_db" id="sub_group_db" name="sub_group_db">#}
-{#                                                        <label class="form-check-label stretched-link" for="sub_group_db">db</label>#}
-                                                    </li>
-                                                    <li class="list-group-item">
-                                                        {{ fields.checkbox('cpanel', '_cpanel', 'sub_group_cpanel') }}
-{#                                                        <input class="form-check-input me-1" type="checkbox" value="_cpanel" id="sub_group_cpanel" name="sub_group_cpanel">#}
-{#                                                        <label class="form-check-label stretched-link" for="sub_group_cpanel">cpanel</label>#}
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <div class="col-2">
-                                                <ul class="list-group">
-                                                    <li class="list-group-item">
-                                                        {{ fields.checkbox('prod', '_prod', 'sub_group_prod') }}
-{#                                                        <input class="form-check-input me-1" type="checkbox" value="_prod" id="sub_group_prod" name="sub_group_prod">#}
-{#                                                        <label class="form-check-label stretched-link" for="sub_group_prod">prod</label>#}
-                                                    </li>
-                                                    <li class="list-group-item">
-                                                        {{ fields.checkbox('stg', '_stg', 'sub_group_stg') }}
-{#                                                        <input class="form-check-input me-1" type="checkbox" value="_stg" id="sub_group_stg" name="sub_group_stg">#}
-{#                                                        <label class="form-check-label stretched-link" for="sub_group_stg">stg</label>#}
-                                                    </li>
-                                                    <li class="list-group-item">
-                                                        {{ fields.checkbox('dev', '_dev', 'sub_group_dev') }}
-{#                                                        <input class="form-check-input me-1" type="checkbox" value="_dev" id="sub_group_dev" name="sub_group_dev">#}
-{#                                                        <label class="form-check-label stretched-link" for="sub_group_dev">dev</label>#}
-                                                    </li>
-                                                </ul>
+                                        </div>
+                                        <div class="row justify-content-center p-2">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Host class:</span>
+                                                {{ fields.group_radio('Web', '_web', 'host_class') }}
+                                                {{ fields.group_radio('DB', '_db', 'host_class') }}
+                                                {{ fields.group_radio('CPanel', '_cpanel', 'host_class') }}
+                                                {{ fields.group_radio('App', '_app', 'host_class') }}
+                                                {{ fields.group_radio('Utils', '_util', 'host_class') }}
+{#                                                <span class="input-group-text" id="addon-wrapping"></span>#}
                                             </div>
                                         </div>
                                         <div class="bd-callout bd-callout-warning text-start code-tips" hidden="">
