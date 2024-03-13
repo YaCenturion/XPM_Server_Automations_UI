@@ -211,6 +211,7 @@ def get_ansible_control(target=False):
         remote_user_pass = str(request.form['remote_user_login']).strip()
         inv_group = str(request.form['inv_group']).strip().replace('-', '_').replace(' ', '_')
         inv_sub_groups = []
+        # TODO Here need fix
         sub_group_keys = [key for key in request.form.keys() if key.startswith('sub_group_')]
         for key in sub_group_keys:
             value = request.form[key]
