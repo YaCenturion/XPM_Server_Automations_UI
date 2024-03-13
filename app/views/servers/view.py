@@ -202,23 +202,23 @@ def get_ansible_control(target=False):
         show_post_data(request.form.items())
         
         # Vars from form
-        target, target_port = target_filter(str(request.form['ip_address']).strip().replace(',', '.'))
-        if target_port == 'error':
-            flash(target, target_port)
+        def clean_input(data):
+            return str(data).strip().replace('-', '_').replace(' ', '_')
+        
+        target, target_port, check = target_filter(request.form['ip_address'])
+        host_port = str(request.form['host_port'])
+        if check:
+            flash(check[0], check[1])
             return redirect(url_for('.get_ansible_control'))
-        host_desc = str(request.form['host_desc']).strip().replace('-', '_').replace(' ', '_')
+        host_desc = clean_input(request.form['host_desc'])
         remote_user_login = str(request.form['remote_user_login']).strip()
         remote_user_pass = str(request.form['remote_user_login']).strip()
-        inv_group = str(request.form['inv_group']).strip().replace('-', '_').replace(' ', '_')
-        inv_sub_groups = []
-        # TODO Here need fix
-        sub_group_keys = [key for key in request.form.keys() if key.startswith('sub_group_')]
-        for key in sub_group_keys:
-            value = request.form[key]
-            inv_sub_groups.append(value)
-
+        inv_group = clean_input(request.form['inv_group'])
+        host_mode = clean_input(request.form['host_mode'])
+        host_class = clean_input(request.form['host_class'])
+        
         # Ansible:
-        # Get inventory
+        # Get current inventory
         inventory_yaml = get_ansible_inventory(ssh, 'yaml')
         filename_inv = "backups/inventory/ansible_inventory"
         if inventory_yaml:
@@ -253,7 +253,7 @@ def get_ansible_control(target=False):
         # show_playbook_yaml_code(ssh, playbook_sets, username)  # Showing generated playbook
 
         # Update inventory
-        sub_inv = generate_sub_inventory(inv_group, target, host_desc, inv_sub_groups)
+        sub_inv = generate_sub_inventory(inv_group, target, host_port, host_desc, host_mode, host_class)
         inventory = merge_inventory(current_inventory, sub_inv)
         
         # Convert to INI

@@ -86,30 +86,37 @@ def add_task_to_db(pb_data, pb_sets):
     return task
 
 
-def generate_sub_inventory(inv_group, host_ip_address, host_desc, inv_suffix_groups):
+def generate_sub_inventory(inv_group, host_ip_address, host_port, host_desc, host_mode, host_class):
     # Add children group
+    group_mode_name = f"{inv_group}{host_mode}"
     sub_inventory = {
         "all": {
             'children': {
                 inv_group: {
-                    'children': {}
+                    'children': {
+                        group_mode_name: {
+                            "hosts": {},
+                            "vars": {
+                                'host_mode': str(host_mode).replace("_", "").upper()
+                            }
+                        }
+                    },
                 }
             }
         }
     }
     
-    # Add sub inventory groups
-    for suffix in inv_suffix_groups:
-        group_name = f"{inv_group}{suffix}"
-        sub_inventory["all"]["children"][inv_group]["children"][group_name] = {
-            "hosts": {
-                host_ip_address: {
-                    "name": host_desc + suffix,
-                    "tag": suffix.replace("_", ""),
-                }
-            }
+    # Add host into group
+    host_record = {
+        host_ip_address: {
+            "host_desc": host_desc,
+            "host_class": str(host_class).replace("_", "").upper(),
         }
+    }
+    if host_port != '22':  # Add non-standard port
+        host_record[host_ip_address]["ansible_port"] = int(host_port)
     
+    sub_inventory["all"]["children"][inv_group]["children"][group_mode_name]["hosts"] = host_record
     return sub_inventory
 
 
@@ -165,6 +172,8 @@ def check_ip_address(ip_adr):
 
 
 def target_filter(ip_adr):
+    check = False
+    ip_adr = str(ip_adr).strip().replace(',', '.')
     port = 22
     if ip_adr and ':' in ip_adr:
         port = str(ip_adr.split(':')[1] if (ip_adr.split(':'))[1].isdigit() else 22)
@@ -172,9 +181,9 @@ def target_filter(ip_adr):
 
     if not check_ip_address(ip_adr):
         text, cat = f'<strong>ERROR</strong> in IP-address: <strong><i>{ip_adr}</i></strong>', 'error'
-        return text, cat
+        check = text, cat
 
-    return ip_adr, str(port)
+    return ip_adr, str(port), check
 
 
 def pb_generate_save_execute_delete(ssh, target, playbook_sets, username):
