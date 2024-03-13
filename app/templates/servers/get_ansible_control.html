@@ -38,14 +38,14 @@
                                         </div>
                                         <div class="row justify-content-center p-2">
                                             <div class="input-group text-start">
-                                                {% if not query %}{{ fields.input('IP adr:', 'host_ip_address', '', "internal ip") }}{% endif %}
+                                                {% if not query %}{{ fields.input('IP adr:', 'host_ip_address', '', "internal ip", min_width="") }}{% endif %}
                                                 {{ fields.input('Port:', 'host_port', '22', "if non standard", min_width="") }}
                                                 {{ fields.input('Name:', 'host_desc', '', "host description", min_width="") }}
                                             </div>
                                         </div>
                                         <div class="row justify-content-center p-2">
                                             <div class="input-group">
-                                                <span class="input-group-text">Host mode:</span>
+                                                <span class="input-group-text">Mode:</span>
                                                 {{ fields.group_radio('Prod', '_prod', 'host_mode') }}
                                                 {{ fields.group_radio('Stg', '_stg', 'host_mode') }}
                                                 {{ fields.group_radio('Dev', '_dev', 'host_mode') }}
@@ -54,7 +54,7 @@
                                         </div>
                                         <div class="row justify-content-center p-2">
                                             <div class="input-group">
-                                                <span class="input-group-text">Host class:</span>
+                                                <span class="input-group-text">Class:</span>
                                                 {{ fields.group_radio('Web', '_web', 'host_class') }}
                                                 {{ fields.group_radio('DB', '_db', 'host_class') }}
                                                 {{ fields.group_radio('CPanel', '_cpanel', 'host_class') }}
