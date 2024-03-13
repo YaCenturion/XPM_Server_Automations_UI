@@ -1,3 +1,4 @@
+from flask import redirect, flash, url_for
 import yaml
 
 from app.utils.main_utils import save_in_db, exec_ansible_playbook, exec_ssh_command
@@ -148,18 +149,32 @@ def inventory_to_ini(data, inventory_ini):
 
 
 def check_ip_address(ip_adr):
+    ip_adr = str(ip_adr)
     if ip_adr.count('.') != 3 or ip_adr.count(' ') != 0:
         return False
-    if len(str(ip_adr).split('.')) != 4:
+    if len(ip_adr.split('.')) != 4:
         return False
     else:
-        tmp = str(ip_adr).split('.')
+        tmp = ip_adr.split('.')
         for i in tmp:
             if len(i) > 3 or not i.isdigit():
                 return False
             if int(i) < 0 or int(i) > 255:
                 return False
     return True
+
+
+def target_filter(ip_adr):
+    port = 22
+    if ip_adr and ':' in ip_adr:
+        port = str(ip_adr.split(':')[1] if (ip_adr.split(':'))[1].isdigit() else 22)
+        ip_adr = ip_adr.split(':')[0]
+
+    if not check_ip_address(ip_adr):
+        text, cat = f'<strong>ERROR</strong> in IP-address: <strong><i>{ip_adr}</i></strong>', 'error'
+        return text, cat
+
+    return ip_adr, str(port)
 
 
 def pb_generate_save_execute_delete(ssh, target, playbook_sets, username):

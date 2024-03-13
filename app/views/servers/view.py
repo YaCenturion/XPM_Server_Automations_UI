@@ -52,10 +52,9 @@ def server(target=False):
     if request.method == 'POST':
         printer(f'Get POST data from: /{request.endpoint}', ui_usr['name'])
         show_post_data(request.form.items())
-        target = str(request.form['ip_address']).strip().replace(',', '.')
-        if not check_ip_address(target):
-            text, cat = f'<strong>ERROR</strong> in IP-address: <strong><i>{target}</i></strong>', 'error'
-            flash(text, cat)
+        target, target_port = target_filter(str(request.form['ip_address']).strip().replace(',', '.'))
+        if target_port == 'error':
+            flash(target, target_port)
             return redirect(url_for('.server'))
 
     if target:
@@ -126,10 +125,9 @@ def create_vhost(target=False):
         show_post_data(request.form.items())
         
         # Vars from form
-        target = str(request.form['ip_address']).strip()
-        if not check_ip_address(target):
-            text, cat = f'ERROR in IP-address', 'error'
-            flash(text, cat)
+        target, target_port = target_filter(str(request.form['ip_address']).strip().replace(',', '.'))
+        if target_port == 'error':
+            flash(target, target_port)
             return redirect(url_for('.add_vhost'))
         domain_name = str(request.form['domain_name']).strip().lower()  # .replace('.', '_')
         web_server = str(request.form['web_service']).strip().lower()
@@ -204,10 +202,9 @@ def get_ansible_control(target=False):
         show_post_data(request.form.items())
         
         # Vars from form
-        target = str(request.form['host_ip_address']).strip()
-        if not check_ip_address(target):
-            text, cat = f'ERROR in IP-address', 'error'
-            flash(text, cat)
+        target, target_port = target_filter(str(request.form['ip_address']).strip().replace(',', '.'))
+        if target_port == 'error':
+            flash(target, target_port)
             return redirect(url_for('.get_ansible_control'))
         host_desc = str(request.form['host_desc']).strip().replace('-', '_').replace(' ', '_')
         remote_user_login = str(request.form['remote_user_login']).strip()
