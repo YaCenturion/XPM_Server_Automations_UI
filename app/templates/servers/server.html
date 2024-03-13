@@ -167,7 +167,7 @@
                                                                 </div>
                                                                 <ul class="list-group list-group-flush text-start">
                                                                         <li class="list-group-item"><a href="{{ url_for('servers.create_vhost', target=query) }}" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Add new VirtualHost</a></li>
-                                                                        <li class="list-group-item">LINK 2</li>
+                                                                        <li class="list-group-item">{% if port['port'] == 8443 %}YES u can{% else %}NO u cant</li>
                                                                         <li class="list-group-item">LINK 3</li>
                                                                         <li class="list-group-item">LINK 4</li>
                                                                 </ul>
