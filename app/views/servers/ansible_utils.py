@@ -157,6 +157,8 @@ def check_ip_address(ip_adr):
         for i in tmp:
             if len(i) > 3 or not i.isdigit():
                 return False
+            if int(i) < 0 or int(i) > 255:
+                return False
     return True
 
 
