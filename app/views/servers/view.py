@@ -52,9 +52,9 @@ def server(target=False):
     if request.method == 'POST':
         printer(f'Get POST data from: /{request.endpoint}', ui_usr['name'])
         show_post_data(request.form.items())
-        target = str(request.form['ip_address']).strip()
+        target = str(request.form['ip_address']).strip().replace(',', '.')
         if not check_ip_address(target):
-            text, cat = f'ERROR in IP-address: {target}', 'error'
+            text, cat = f'<strong>ERROR</strong> in IP-address: <strong><i>{target}</i></strong>', 'error'
             flash(text, cat)
             return redirect(url_for('.server'))
 

@@ -3,7 +3,7 @@
                         <div class="row justify-content-center">
                             <div class="col-6 pb-4">
                                 <div class="alert alert-{% if cat == 'error' %}danger{% else %}{{ cat }}{% endif %} alert-dismissible fade show" role="alert">
-                                    {% if cat == 'error' %}<i class="fa-solid fa-triangle-exclamation"></i>{% else %}<i class="fa-solid fa-circle-check"></i>{% endif %} {{ msg }}
+                                    {% if cat == 'error' %}<i class="fa-solid fa-triangle-exclamation"></i>{% else %}<i class="fa-solid fa-circle-check"></i>{% endif %} {{ msg|safe }}
                                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                 </div>
                             </div>
