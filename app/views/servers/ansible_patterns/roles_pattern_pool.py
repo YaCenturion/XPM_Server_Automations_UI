@@ -35,9 +35,9 @@ roles = {
         'restart_nginx': {'role': 'restart_nginx'},
         
         'apache_cleaner': {'role': 'apache_cleaner'},
-        'apache_default': {'role': 'apache_cleaner'},
+        'apache_default_set': {'role': 'apache_default_set'},
         'nginx_cleaner': {'role': 'nginx_cleaner'},
-        'nginx_default': {'role': 'nginx_cleaner'},
+        'nginx_default_set': {'role': 'nginx_default_set'},
     },
 }
 

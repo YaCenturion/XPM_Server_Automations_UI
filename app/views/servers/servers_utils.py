@@ -64,14 +64,14 @@ def add_packages_action(packages, action):
             if action == 'absent':
                 additional_role = roles['web']["apache_cleaner"]
             elif action == 'latest':
-                additional_role = roles['web']["apache_default"]
+                additional_role = roles['web']["nginx_default_set"]
             else:
                 additional_role = False
         elif package == 'nginx':
             if action == 'absent':
                 additional_role = roles['web']["nginx_cleaner"]
             elif action == 'latest':
-                additional_role = roles['web']["nginx_default"]
+                additional_role = roles['web']["nginx_default_set"]
             else:
                 additional_role = False
 
