@@ -1,4 +1,4 @@
-from flask import redirect, flash, url_for
+# from flask import redirect, flash, url_for
 import yaml
 
 from app.utils.main_utils import save_in_db, exec_ansible_playbook, exec_ssh_command
@@ -86,21 +86,24 @@ def add_task_to_db(pb_data, pb_sets):
     return task
 
 
-def generate_sub_inventory(inv_group, host_ip_address, host_port, host_desc, host_mode, host_class):
+def generate_sub_inventory(pool):
     # Add children group
-    group_mode_name = f"{inv_group}{host_mode}"
+    group_mode_name = f"{pool['inv_group']}{pool['host_mode']}"
     sub_inventory = {
         "all": {
             'children': {
-                inv_group: {
+                pool['inv_group']: {
                     'children': {
                         group_mode_name: {
                             "hosts": {},
                             "vars": {
-                                'host_mode': str(host_mode).replace("_", "").upper()
+                                'host_mode': str(pool['host_mode']).replace("_", "").upper(),
                             }
                         }
                     },
+                    "vars": {
+                        'priority_id': str(pool['priority_id']),
+                    }
                 }
             }
         }
@@ -108,15 +111,17 @@ def generate_sub_inventory(inv_group, host_ip_address, host_port, host_desc, hos
     
     # Add host into group
     host_record = {
-        host_ip_address: {
-            "host_desc": host_desc,
-            "host_class": str(host_class).replace("_", "").upper(),
+        pool['host_ip_address']: {
+            "host_desc": pool['host_desc'],
+            "host_class": str(pool['host_class']).replace("_", "").upper(),
         }
     }
-    if host_port != '22':  # Add non-standard port
-        host_record[host_ip_address]["ansible_port"] = int(host_port)
-    
-    sub_inventory["all"]["children"][inv_group]["children"][group_mode_name]["hosts"] = host_record
+    if pool['host_port'] != '22':  # Add non-standard port
+        host_record[pool['host_ip_address']]["ansible_port"] = int(pool['host_port'])
+    if pool['host_key']:  # Add non-default SSH-key
+        host_record[pool['host_ip_address']]["ansible_ssh_private_key_file"] = pool['host_key']
+
+    sub_inventory["all"]["children"][pool['inv_group']]["children"][group_mode_name]["hosts"] = host_record
     return sub_inventory
 
 

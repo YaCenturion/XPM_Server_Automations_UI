@@ -34,14 +34,19 @@
                                         <div class="row justify-content-center p-2">
                                             <div class="input-group">
                                                 {{ fields.datalist('Inventory Group [...]:', 'inv_group', ansible_groups) }}
-                                                {{ fields.input('Company ID:', 'priority_id', nut_vm[0].company_id, "Company ID", min_width="") }}
+                                                {{ fields.input('Company ID:', 'priority_id', nut_vm[0].company_id, "Company ID", min_width="", add_input_style=" style='max-width: 100px;'") }}
                                             </div>
                                         </div>
                                         <div class="row justify-content-center p-2">
                                             <div class="input-group text-start">
                                                 {% if not query %}{{ fields.input('IP adr:', 'host_ip_address', '', "internal ip", min_width="") }}{% endif %}
-                                                {{ fields.input('Port:', 'host_port', '22', "if non standard", min_width="") }}
                                                 {{ fields.input('Name:', 'host_desc', nut_vm[0].vm_name, "host description", min_width="") }}
+                                            </div>
+                                        </div>
+                                        <div class="row justify-content-center p-2">
+                                            <div class="input-group text-start">
+                                                {{ fields.input('Port:', 'host_port', '22', "only if non-standard", min_width="", add_input_style=" style='max-width: 80px;'") }}
+                                                {{ fields.input('Special SSH-key:', 'host_ssh_key', '', "input fullpath: /path/to/key.pub", min_width="") }}
                                             </div>
                                         </div>
                                         <div class="row justify-content-center p-2">
@@ -68,8 +73,8 @@
                                         </div>
                                         <div class="row justify-content-center p-2">
                                                 <div class="input-group mb-4">
-                                                    {{ fields.input('Remote root-user:', 'remote_user_login', value, "") }}
-                                                    {{ fields.input('password:', 'remote_user_pass', value, "", type='password') }}
+                                                    {{ fields.input('Root-user:', 'remote_user_login', value, "") }}
+                                                    {{ fields.input('Password:', 'remote_user_pass', value, "", type='password') }}
 {#                                                    <span class="input-group-text" id="srv_username-label">Remote root login:</span>#}
 {#                                                    <input type="text" class="form-control" placeholder="" aria-label="srv_username" aria-describedby="srv_username" id="srv_username" name="srv_username" autocomplete="off" oninput="checkUsername()">#}
 {#                                                    <span class="input-group-text" id="srv_pass-label">password:</span>#}

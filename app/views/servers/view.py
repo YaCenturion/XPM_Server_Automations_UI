@@ -190,7 +190,7 @@ def get_ansible_control(target=False):
         'name': current_user.username,
         'id': current_user.id,
     }
-    # TODO nutanix 172.17.186.239
+
     nutanix_vm_info = get_vms_like(target)
     front_data = {}
     ssh, msg = get_ssh(ansible_host)
@@ -205,14 +205,16 @@ def get_ansible_control(target=False):
         
         # Vars from form
         def clean_input(data):
-            return str(data).strip().replace('-', '_').replace(' ', '_')
+            return str(data).strip().replace('-', '_').replace(' ', '_').replace('.', '_')
         
         target, target_port, status = target_filter(request.form['ip_address'])
         host_port = str(request.form['host_port'])
         if status:
             flash(status[0], status[1])
             return redirect(url_for('.get_ansible_control'))
+        host_ssh_key = str(request.form['host_ssh_key']).strip()
         host_desc = clean_input(request.form['host_desc'])
+        priority_id = clean_input(request.form['priority_id'])
         remote_user_login = str(request.form['remote_user_login']).strip()
         remote_user_pass = str(request.form['remote_user_login']).strip()
         inv_group = clean_input(request.form['inv_group'])
@@ -255,7 +257,17 @@ def get_ansible_control(target=False):
         # show_playbook_yaml_code(ssh, playbook_sets, username)  # Showing generated playbook
 
         # Update inventory
-        sub_inv = generate_sub_inventory(inv_group, target, host_port, host_desc, host_mode, host_class)
+        host_pool = {
+            'inv_group': inv_group,
+            'host_ip_address': target,
+            'host_port': host_port,
+            'host_ssh_key': host_ssh_key,
+            'host_desc': host_desc,
+            'host_mode': host_mode,
+            'host_class': host_class,
+            'priority_id': priority_id,
+        }
+        sub_inv = generate_sub_inventory(host_pool)
         inventory = merge_inventory(current_inventory, sub_inv)
         
         # Convert to INI

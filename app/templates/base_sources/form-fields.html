@@ -14,9 +14,9 @@
 {%- endmacro %}
 
 {# input #}
-{% macro input(label, name, value='', placeholder='', required='required', disabled='', type='text', min_width=" label-width") -%}
+{% macro input(label, name, value='', placeholder='', required='required', disabled='', type='text', min_width=" label-width", add_input_style="") -%}
     <label class="input-group-text{{ min_width }}" for="input_{{ name }}">{{ label|safe }}</label>
-    <input class="form-control" id="input_{{ name }}" name="{{ name }}" type="{{ type }}" value="{{ value|e }}" placeholder="{{ placeholder }}" {{ required }} {{ disabled }}>
+    <input class="form-control" {{ add_input_style|safe }} id="input_{{ name }}" name="{{ name }}" type="{{ type }}" value="{{ value|e }}" placeholder="{{ placeholder }}" {{ required }} {{ disabled }}>
 {%- endmacro %}
 
 {# phone #}
