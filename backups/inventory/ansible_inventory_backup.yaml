@@ -5,124 +5,193 @@ all:
         freesbe_prod:
           hosts:
             172.16.231.129:
-              host_name: Freesbe_ApacheWebServer_web
-              hosts_tag: prod
+              host_class: WEB
+              host_mode: PROD
+              host_name: Freesbe_ApacheWebServer
             172.16.231.130:
-              host_name: Freesbe_Nginx_Cache2_web
-              hosts_tag: prod
-    lubinski:
-      children:
-        lubinski_prod:
-          hosts:
-            172.17.186.239:
-              host_name: lubinski_ftp_web
-              hosts_tag: prod
+              host_class: WEB
+              host_mode: PROD
+              host_name: Freesbe_Nginx_Cache2
     strauss:
-      hosts:
-        172.18.191.26:
-          host_name: Strauss_redirect
-        172.19.119.80:
-          host_name: StraussUbuntu_Prod_02_DB
-        172.19.119.94:
-          host_name: StraussUbuntu_Prod_02_WEB
-        172.19.139.80:
-          host_name: StraussUbuntu_Prod_01_DB
-        172.19.139.96:
-          host_name: StraussUbuntu_Prod_01_WEB
-        172.19.157.145:
-          host_name: StraussUbuntu_Prod_03_DB
-        172.19.157.147:
-          host_name: StraussUbuntu_Prod_03_WEB
-        172.19.164.204:
-          host_name: StraussOverseas_sites_WEB
-        172.19.164.206:
-          host_name: StraussOverseas_sites_DB
-        172.19.167.151:
-          host_name: Strauss_InternalUse
-        172.19.167.174:
-          host_name: Strauss_Mini_orange
+      children:
+        strauss_prod:
+          hosts:
+            172.18.191.26:
+              ansible_ssh_port: 61022
+              host_class: UTILS
+              host_mode: PROD
+              host_name: Strauss_redirect
+            172.19.119.80:
+              ansible_ssh_port: 61022
+              host_class: DB
+              host_mode: PROD
+              host_name: StraussUbuntu_Prod_02
+            172.19.119.94:
+              ansible_ssh_port: 61022
+              host_class: WEB
+              host_mode: PROD
+              host_name: StraussUbuntu_Prod_02
+            172.19.139.80:
+              ansible_ssh_port: 61022
+              host_class: DB
+              host_mode: PROD
+              host_name: StraussUbuntu_Prod_01
+            172.19.139.96:
+              ansible_ssh_port: 61022
+              host_class: WEB
+              host_mode: PROD
+              host_name: StraussUbuntu_Prod_01
+            172.19.157.145:
+              ansible_ssh_port: 61022
+              host_class: DB
+              host_mode: PROD
+              host_name: StraussUbuntu_Prod_03
+            172.19.157.147:
+              ansible_ssh_port: 61022
+              host_class: WEB
+              host_mode: PROD
+              host_name: StraussUbuntu_Prod_03
+            172.19.164.204:
+              ansible_ssh_port: 61022
+              host_class: WEB
+              host_mode: PROD
+              host_name: StraussOverseas_sites
+            172.19.164.206:
+              ansible_ssh_port: 61022
+              host_class: DB
+              host_mode: PROD
+              host_name: StraussOverseas_sites
+            172.19.167.151:
+              ansible_ssh_port: 61022
+              host_class: UTILS
+              host_mode: PROD
+              host_name: Strauss_InternalUse
+            172.19.167.174:
+              ansible_ssh_port: 61022
+              host_mode: PROD
+              host_name: Strauss_Mini_orange
     strauss_water:
       children:
         strauss_water_dev:
           hosts:
             172.19.178.140:
-              host_name: StraussWaterUbuntu_next_dev
-              hosts_tag: dev
+              ansible_ssh_port: 61022
+              host_mode: DEV
+              host_name: StraussWaterUbuntu_next
             172.19.178.160:
-              host_name: StraussWaterUbuntu_next_business_dev
-              hosts_tag: dev
+              ansible_ssh_port: 61022
+              host_mode: DEV
+              host_name: StraussWaterUbuntu_next_business
             172.19.178.170:
-              host_name: StraussWaterUbuntu_api_Dev
-              hosts_tag: dev
+              ansible_ssh_port: 61022
+              host_class: WEB
+              host_mode: DEV
+              host_name: StraussWaterUbuntu_api
             172.19.178.180:
-              host_name: StraussWaterUbuntu_Drupal_Dev
-              hosts_tag: dev
+              ansible_ssh_port: 61022
+              host_class: WEB
+              host_mode: DEV
+              host_name: StraussWaterUbuntu_Drupal
             172.19.178.190:
-              host_name: StraussWaterUbuntu_Mysql_Dev
-              hosts_tag: dev
+              ansible_ssh_port: 61022
+              host_class: DB
+              host_mode: DEV
+              host_name: StraussWaterUbuntu_Mysql
             172.19.178.200:
-              host_name: StraussWaterUbuntu_HaProxy_Dev
-              hosts_tag: dev
+              ansible_ssh_port: 61022
+              host_class: UTILS
+              host_mode: DEV
+              host_name: StraussWaterUbuntu_HaProxy
             172.19.178.210:
-              host_name: StraussWaterUbuntu_MongoDb_Dev
-              hosts_tag: dev
+              ansible_ssh_port: 61022
+              host_class: DB
+              host_mode: DEV
+              host_name: StraussWaterUbuntu_MongoDb
             172.19.178.220:
-              host_name: StraussWaterUbuntu_Management_Dev
-              hosts_tag: dev
+              ansible_ssh_port: 61022
+              host_mode: DEV
+              host_name: StraussWaterUbuntu_Management
         strauss_water_prod:
           hosts:
             172.18.146.120:
-              host_name: StraussWaterUbuntu_api_Prod
-              hosts_tag: prod
+              ansible_ssh_port: 61022
+              host_class: WEB
+              host_mode: PROD
+              host_name: StraussWaterUbuntu_api
             172.18.146.122:
-              host_name: StraussWaterUbuntu_Drupal_Prod
-              hosts_tag: prod
+              ansible_ssh_port: 61022
+              host_class: WEB
+              host_mode: PROD
+              host_name: StraussWaterUbuntu_Drupal
             172.18.146.124:
-              host_name: StraussWaterUbuntu_MongoDb_Prod
-              hosts_tag: prod
+              ansible_ssh_port: 61022
+              host_class: DB
+              host_mode: PROD
+              host_name: StraussWaterUbuntu_MongoDb
             172.18.146.126:
-              host_name: StraussWaterUbuntu_Mysql_Prod
-              hosts_tag: prod
+              ansible_ssh_port: 61022
+              host_class: DB
+              host_mode: PROD
+              host_name: StraussWaterUbuntu_Mysql
             172.18.146.128:
-              host_name: StraussWaterUbuntu_next_business_Prod
-              hosts_tag: prod
+              ansible_ssh_port: 61022
+              host_mode: PROD
+              host_name: StraussWaterUbuntu_next_business
             172.18.146.130:
-              host_name: StraussWaterUbuntu_next_Prod
-              hosts_tag: prod
+              ansible_ssh_port: 61022
+              host_mode: PROD
+              host_name: StraussWaterUbuntu_next
             172.18.146.132:
-              host_name: StraussWaterUbuntu_HaProxy_Prod
-              hosts_tag: prod
+              ansible_ssh_port: 61022
+              host_class: UTILS
+              host_mode: PROD
+              host_name: StraussWaterUbuntu_HaProxy
             172.18.146.134:
-              host_name: StraussWaterUbuntu_Management_Prod
-              hosts_tag: prod
+              ansible_ssh_port: 61022
+              host_mode: PROD
+              host_name: StraussWaterUbuntu_Management
         strauss_water_stg:
           hosts:
             172.19.142.120:
-              host_name: StraussWaterUbuntu_api_Stage
-              hosts_tag: stg
+              ansible_ssh_port: 61022
+              host_class: WEB
+              host_mode: STG
+              host_name: StraussWaterUbuntu_api
             172.19.142.122:
-              host_name: StraussWaterUbuntu_Drupal_Stage
-              hosts_tag: stg
+              ansible_ssh_port: 61022
+              host_class: WEB
+              host_mode: STG
+              host_name: StraussWaterUbuntu_Drupal
             172.19.142.124:
-              host_name: StraussWaterUbuntu_MongoDb_Stage
-              hosts_tag: stg
+              ansible_ssh_port: 61022
+              host_class: DB
+              host_mode: STG
+              host_name: StraussWaterUbuntu_MongoDb
             172.19.142.126:
-              host_name: StraussWaterUbuntu_Mysql_Stage
-              hosts_tag: stg
+              ansible_ssh_port: 61022
+              host_class: DB
+              host_mode: STG
+              host_name: StraussWaterUbuntu_Mysql
             172.19.142.128:
-              host_name: StraussWaterUbuntu_next_business_stage
-              hosts_tag: stg
+              ansible_ssh_port: 61022
+              host_mode: STG
+              host_name: StraussWaterUbuntu_next_business
             172.19.142.130:
-              host_name: StraussWaterUbuntu_next_stage
-              hosts_tag: stg
+              ansible_ssh_port: 61022
+              host_mode: STG
+              host_name: StraussWaterUbuntu_next
             172.19.142.132:
-              host_name: StraussWaterUbuntu_HaProxy_Stage
-              hosts_tag: stg
+              ansible_ssh_port: 61022
+              host_class: UTILS
+              host_mode: STG
+              host_name: StraussWaterUbuntu_HaProxy
             172.19.142.134:
-              host_name: StraussWaterUbuntu_Management_Stage
-              hosts_tag: stg
+              ansible_ssh_port: 61022
+              host_mode: STG
+              host_name: StraussWaterUbuntu_Management
       hosts:
-        172.19.116.80: {}
+        172.19.116.80:
+          ansible_ssh_port: 61022
     test:
       hosts:
         172.16.100.2:

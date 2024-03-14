@@ -47,7 +47,7 @@
                                         <div class="row justify-content-center p-2">
                                             <div class="input-group text-start">
                                                 {{ fields.input('Port:', 'host_port', '22', "only if non-standard", min_width="", add_input_style=" style='max-width: 80px;'") }}
-                                                {{ fields.input('Special SSH-key:', 'host_ssh_key', '', "input fullpath: /path/to/key.pub", min_width="") }}
+                                                {{ fields.input('Special SSH-key:', 'host_ssh_key', '', "input fullpath: /path/to/key.pub", min_width="", required='') }}
                                             </div>
                                         </div>
                                         <div class="row justify-content-center p-2">

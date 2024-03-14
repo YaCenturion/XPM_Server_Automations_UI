@@ -118,10 +118,11 @@ def generate_sub_inventory(pool):
     }
     if pool['host_port'] != '22':  # Add non-standard port
         host_record[pool['host_ip_address']]["ansible_port"] = int(pool['host_port'])
-    if pool['host_key']:  # Add non-default SSH-key
+    if pool['host_ssh_key']:  # Add non-default SSH-key
         host_record[pool['host_ip_address']]["ansible_ssh_private_key_file"] = pool['host_key']
 
     sub_inventory["all"]["children"][pool['inv_group']]["children"][group_mode_name]["hosts"] = host_record
+    print(sub_inventory)
     return sub_inventory
 
 

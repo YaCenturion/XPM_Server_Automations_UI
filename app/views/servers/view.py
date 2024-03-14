@@ -207,16 +207,16 @@ def get_ansible_control(target=False):
         def clean_input(data):
             return str(data).strip().replace('-', '_').replace(' ', '_').replace('.', '_')
         
-        target, target_port, status = target_filter(request.form['ip_address'])
+        target, target_port, status = target_filter(request.form['host_ip_address'])
         host_port = str(request.form['host_port'])
         if status:
             flash(status[0], status[1])
             return redirect(url_for('.get_ansible_control'))
-        host_ssh_key = str(request.form['host_ssh_key']).strip()
+        host_ssh_key = str(request.form['host_ssh_key']).strip() if len(request.form['host_ssh_key']) > 0 else False
         host_desc = clean_input(request.form['host_desc'])
         priority_id = clean_input(request.form['priority_id'])
         remote_user_login = str(request.form['remote_user_login']).strip()
-        remote_user_pass = str(request.form['remote_user_login']).strip()
+        remote_user_pass = str(request.form['remote_user_pass']).strip()
         inv_group = clean_input(request.form['inv_group'])
         host_mode = clean_input(request.form['host_mode'])
         host_class = clean_input(request.form['host_class'])
