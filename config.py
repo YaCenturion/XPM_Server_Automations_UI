@@ -81,7 +81,7 @@ nutanix = {
 }
 
 playbooks_lst = {
-    "base": 'ansible-playbook /etc/ansible/prod/',
+    "base": 'sudo ansible-playbook /etc/ansible/prod/',
     "show_me_yml": 'cat /etc/ansible/prod/',
     "delete_yml": 'rm -rf /etc/ansible/prod/',
     "prod_deploy": '/etc/ansible/prod/',

@@ -122,7 +122,7 @@ def generate_sub_inventory(pool):
         host_record[pool['host_ip_address']]["ansible_ssh_private_key_file"] = pool['host_key']
 
     sub_inventory["all"]["children"][pool['inv_group']]["children"][group_mode_name]["hosts"] = host_record
-    print(sub_inventory)
+    # print(sub_inventory)
     return sub_inventory
 
 
