@@ -31,16 +31,17 @@
                                             <span class="badge bg-secondary fs-5">{{ query }}</span>
                                         </div>
                                         {% endif %}
+                                        {% if nut_vm %}{% set vm_company_id, vm_name = nut_vm[0].company_id, nut_vm[0].vm_name %}{% else %}{% set vm_company_id, vm_name = "", "" %}{% endif %}
                                         <div class="row justify-content-center p-2">
                                             <div class="input-group">
                                                 {{ fields.datalist('Inventory Group [...]:', 'inv_group', ansible_groups) }}
-                                                {{ fields.input('Company ID:', 'priority_id', nut_vm[0].company_id, "Company ID", min_width="", add_input_style=" style='max-width: 100px;'") }}
+                                                {{ fields.input('Company ID:', 'priority_id', vm_company_id, "Company ID", min_width="", add_input_style=" style='max-width: 100px;'") }}
                                             </div>
                                         </div>
                                         <div class="row justify-content-center p-2">
                                             <div class="input-group text-start">
                                                 {% if not query %}{{ fields.input('IP adr:', 'host_ip_address', '', "internal ip", min_width="") }}{% endif %}
-                                                {{ fields.input('Name:', 'host_desc', nut_vm[0].vm_name, "host description", min_width="") }}
+                                                {{ fields.input('Name:', 'host_desc', vm_name, "host description", min_width="") }}
                                             </div>
                                         </div>
                                         <div class="row justify-content-center p-2">
