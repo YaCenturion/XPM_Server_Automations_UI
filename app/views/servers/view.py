@@ -190,6 +190,8 @@ def get_ansible_control(target=False):
         'name': current_user.username,
         'id': current_user.id,
     }
+    # TODO nutanix 172.17.186.239
+    nutanix_vm_info = get_vms_like(target)
     front_data = {}
     ssh, msg = get_ssh(ansible_host)
     if not ssh:
@@ -277,7 +279,7 @@ def get_ansible_control(target=False):
         # print(ansible_groups, type(ansible_groups))
         
     return render_template(
-        'servers/get_ansible_control.html', query=target, data=front_data,
+        'servers/get_ansible_control.html', query=target, nut_vm=nutanix_vm_info, data=front_data,
         ansible_groups=ansible_groups, php_lst=php_versions, web_service_lst=web_services,
         user=current_user, ver=ver)
 

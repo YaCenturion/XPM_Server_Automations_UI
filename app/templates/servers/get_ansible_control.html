@@ -34,13 +34,14 @@
                                         <div class="row justify-content-center p-2">
                                             <div class="input-group">
                                                 {{ fields.datalist('Inventory Group [...]:', 'inv_group', ansible_groups) }}
+                                                {{ fields.input('Company ID:', 'priority_id', nut_vm[0].company_id, "Company ID", min_width="") }}
                                             </div>
                                         </div>
                                         <div class="row justify-content-center p-2">
                                             <div class="input-group text-start">
                                                 {% if not query %}{{ fields.input('IP adr:', 'host_ip_address', '', "internal ip", min_width="") }}{% endif %}
                                                 {{ fields.input('Port:', 'host_port', '22', "if non standard", min_width="") }}
-                                                {{ fields.input('Name:', 'host_desc', '', "host description", min_width="") }}
+                                                {{ fields.input('Name:', 'host_desc', nut_vm[0].vm_name, "host description", min_width="") }}
                                             </div>
                                         </div>
                                         <div class="row justify-content-center p-2">
