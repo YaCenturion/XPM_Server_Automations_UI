@@ -12,7 +12,7 @@ def create_db_and_update_data(app):  # For create DB and fill tables
 
         add_list = [
             # Creating users
-            root_user, user1, user2
+            root_user, user1, user2, user3
         ]
         add_to_db(add_list)
         # Commit
@@ -46,6 +46,16 @@ user2 = Users(
     name='Amit Zertal',  # type: ignore[call-arg]
     email='amit.z@expim.co.il',  # type: ignore[call-arg]
     password_hash=generate_password_hash('9.DE9v>FdaP=nn'),  # type: ignore[call-arg]
+    app_role=1,  # type: ignore[call-arg]
+    create=1685782415,  # type: ignore[call-arg]
+    reserved=None  # type: ignore[call-arg]
+    )
+
+user3 = Users(
+    username='liron',  # type: ignore[call-arg]
+    name='Liron Hadad',  # type: ignore[call-arg]
+    email='liron@expim.co.il',  # type: ignore[call-arg]
+    password_hash=generate_password_hash('4P9pVn#uyAscxwwF'),  # type: ignore[call-arg]
     app_role=1,  # type: ignore[call-arg]
     create=1685782415,  # type: ignore[call-arg]
     reserved=None  # type: ignore[call-arg]
