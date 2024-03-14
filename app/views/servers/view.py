@@ -52,9 +52,9 @@ def server(target=False):
     if request.method == 'POST':
         printer(f'Get POST data from: /{request.endpoint}', ui_usr['name'])
         show_post_data(request.form.items())
-        target, target_port = target_filter(str(request.form['ip_address']).strip().replace(',', '.'))
-        if target_port == 'error':
-            flash(target, target_port)
+        target, target_port, status = target_filter(request.form['ip_address'])
+        if status:
+            flash(status[0], status[1])
             return redirect(url_for('.server'))
 
     if target:
@@ -125,9 +125,9 @@ def create_vhost(target=False):
         show_post_data(request.form.items())
         
         # Vars from form
-        target, target_port = target_filter(str(request.form['ip_address']).strip().replace(',', '.'))
-        if target_port == 'error':
-            flash(target, target_port)
+        target, target_port, status = target_filter(request.form['ip_address'])
+        if status:
+            flash(status[0], status[1])
             return redirect(url_for('.add_vhost'))
         domain_name = str(request.form['domain_name']).strip().lower()  # .replace('.', '_')
         web_server = str(request.form['web_service']).strip().lower()
@@ -205,10 +205,10 @@ def get_ansible_control(target=False):
         def clean_input(data):
             return str(data).strip().replace('-', '_').replace(' ', '_')
         
-        target, target_port, check = target_filter(request.form['ip_address'])
+        target, target_port, status = target_filter(request.form['ip_address'])
         host_port = str(request.form['host_port'])
-        if check:
-            flash(check[0], check[1])
+        if status:
+            flash(status[0], status[1])
             return redirect(url_for('.get_ansible_control'))
         host_desc = clean_input(request.form['host_desc'])
         remote_user_login = str(request.form['remote_user_login']).strip()
