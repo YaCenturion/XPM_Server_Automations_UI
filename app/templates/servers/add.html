@@ -26,12 +26,11 @@
                                 <div class="col-8 text-center">
                                     <form method="POST"  id="expim-form">
                                         <div class="row justify-content-center p-2">
-                                            {% if query %}
-                                            <div class="text-center">
+                                            <div
+                                            {% if query %} class="text-center">
                                                 {{ fields.input_hidden(query, 'ip_address') }}
                                                 <span class="badge bg-secondary fs-5">{{ query }}</span>
-                                            {% else %}
-                                            <div class="input-group">
+                                            {% else %} class="input-group">
                                                 {{ fields.input('IP address', 'ip_address', '', "Server IP") }}
                                             {% endif %}
                                             </div>
