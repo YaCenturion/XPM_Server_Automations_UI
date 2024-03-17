@@ -46,6 +46,7 @@ r_user = Users(
 )
 
 ui_users = [
+    # (login, name, e-mal, pw, role)
     ('boris', 'Boris Drozdovski', 'boris.d@expim.co.il', 'xriT8o]xZ7549E2', 1),
     ('liron', 'Liron Hadad', 'liron@expim.co.il', '4P9pVn#uyAscxwwF', 1),
     ('ofir', 'Ofir Hadad', 'ofir@expim.co.il', 'MasterOfUniverse', 1),
