@@ -95,6 +95,112 @@ def server(target=False):
 
 
 @login_required
+@servers.route('/add/<string:task_type>/<target>', methods=['GET', 'POST'])
+@servers.route('/add/<string:task_type>/', methods=['GET', 'POST'])
+def add_on_server(task_type=False, target=False):
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    ui_usr = {
+        'name': current_user.username,
+        'id': current_user.id,
+    }
+    front_data = {}
+    php_fpm_lst = php_versions
+    php_fpm_old_path = False
+    if target:
+        if not check_ip_address(target):
+            text, cat = f'ERROR in IP-address', 'error'
+            flash(text, cat)
+            return redirect(url_for('.add_vhost'))
+        ssh, msg = get_ssh(ansible_host)
+        front_data = get_facts(front_data, ssh, target, ui_usr['name'])
+
+        php_fpm_lst = get_php_fpm_installed(front_data['php_fpm_versions'])
+        if not php_fpm_lst:
+            php_fpm_lst = php_versions
+        php_fpm_old_path = get_php_fpm_path(front_data['php_fpm_services'])
+
+    if request.method == 'POST':
+        printer(f'Get POST data from: /{request.endpoint}', ui_usr['name'])
+        show_post_data(request.form.items())
+
+        # Vars from form
+        target, target_port, status = target_filter(request.form['ip_address'])
+        if status:
+            flash(status[0], status[1])
+            return redirect(url_for('.add_vhost'))
+        if task_type:
+            ssh, msg = get_ssh(ansible_host)
+            if ssh:
+
+                if task_type == 'vhost':  # Setup new VirtualHost
+                    domain_name = str(request.form['domain_name']).strip().lower()  # .replace('.', '_')
+                    web_server = str(request.form['web_service']).strip().lower()
+                    php_ver = str(request.form['php_ver']).strip().lower()
+                    db_user = str(request.form['db_user']).strip().lower().replace('.', '_')
+                    db_pass = str(request.form['db_pass']).strip()
+                    playbook_sets = {
+                        'user_id': current_user.id,
+                        'username': current_user.username,
+                        'filename': f"{str(int(time.time()))}_{domain_name.lower().replace('.', '_')}",
+                        'name': f'Add new VirtualHost for: {domain_name}',
+                        'target': target,
+                        'vars': {
+                            "state_action": 'present',
+                            "username": domain_name,
+                            "mysql_user": db_user,
+                            "mysql_pass": db_pass,
+                            "selected_php": php_ver,
+                            "use_php_fpm_old_path": php_fpm_old_path,
+                            "web_server_name": web_server,
+                        },
+                        'roles': add_new_virtualhost(web_server),
+                    }
+
+                elif task_type == 'reverse_proxy':
+                    domain_name = str(request.form['domain_name']).strip().lower()  # .replace('.', '_')
+                    php_ver = str(request.form['php_ver']).strip().lower()
+                    playbook_sets = {
+                        'user_id': current_user.id,
+                        'username': current_user.username,
+                        'filename': f"{str(int(time.time()))}_{domain_name.lower().replace('.', '_')}",
+                        'name': f'Add new VirtualHost for: {domain_name}',
+                        'target': target,
+                        'vars': {
+                            "state_action": 'present',
+                            "username": domain_name,
+                            "selected_php": php_ver,
+                            "use_php_fpm_old_path": php_fpm_old_path,
+                        },
+                        'roles': add_reverse_proxy(),
+                    }
+                else:
+                    flash('Invalid task type', 'error')
+                    return redirect(url_for('.server'))
+
+                text, cat, log = pb_generate_save_execute_delete(ssh, target, playbook_sets, ui_usr['name'])
+                flash(text, cat)
+                if cat in ('error', 'warning'):
+                    return redirect(url_for('.server'))
+
+                # show_playbook_yaml_code(ssh, playbook_sets, username)  # Showing generated playbook
+                close_ssh(ssh, ui_usr['name'])
+                flash(text, cat)
+                return redirect(url_for(f'.server', target=target))
+
+            else:
+                front_data['get_facts'] = [False, msg]
+
+        if not front_data['get_facts'][0]:
+            text, cat = 'Warning! Read LOG carefully!', 'error'
+            flash(text, cat)
+
+    return render_template(
+        'servers/add.html', query=target, data=front_data,
+        php_lst=php_fpm_lst, web_service_lst=web_services, user=current_user, ver=ver)
+
+
+@login_required
 @servers.route('/add_vh/<target>', methods=['GET', 'POST'])
 @servers.route('/add_vh/', methods=['GET', 'POST'])
 def create_vhost(target=False):

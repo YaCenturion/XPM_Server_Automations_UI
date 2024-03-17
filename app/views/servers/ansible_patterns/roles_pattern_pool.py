@@ -38,6 +38,8 @@ roles = {
         'apache_default_set': {'role': 'apache_default_set'},
         'nginx_cleaner': {'role': 'nginx_cleaner'},
         'nginx_default_set': {'role': 'nginx_default_set'},
+
+        'create_reverse_proxy': {'role': 'create_reverse_proxy'},
     },
 }
 
@@ -56,6 +58,12 @@ def add_new_virtualhost(web_server):
         (roles['web'][f'create_{web_server}_virtualhost'],),
         (roles['web']['ftp_user'],),
         (roles['web'][f'restart_{web_server}'],),
+    ]
+
+
+def add_reverse_proxy():
+    return [
+        (roles['web']['create_reverse_proxy'],),
     ]
 
 
