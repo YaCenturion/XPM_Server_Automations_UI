@@ -247,6 +247,11 @@ body {
     border-left: 0.25rem solid var(--bd-callout-border, var(--bs-gray-300));
 }
 
+.hidden-button {
+    display: none;
+}
+
+
 /* WAIT - Loading */
 .modal-loading{
     position: fixed;
