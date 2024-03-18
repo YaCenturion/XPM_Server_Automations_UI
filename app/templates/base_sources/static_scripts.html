@@ -18,7 +18,7 @@
     let forms = document.querySelectorAll("#expim-form");
     if (forms) {
         forms.forEach(function (form) {
-            let buttons = form.querySelectorAll("button");
+            let buttons = form.querySelectorAll("button[type='submit']");
             buttons.forEach(function (button) {
                 button.addEventListener("click", showLoading);
             });

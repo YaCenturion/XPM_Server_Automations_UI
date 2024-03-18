@@ -269,7 +269,7 @@ def add_on_server(task_type=False, target=False):
 #             flash(text, cat)
 #
 #     return render_template(
-#         'servers/add_new_vhost.html', query=target, data=front_data,
+#         'servers/_old_add_new_vhost.html', query=target, data=front_data,
 #         php_lst=php_fpm_lst, web_service_lst=web_services, user=current_user, ver=ver)
 
 

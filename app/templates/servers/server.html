@@ -118,7 +118,7 @@
                                                     </thead>
                                                     <tbody>
                                                     {% for port in data['ports'] %}
-                                                        {% if port["port"]|int in (80, 443, 21, 3306, 11211) %}
+                                                        {% if port["port"]|int in (80, 443, 21, 3306, 8011, 8443, 11211, 6081) %}
                                                         <tr>
                                                             <td>{{ port["name"] }}  <span class="badge rounded-pill text-{% if ':' not in port['address'] %}success{% else %}danger{% endif %}-emphasis bg-{% if ':' not in port['address'] %}success{% else %}danger{% endif %}-subtle border-{% if ':' not in port['address'] %}success{% else %}danger{% endif %}-subtle border">{% if ':' not in port['address'] %}IPv4{% else %}IPv6{% endif %}</span></td>
                                                             <td class="align-middle text-center">{% if port['port'] == 80 %}<i class="fa-solid fa-square-check text-success"></i>{% endif %}</td>
@@ -338,6 +338,7 @@
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="accordion pb-3" id="accordionPackages">
+                                                        <form method="POST" id="expim-form">
                                                         {% for division_name in data['packages'].keys() %}
                                                         <div class="accordion-item">
                                                             <h2 class="accordion-header">
@@ -357,7 +358,7 @@
                                                             </h2>
                                                             <div id="{{ division_name }}_packages-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionPackages">
                                                                 <div class="accordion-body text-start">
-                                                                    <form method="POST" id="expim-form">
+{#                                                                    <form method="POST" id="expim-form">#}
                                                                         <div class="col-12 text-center">
                                                                             <table class="table table-hover">
                                                                                 <thead>
@@ -396,14 +397,18 @@
                                                                                 </tr>
                                                                             </table>
                                                                         </div>
-                                                                        {{ fields.input_hidden(query, 'ip_address') }}
-                                                                        {{ fields.input_hidden('true', 'update') }}
-                                                                        {{ fields.csrf() }}
-                                                                    </form>
+{#                                                                        {{ fields.input_hidden(query, 'ip_address') }}#}
+{#                                                                        {{ fields.input_hidden('true', 'update') }}#}
+{#                                                                        {{ fields.csrf() }}#}
+{#                                                                    </form>#}
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         {% endfor %}
+                                                            {{ fields.input_hidden(query, 'ip_address') }}
+                                                            {{ fields.input_hidden('true', 'update') }}
+                                                            {{ fields.csrf() }}
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>
