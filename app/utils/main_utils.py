@@ -130,10 +130,16 @@ def get_ansible_inventory(ssh, output):
     return result
 
 
-def deploy_updated_inventory(ssh, inventory_dict, inventory_ini, ui_user):
+def deploy_updated_inventory(ssh, inventory_dict, inventory_ini, sub_inv, ui_user):
     # Backup inventory_ui
     command = 'cp -f /etc/ansible/hosts/inventory_ui.* /etc/ansible/hosts-backups/'
     exec_ssh_command(ssh, command, ui_user)
+
+    # Save sub_inventory
+    file = f'/etc/ansible/hosts-backups/{int(time.time())}_sub_inv'
+    with ssh.open_sftp() as sftp:
+        with sftp.file(f'{file}.yaml', 'w') as f_yaml:
+            yaml.dump(sub_inv, f_yaml, default_flow_style=False)
 
     # Save updated inventory_ui
     file = '/etc/ansible/hosts/inventory_ui'

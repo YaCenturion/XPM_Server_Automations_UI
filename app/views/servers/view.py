@@ -367,7 +367,7 @@ def get_ansible_control(target=False):
         inventory_ini = '\n'.join(inventory_to_ini(inventory, [])) + '\n'
 
         # BackUp & Deploy inventory
-        deploy_updated_inventory(ssh, inventory, inventory_ini, ui_usr['name'])
+        deploy_updated_inventory(ssh, inventory, inventory_ini, sub_inv, ui_usr['name'])
 
         # Local saving inventory
         save_inventory_local(filename_inv, inventory, inventory_ini)
