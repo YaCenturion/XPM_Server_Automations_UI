@@ -20,6 +20,7 @@ roles = {
         'install_mysql_module': {'role': 'install_mysql_module'},
         
         'packages_action': {'role': 'packages_action'},
+        'return_credentials': {'role': 'return_credentials'},
     },
     'db': {
         'db': {'role': 'create_db'},  # absent|present
@@ -46,25 +47,38 @@ roles = {
 
 # Defs with presets for generate list of roles action:
 def add_new_virtualhost(web_server):
-    return [
-        (roles['system']['user'],),
-        (roles['system']['directory'],),
-        (roles['system']['ssl_directory'],),
-        (roles['system']['install_mysql_module'],),
-        (roles['db']['db'],),
-        (roles['db']['user'],),
-        (roles['web']['create_php_fpm_sock'],),
-        (roles['web']['SSL_certificate'],),
-        (roles['web'][f'create_{web_server}_virtualhost'],),
-        (roles['web']['ftp_user'],),
-        (roles['web'][f'restart_{web_server}'],),
-    ]
-
-
-def add_reverse_proxy():
-    return [
-        (roles['web']['create_reverse_proxy'],),
-    ]
+    if web_server == 'reverse_proxy':
+        roles_pool = [
+            (roles['system']['user'],),
+            (roles['system']['directory'],),
+            (roles['system']['ssl_directory'],),
+            (roles['system']['install_mysql_module'],),
+            (roles['db']['db'],),
+            (roles['db']['user'],),
+            (roles['web']['create_php_fpm_sock'],),
+            (roles['web']['SSL_certificate'],),
+            (roles['web']['create_reverse_proxy'],),
+            (roles['web']['ftp_user'],),
+            (roles['web'][f'restart_nginx'],),
+            (roles['web'][f'restart_apache'],),
+            (roles['web'][f'return_credentials'],),
+        ]
+    else:
+        roles_pool = [
+            (roles['system']['user'],),
+            (roles['system']['directory'],),
+            (roles['system']['ssl_directory'],),
+            (roles['system']['install_mysql_module'],),
+            (roles['db']['db'],),
+            (roles['db']['user'],),
+            (roles['web']['create_php_fpm_sock'],),
+            (roles['web']['SSL_certificate'],),
+            (roles['web'][f'create_{web_server}_virtualhost'],),
+            (roles['web']['ftp_user'],),
+            (roles['web'][f'restart_{web_server}'],),
+            (roles['system'][f'return_credentials'],),
+        ]
+    return roles_pool
 
 
 def injection_ansible_control():

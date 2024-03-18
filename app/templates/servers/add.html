@@ -21,7 +21,7 @@
                         <div class="mx-auto text-center p-3">
                             <h2>{{ title_text }}</h2>
                         </div>
-{#                        {% if not data %}#}
+                        {% if task_type %}
                             <div class="row justify-content-center p-2">
                                 <div class="col-8 text-center">
                                     <form method="POST"  id="expim-form">
@@ -35,30 +35,40 @@
                                             {% endif %}
                                             </div>
                                         </div>
-                                        <div class="row justify-content-center p-2">
-                                            <div class="input-group">
-                                                {{ fields.input('Domain', 'domain_name', "", "input domain for vhost") }}
+                                        {% if task_type == 'vhost' %}
+                                            <div class="row justify-content-center p-2">
+                                                <div class="input-group">
+                                                    {{ fields.input('Domain', 'domain_name', "", "input domain for vhost") }}
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="row justify-content-center p-2">
-                                            <div class="input-group">
-                                                {{ fields.select('Service:', 'web_service', web_service_lst, "") }}
-                                                {{ fields.select('PHP-FPM ver:', 'php_ver', php_lst, "") }}
-{#                                                {{ fields.input('Ports', 'vhost_port', '80,443', "", disabled='disabled') }}#}
+                                            <div class="row justify-content-center p-2">
+                                                <div class="input-group">
+                                                    {% set revers_proxy = web_service_lst %}
+                                                    {% for port in data['ports'] %}{% if port['port'] == 8443 %}{% set revers_proxy = ('Reverse proxy', 'reverse_proxy') %}{% endif %}{% endfor %}
+                                                    {{ fields.select('Service:', 'web_service', revers_proxy, "") }}
+                                                    {{ fields.select('PHP-FPM ver:', 'php_ver', php_lst, "") }}
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="row justify-content-center p-2">
-                                            <div class="input-group">
-                                                {{ fields.input('DB User', 'db_user', value, "") }}
-                                                {{ fields.input('DB Password', 'db_pass', value, "", type='password') }}
+                                            <div class="row justify-content-center p-2">
+                                                <div class="input-group">
+                                                    {{ fields.input('DB User', 'db_user', value, "") }}
+                                                    {{ fields.input('DB Password', 'db_pass', value, "", type='password') }}
+                                                </div>
                                             </div>
-                                        </div>
-                                        {{ fields.submit(label="Update state", id="division_name") }}
+                                        {% elif task_type == 'reverse_proxy' %}
+                                            <div class="row justify-content-center p-2">
+                                                <div class="input-group">
+                                                    {{ fields.input('Domain', 'domain_name', "", "input domain for vhost") }}
+                                                    {{ fields.select('PHP-FPM ver:', 'php_ver', php_lst, "") }}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        {{ fields.submit(label="Apply to host", id="division_name") }}
                                         {{ fields.csrf() }}
                                     </form>
                                 </div>
                             </div>
-{#                        {% endif %}#}
+                        {% endif %}
                         {% if data['full_log'] %}
                             <div class="row justify-content-center p-2">
                                 <div class="accordion" id="accordionConsoleLog">
