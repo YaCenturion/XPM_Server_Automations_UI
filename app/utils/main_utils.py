@@ -136,7 +136,7 @@ def deploy_updated_inventory(ssh, inventory_dict, inventory_ini, sub_inv, ui_use
     exec_ssh_command(ssh, command, ui_user)
 
     # Save sub_inventory
-    file = f'/etc/ansible/hosts-backups/{int(time.time())}_sub_inv'
+    file = f'/etc/ansible/hosts-backups/{int(time.time())}_user_{ui_user}_add_inv'
     with ssh.open_sftp() as sftp:
         with sftp.file(f'{file}.yaml', 'w') as f_yaml:
             yaml.dump(sub_inv, f_yaml, default_flow_style=False)
