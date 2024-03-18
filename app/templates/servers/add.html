@@ -43,9 +43,7 @@
                                             </div>
                                             <div class="row justify-content-center p-2">
                                                 <div class="input-group">
-                                                    {% set revers_proxy = web_service_lst %}
-                                                    {% for port in data['ports'] %}{% if port['port'] == 8443 %}{% set revers_proxy = ('Reverse proxy', 'reverse_proxy') %}{% endif %}{% endfor %}
-                                                    {{ fields.select('Service:', 'web_service', revers_proxy, "") }}
+                                                    {{ fields.select('Service:', 'web_service', web_service_lst, "") }}
                                                     {{ fields.select('PHP-FPM ver:', 'php_ver', php_lst, "") }}
                                                 </div>
                                             </div>
