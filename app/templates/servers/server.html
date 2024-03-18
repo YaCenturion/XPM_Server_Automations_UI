@@ -165,7 +165,7 @@
                                                                     <strong>Favorite:</strong>
                                                                 </div>
                                                                 <ul class="list-group list-group-flush text-start">
-                                                                        <li class="list-group-item"><a href="{{ url_for('servers.add_on_server', task_type='vhost', target=query) }}" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Add VirtualHost</a>
+                                                                        <li class="list-group-item"><a href="{{ url_for('servers.add_on_server', task_type='vhost', target=query) }}" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover take-time">Add VirtualHost</a>
                                                                             {% set revers_proxy = False %}
                                                                             {% for port in data['ports'] %}{% if port['port'] == 8443 %}{% set revers_proxy = True %}{% endif %}{% endfor %}
                                                                             {% if revers_proxy %}RP Ready{% endif %}

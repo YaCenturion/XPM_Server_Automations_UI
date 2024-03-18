@@ -14,6 +14,11 @@
     let updateDbLink = document.getElementById("nav-update-db");
     updateDbLink.addEventListener("click", showLoading);
 
+    // For all class "take-time"
+    document.querySelectorAll('.take-time').forEach(item => {
+        item.addEventListener('click', showLoading);
+    });
+
     // For FORM with id="expim-form"
     let forms = document.querySelectorAll("#expim-form");
     if (forms) {
