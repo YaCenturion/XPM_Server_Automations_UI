@@ -52,7 +52,6 @@
                                             </div>
                                             <div class="card-body">
                                                 <span class="mb-3 px-2 py-1 fw-semibold text-secondary-emphasis bg-secondary-subtle border border-secondary-subtle rounded-2 fs-5"><i class="fa-brands fa-{{ data['system']['dist']|lower }}"></i> {{ data['system']['dist'] }} v.{{ data['system']['ver'] }}</span>
-{#                                                <p class="card-text">{{ data['system']['kernel'] }}</p>#}
                                             </div>
                                             <ul class="list-group list-group-flush">
                                                 <li class="list-group-item">Kernel: {{ data['system']['kernel'] }}</li>
@@ -139,7 +138,7 @@
                                     </div>
                                     {% endif %}
                                 </div>
-{# TEST #}
+
                                 <div class="row justify-content-center p-2">
                                     <div class="col-12">
                                         <div class="card text-center">
@@ -310,22 +309,6 @@
                                                     </tr>
                                                     {% endfor %}
                                                 </table>
-
-
-
-
-
-
-{#                                                <form method="POST" action="http://tools.expim.local/">#}
-{#                                                    {{  fields.csrf() }}#}
-{#                                                    {{  fields.input_hidden(value=query, name='global_search_string') }}#}
-{#                                                    {{  fields.input_hidden(value='search_ip', name='search_ip') }}#}
-{#                                                    {{  fields.input_hidden(value='search_customer', name='search_customer') }}#}
-{#                                                    {{  fields.input_hidden(value='search_url', name='search_url') }}#}
-{#                                                    {{  fields.input_hidden(value='search_vms', name='search_vms') }}#}
-{#                                                    {{  fields.input_hidden(value='1', name='index_form') }}#}
-{#                                                    {{  fields.submit(label="More about VM", id="submit_"+query, col='8') }}#}
-{#                                                </form>#}
                                             </div>
                                         </div>
                                     </div>
