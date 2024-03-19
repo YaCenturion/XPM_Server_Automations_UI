@@ -56,10 +56,10 @@ def change_user_password(num_id):
     web_form = ChangePasswordForm()
     user = Users.query.get_or_404(num_id)
     if web_form.validate_on_submit():
-        user.set_password(web_form.password.data)
+        user.password(web_form.password.data)
         db.session.commit()
         flash('Password changed successfully!', 'success')
-        return redirect(url_for('account.all_users'))
+        return redirect(url_for('users.all_users'))
     if request.method == 'POST':
         flash('Attention!', 'error')
         get_form_errors(web_form)
