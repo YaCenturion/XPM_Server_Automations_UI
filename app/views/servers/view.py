@@ -127,6 +127,14 @@ def add_on_server(task_type=False, target=False):
             php_fpm_lst = php_versions
         php_fpm_old_path = get_php_fpm_path(front_data['php_fpm_services'])
 
+        web_services_installed = []
+        for package in front_data['packages']['web']:
+            if package[0] == 'Nginx' and package[2] == 'checked':
+                web_services_installed.append(('Nginx', 'nginx'))
+            elif package[0] == 'Apache 2' and package[2] == 'checked':
+                web_services_installed.append(('Apache', 'apache'))
+        web_service_lst = web_services_installed
+
         for port in front_data['ports']:
             if port['port'] == 8443:
                 web_service_lst = [
