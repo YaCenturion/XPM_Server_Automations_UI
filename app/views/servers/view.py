@@ -111,6 +111,7 @@ def add_on_server(task_type=False, target=False):
         'id': current_user.id,
     }
     front_data = {}
+    web_service_lst = web_services
     php_fpm_lst = php_versions
     php_fpm_old_path = False
     if target:
@@ -125,6 +126,13 @@ def add_on_server(task_type=False, target=False):
         if not php_fpm_lst:
             php_fpm_lst = php_versions
         php_fpm_old_path = get_php_fpm_path(front_data['php_fpm_services'])
+
+        for port in front_data['ports']:
+            if port['port'] == 8443:
+                web_service_lst = [
+                    ('Reverse proxy', 'reverse_proxy'),
+                ]
+                break
 
     if request.method == 'POST':
         printer(f'Get POST data from: /{request.endpoint}', ui_usr['name'])
@@ -181,13 +189,7 @@ def add_on_server(task_type=False, target=False):
         if not front_data['get_facts'][0]:
             text, cat = 'Warning! Read LOG carefully!', 'error'
             flash(text, cat)
-    web_service_lst = web_services
-    for port in front_data['ports']:
-        if port['port'] == 8443:
-            web_service_lst = [
-                ('Reverse proxy', 'reverse_proxy'),
-            ]
-            break
+
     return render_template(
         'servers/add.html', query=target, task_type=task_type, data=front_data,
         php_lst=php_fpm_lst, web_service_lst=web_service_lst, user=current_user, ver=ver)
