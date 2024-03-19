@@ -1,13 +1,35 @@
 import json
-from flask import redirect, url_for, flash
+from flask import flash
 from app.utils.main_utils import *
 from app.views.servers.ansible_patterns.roles_pattern_pool import packages_action, roles
 from app.views.servers.ansible_utils import pb_generate_save_execute_delete
 from config import linux_packages_dict, playbooks_lst
 
 
+def get_credentials(log):
+    credential_pool = {
+        'db': False,
+        'ftp': False,
+    }
+    if 'return_vhost_credentials' in log:
+        short_log = str(log).split("Output Credentials")[1].split("=> ")[1].split('PLAY RECAP')[0].strip()
+        cred = json.loads(short_log)
+        if 'db' in cred['msg']:
+            # db_log = str(log).split("Output DB credentials")[1].split("=> ")[1]
+            # db_log = db_log.split('}')[0].strip()
+            # db_cred = json.loads(db_log + '}')
+            # print('>>>>>>>>>>>>>>>>>>>', db_cred)
+            credential_pool['db'] = cred['msg']['db']  # ["db_name: foo", "db_username: foo", "user_pass: foo"]
+        if 'ftp' in cred['msg']:
+            # ftp_log = str(log).split("Output FTP credentials")[1].split("=> ")[1].split('}')[0].strip()
+            # ftp_cred = json.loads(ftp_log + '}')
+            # print('>>>>>>>>>>>>>>>>>>>', ftp_cred)
+            credential_pool['ftp'] = cred['msg']['ftp']  # ["ftp_user: foo", "ftp_pass: foo"]
+    return credential_pool
+
+
 def handler_facts(log):
-    facts_str = log.split("Display RESULT")[1].split("=> ")[1].split("PLAY RECAP")[0].strip()
+    facts_str = str(log).split("Display RESULT")[1].split("=> ")[1].split("PLAY RECAP")[0].strip()
     all_facts = json.loads(facts_str)
     main_facts = all_facts['msg'][0]
 
