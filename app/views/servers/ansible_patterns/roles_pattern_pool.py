@@ -25,6 +25,8 @@ roles = {
     'db': {
         'db': {'role': 'create_db'},  # absent|present
         'user': {'role': 'create_db_user'},  # absent|present
+        'mysql_secure_installation': {'role': 'mysql_secure_installation'},  # absent|present
+        'mysql_cleaner': {'role': 'mysql_cleaner'},  # absent|present
     },
     'web': {
         'create_php_fpm_sock': {'role': 'create_php_fpm_sock'},
