@@ -96,6 +96,13 @@ def add_packages_action(packages, action):
                 additional_role = roles['web']["nginx_default_set"]
             else:
                 additional_role = False
+        elif package == 'mysql':
+            if action == 'absent':
+                additional_role = roles['db']["mysql_cleaner"]
+            elif action == 'latest':
+                additional_role = roles['db']["mysql_secure_installation"]
+            else:
+                additional_role = False
 
     return additional_role
 
