@@ -20,7 +20,7 @@ roles = {
         'install_mysql_module': {'role': 'install_mysql_module'},
         
         'packages_action': {'role': 'packages_action'},
-        'return_vhost_credentials': {'role': 'return_vhost_credentials'},
+        'return_credentials': {'role': 'return_credentials'},
     },
     'db': {
         'db': {'role': 'create_db'},  # absent|present
@@ -63,7 +63,7 @@ def add_new_virtualhost(web_server):
             (roles['web']['ftp_user'],),
             (roles['web'][f'restart_nginx'],),
             (roles['web'][f'restart_apache'],),
-            (roles['system'][f'return_vhost_credentials'],),
+            (roles['system'][f'return_credentials'],),
         ]
     else:
         roles_pool = [
@@ -78,7 +78,7 @@ def add_new_virtualhost(web_server):
             (roles['web'][f'create_{web_server}_virtualhost'],),
             (roles['web']['ftp_user'],),
             (roles['web'][f'restart_{web_server}'],),
-            (roles['system'][f'return_vhost_credentials'],),
+            (roles['system'][f'return_credentials'],),
         ]
     return roles_pool
 
