@@ -103,6 +103,6 @@
 </div>
 {%- endmacro %}
 
-{%- macro group_submit(label="Submit", id='', type="submit", disabled="", class_addon="") -%}
-    <button class="btn btn-danger btn-custom {{ class_addon }}" type="{{ type }}" id="{{ id }}" {{ disabled }}>{{ label|safe }}</button>
+{%- macro group_submit(label="Submit", id='', type="submit", disabled="", class_addon=" btn-danger btn-custom") -%}
+    <button class="btn {{ class_addon }}" type="{{ type }}" id="{{ id }}" {{ disabled }}>{{ label|safe }}</button>
 {%- endmacro %}
