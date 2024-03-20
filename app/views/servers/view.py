@@ -183,24 +183,7 @@ def add_on_server(task_type=False, target=False):
 
             text, cat, log = pb_generate_save_execute_delete(ssh, target, playbook_sets, ui_usr['name'])
             if log:
-                cred_pool = get_credentials(log)
-                text += "<br /><br /> ************** <strong>ATTENTION!</strong> ************* <br />"
-                if cred_pool['db']:
-                    text += f'>> <strong>Save DB credentials:</strong><br />'
-                    for row in cred_pool['db']:
-                        key, val = str(row).split(': ')
-                        text += f'>>>> <strong>{key}:</strong> {val}<br />'
-                if cred_pool['ftp']:
-                    text += f'<br /> >> <strong>Save FTP credentials:</strong><br />'
-                    for row in cred_pool['ftp']:
-                        key, val = str(row).split(': ')
-                        text += f'>>>> <strong>{key}:</strong> {val}<br />'
-                if cred_pool['mysql']:
-                    text += f'<br /> >> <strong>Save MySQL credentials:</strong><br />'
-                    for row in cred_pool['mysql']:
-                        key, val = str(row).split(': ')
-                        text += f'>>>> <strong>{key}:</strong> {val}<br />'
-                text += "<br /><br /> **** You <strong>MUST SAVE INFO</strong> into PasswordState! **** <br />"
+                text = get_credentials(log, text)
             if cat in ('error', 'warning'):
                 return redirect(url_for('.server'))
 

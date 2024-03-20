@@ -6,25 +6,31 @@ from app.views.servers.ansible_utils import pb_generate_save_execute_delete
 from config import linux_packages_dict, playbooks_lst
 
 
-def get_credentials(log):
-    credential_pool = {
-        'db': False,
-        'ftp': False,
-        'mysql': False,
-    }
+def get_credentials(log, text):
     if 'return_credentials' in log:
+        text += "<br /><br /> ************** <strong>ATTENTION!</strong> ************* <br />"
         short_log = str(log).split("Output Credentials")[1].split("=> ")[1].split('PLAY RECAP')[0].strip()
         cred = json.loads(short_log)
         if 'db' in cred['msg']:
             if cred['msg']['db']:
-                credential_pool['db'] = cred['msg']['db']  # ["db_name: foo", "db_username: foo", "user_pass: foo"]
+                text += f'>> <strong>Save DB credentials:</strong><br />'
+                for row in cred['msg']['db']:
+                    key, val = str(row).split(': ')
+                    text += f'>>>> <strong>{key}:</strong> {val}<br />'
         if 'ftp' in cred['msg']:
             if cred['msg']['ftp']:
-                credential_pool['ftp'] = cred['msg']['ftp']  # ["ftp_user: foo", "ftp_pass: foo"]
+                text += f'<br /> >> <strong>Save FTP credentials:</strong><br />'
+                for row in cred['msg']['ftp']:
+                    key, val = str(row).split(': ')
+                    text += f'>>>> <strong>{key}:</strong> {val}<br />'
         if 'mysql' in cred['msg']:
             if cred['msg']['mysql']:
-                credential_pool['mysql'] = cred['msg']['mysql']  # ["ftp_user: foo", "ftp_pass: foo"]
-    return credential_pool
+                text += f'<br /> >> <strong>Save MySQL credentials:</strong><br />'
+                for row in cred['msg']['mysql']:
+                    key, val = str(row).split(': ')
+                    text += f'>>>> <strong>{key}:</strong> {val}<br />'
+        text += "<br /><br /> **** You <strong>MUST SAVE INFO</strong> into PasswordState! **** <br />"
+    return text
 
 
 def handler_facts(log):
@@ -106,51 +112,55 @@ def add_packages_action(packages, action):
     return additional_role
 
 
+def packages_action_playbook(target, state, pkg_pool, ui_usr, addons=False):
+    pb_sets = {
+        'user_id': ui_usr['id'],
+        'username': ui_usr['name'],
+        'filename': f"{str(int(time.time()))}_{target}",
+        'name': f'Update packages for: {target}',
+        'target': target,
+        'vars': {
+            "packages": pkg_pool,
+            "action": state,
+        },
+        'roles': packages_action(addons),
+    }
+    return pb_sets
+
+
+def pkg_action_constructor(data, action, ssh, target, ui_usr, msg_text, full_log):
+    pkg_names_pool = ','.join(data)
+    additional_role = add_packages_action(data, action)
+    playbook_sets = packages_action_playbook(target, action, pkg_names_pool, ui_usr, additional_role)
+    text, cat, ssh_log = pb_generate_save_execute_delete(ssh, target, playbook_sets, ui_usr['name'])
+    if ssh_log:
+        text = get_credentials(ssh_log, text)
+    msg_text += text
+    full_log += ssh_log
+    status = True
+    if cat == 'error':
+        status = False
+    return status, ssh_log, full_log, msg_text
+
+
 def update_server_packages(front_data, update_pool, ssh, target, ui_usr):
-    def packages_action_playbook(state, pkg_pool, addons=False):
-        pb_sets = {
-            'user_id': ui_usr['id'],
-            'username': ui_usr['name'],
-            'filename': f"{str(int(time.time()))}_{target}",
-            'name': f'Update packages for: {target}',
-            'target': target,
-            'vars': {
-                "packages": pkg_pool,
-                "action": state,
-            },
-            'roles': packages_action(addons),
-        }
-        return pb_sets
-    
     full_log = ''
+    msg_text = ''
     front_data['update_delete'] = [True, 'Not used']
     front_data['update_install'] = [True, 'Not used']
 
     if update_pool['delete']:
-        action = "absent"
-        pkg_names_pool = ','.join(update_pool['delete'])
-        additional_role = add_packages_action(update_pool['delete'], action)
-        playbook_sets = packages_action_playbook(action, pkg_names_pool, additional_role)
-        text, cat, ssh_log = pb_generate_save_execute_delete(ssh, target, playbook_sets, ui_usr['name'])
-        full_log += ssh_log
-        
-        status = True
-        if cat == 'error':
-            status = False
+        status, ssh_log, full_log, msg_text = pkg_action_constructor(
+            update_pool['delete'], "absent", ssh, target, ui_usr, msg_text, full_log
+        )
         front_data['update_delete'] = [status, ssh_log]
     if update_pool['install']:
-        action = "latest"
-        pkg_names_pool = ','.join(update_pool['install'])
-        additional_role = add_packages_action(update_pool['install'], action)
-        playbook_sets = packages_action_playbook(action, pkg_names_pool, additional_role)
-        text, cat, ssh_log = pb_generate_save_execute_delete(ssh, target, playbook_sets, ui_usr['name'])
-        full_log += ssh_log
-
-        status = True
-        if cat == 'error':
-            status = False
+        status, ssh_log, full_log, msg_text = pkg_action_constructor(
+            update_pool['install'], "latest", ssh, target, ui_usr, msg_text, full_log
+        )
         front_data['update_install'] = [status, ssh_log]
-    return front_data, full_log
+
+    return front_data, full_log, msg_text
 
 
 def get_facts(front_data, ssh, target, username):

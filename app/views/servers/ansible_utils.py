@@ -209,9 +209,9 @@ def pb_generate_save_execute_delete(ssh, target, playbook_sets, username):
         current_task.status = status
         current_task.exec_log = ssh_log
         db.session.commit()
-        text, cat, log = 'Success! Playbook executed!', 'success', ssh_log
+        text, cat, log = '<strong>Success!</strong> Playbook executed!<br>', 'success', ssh_log
     else:
-        text, cat, log = f'ERROR: save task to DB', 'error', False
+        text, cat, log = f'<strong>ERROR:</strong> save task to DB<br>', 'error', False
     
     # Delete playbook after execute:
     exec_ssh_command(ssh, f'{playbooks_lst["delete_yml"]}{playbook_sets["filename"]}.yml', username)
