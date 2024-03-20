@@ -10,21 +10,20 @@ def get_credentials(log):
     credential_pool = {
         'db': False,
         'ftp': False,
+        'mysql': False,
     }
-    if 'return_vhost_credentials' in log:
+    if 'return_credentials' in log:
         short_log = str(log).split("Output Credentials")[1].split("=> ")[1].split('PLAY RECAP')[0].strip()
         cred = json.loads(short_log)
         if 'db' in cred['msg']:
-            # db_log = str(log).split("Output DB credentials")[1].split("=> ")[1]
-            # db_log = db_log.split('}')[0].strip()
-            # db_cred = json.loads(db_log + '}')
-            # print('>>>>>>>>>>>>>>>>>>>', db_cred)
-            credential_pool['db'] = cred['msg']['db']  # ["db_name: foo", "db_username: foo", "user_pass: foo"]
+            if cred['msg']['db']:
+                credential_pool['db'] = cred['msg']['db']  # ["db_name: foo", "db_username: foo", "user_pass: foo"]
         if 'ftp' in cred['msg']:
-            # ftp_log = str(log).split("Output FTP credentials")[1].split("=> ")[1].split('}')[0].strip()
-            # ftp_cred = json.loads(ftp_log + '}')
-            # print('>>>>>>>>>>>>>>>>>>>', ftp_cred)
-            credential_pool['ftp'] = cred['msg']['ftp']  # ["ftp_user: foo", "ftp_pass: foo"]
+            if cred['msg']['ftp']:
+                credential_pool['ftp'] = cred['msg']['ftp']  # ["ftp_user: foo", "ftp_pass: foo"]
+        if 'mysql' in cred['msg']:
+            if cred['msg']['mysql']:
+                credential_pool['mysql'] = cred['msg']['mysql']  # ["ftp_user: foo", "ftp_pass: foo"]
     return credential_pool
 
 

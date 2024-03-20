@@ -195,7 +195,12 @@ def add_on_server(task_type=False, target=False):
                     for row in cred_pool['ftp']:
                         key, val = str(row).split(': ')
                         text += f'>>>> <strong>{key}:</strong> {val}<br />'
-                text += "<br /><br /> **** You <strong>MUST SAVE</strong> info into PasswordState! **** <br />"
+                if cred_pool['mysql']:
+                    text += f'<br /> >> <strong>Save MySQL credentials:</strong><br />'
+                    for row in cred_pool['mysql']:
+                        key, val = str(row).split(': ')
+                        text += f'>>>> <strong>{key}:</strong> {val}<br />'
+                text += "<br /><br /> **** You <strong>MUST SAVE INFO</strong> into PasswordState! **** <br />"
             if cat in ('error', 'warning'):
                 return redirect(url_for('.server'))
 
