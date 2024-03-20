@@ -50,7 +50,6 @@ ui_users = [
     ('boris', 'Boris Drozdovski', 'boris.d@expim.co.il', 'xriT8o]xZ7549E2', 1),
     ('liron', 'Liron Hadad', 'liron@expim.co.il', '4P9pVn#uyAscxwwF', 1),
     ('ofir', 'Ofir Hadad', 'ofir@expim.co.il', 'MasterOfUniverse', 1),
-    ('michal.t', 'Michal Turner', 'michal.t@expim.co.il', '9T].X^TRtaWK~E', 3),
 
     ('amit.z', 'Amit Zertal', 'amit.z@expim.co.il', '9.DE9v>FdaP=nn', 2),
     ('david.b', 'David Binaev', 'david.b@expim.co.il', 'RC@X9x1L_4_W>=', 2),
@@ -59,4 +58,5 @@ ui_users = [
     ('rafaela.g', 'Rafaela Garnaga', 'rafaela.g@expim.co.il', 'Ra060365!', 2),
     ('ran.k', 'Ran Kantor', 'ran.k@expim.co.il', 'y6T_1FWmiwbR)g', 2),
     ('shaked.l', 'Shaked Levi', 'shaked.l@expim.co.il', '5~mE6HV3RcsdtE', 2),
+    ('michal.g', 'Michal Gelman', 'michal.g@expim.co.il', 'v9G)xTFUGRBxfs', 2),
 ]
