@@ -19,7 +19,7 @@ class Users(UserMixin, db.Model):
     name = db.Column(db.String(64))
     email = db.Column(db.String(120), unique=True)
     password_hash = db.Column(db.String(128))
-    app_role = db.Column(db.Integer, default=3)  # Root: 0, Admin: 1, Ops: 2
+    app_role = db.Column(db.Integer, default=3)  # Root: 0, Admin: 1, Ops: 2, Office: 3
     create = db.Column(db.Integer, default=int(time.time()))
     reserved = db.Column(db.String(300), default=None)
 
