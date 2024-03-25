@@ -76,10 +76,6 @@
                                                 <div class="input-group mb-4">
                                                     {{ fields.input('Root-user:', 'remote_user_login', value, "") }}
                                                     {{ fields.input('Password:', 'remote_user_pass', value, "", type='password') }}
-{#                                                    <span class="input-group-text" id="srv_username-label">Remote root login:</span>#}
-{#                                                    <input type="text" class="form-control" placeholder="" aria-label="srv_username" aria-describedby="srv_username" id="srv_username" name="srv_username" autocomplete="off" oninput="checkUsername()">#}
-{#                                                    <span class="input-group-text" id="srv_pass-label">password:</span>#}
-{#                                                    <input type="password" class="form-control" placeholder="" aria-label="srv_pass" aria-describedby="srv_pass" id="srv_pass" name="srv_pass" autocomplete="off">#}
                                                 </div>
                                                 <div class="input-group mb-4" id="windows_warning" style="display: none;">
                                                     <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -88,13 +84,9 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                        {% if query %}{{ fields.input_hidden(query, 'host_ip_address') }}{% endif %}
                                         {{ fields.submit(label='<i class="fa-solid fa-gamepad"></i> Get under control', id="submit", disabled="disabled") }}
                                         {{ fields.csrf() }}
-{#                                        <div class="row justify-content-center text-center">#}
-{#                                            <div class="mb-3">#}
-{#                                                <button class="btn btn-outline-secondary btn-outline-custom" type="submit" id="button-add-ansible"><i class="fa-solid fa-gears fa-shake"></i> Add & generate</button>#}
-{#                                            </div>#}
-{#                                        </div>#}
                                     </form>
 
                                 </div>
