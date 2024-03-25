@@ -91,7 +91,7 @@
 
 {# input_hidden #}
 {%- macro input_hidden(value='', name='') -%}
-    <input type="hidden" name="{{ name }}" value="{{ value }}">
+    <input type="hidden" name="{{ name }}" value="{{ value }}" id="input_{{ name }}">
 {%- endmacro %}
 
 {# submit #}
