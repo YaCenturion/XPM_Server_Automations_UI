@@ -40,7 +40,7 @@
                                         </div>
                                         <div class="row justify-content-center p-2">
                                             <div class="input-group text-start">
-                                                {% if not query %}{{ fields.input('IP adr:', 'host_ip_address', '', "internal ip", min_width="") }}{% endif %}
+                                                {% if not query %}{{ fields.input('IP address:', 'host_ip_address', '', "internal ip", min_width="") }}{% endif %}
                                                 {{ fields.input('Name:', 'host_desc', vm_name, "host description", min_width="") }}
                                             </div>
                                         </div>
@@ -68,7 +68,7 @@
                                                 {{ fields.group_radio('Utils', '_util', 'host_class') }}
                                             </div>
                                         </div>
-                                        <div class="bd-callout bd-callout-warning text-start code-tips" hidden="">
+                                        <div id="cpanel_warning" style="display: none;" class="bd-callout bd-callout-warning text-start code-tips">
                                             <p class="font-monospace">You need to 'login' to the cpanel server as your original user and run the example below:</p>
                                             <mark>$ <code class="language-xml user-select-all" data-lang="bash">echo 'xpmans' >> /etc/cagefs/exclude/disabled-by-cli && cagefsctl --force-update</code></mark>
                                         </div>
@@ -81,14 +81,14 @@
 {#                                                    <span class="input-group-text" id="srv_pass-label">password:</span>#}
 {#                                                    <input type="password" class="form-control" placeholder="" aria-label="srv_pass" aria-describedby="srv_pass" id="srv_pass" name="srv_pass" autocomplete="off">#}
                                                 </div>
-                                                <div class="input-group mb-4" id="warning" style="display: none;">
+                                                <div class="input-group mb-4" id="windows_warning" style="display: none;">
                                                     <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                                                        <i class="fa-solid fa-triangle-exclamation"></i> If this is a Windows Server, stop, it won't work!
+                                                        <i class="fa-solid fa-triangle-exclamation"></i> If this is a Windows Server, stop!<br />It won't work!
                                                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                                     </div>
                                                 </div>
                                             </div>
-                                        {{ fields.submit(label='<i class="fa-solid fa-gamepad"></i> Get under control', id="button-add-ansible") }}
+                                        {{ fields.submit(label='<i class="fa-solid fa-gamepad"></i> Get under control', id="submit", disabled="disabled") }}
                                         {{ fields.csrf() }}
 {#                                        <div class="row justify-content-center text-center">#}
 {#                                            <div class="mb-3">#}
@@ -128,4 +128,82 @@
 
 {#{% block main_bottom %}<h5>bottom</h5>{% endblock %}#}
 
-{% block custom_scripts %}{% endblock %}
+{% block custom_scripts %}
+    <script>
+        // проверка условий для form
+        function checkForm() {
+            let inv_group = document.getElementById('inv_group').value;
+            let priority_id = document.getElementById('input_priority_id').value;
+            let host_desc = document.getElementById('input_host_desc').value;
+            let host_ip_address = document.getElementById('input_host_ip_address').value;
+            let host_port = document.getElementById('input_host_port').value;
+            let remote_user_login = document.getElementById('input_remote_user_login').value;
+            let remote_user_pass = document.getElementById('input_remote_user_pass').value;
+            let host_mode_selected = document.querySelector('input[name="host_mode"]:checked');
+            let host_class_selected = document.querySelector('input[name="host_class"]:checked');
+
+            // Проверка условий
+            if (inv_group && priority_id && host_desc && host_ip_address && host_port && remote_user_login && remote_user_pass && host_mode_selected && host_class_selected) {
+                document.getElementById('submit').removeAttribute('disabled');
+            } else {
+                document.getElementById('submit').setAttribute('disabled', 'disabled');
+            }
+        }
+
+        // Слушаем изменения в полях формы и при изменении вызываем функцию проверки
+        document.addEventListener('DOMContentLoaded', function () {
+            let inputs = document.querySelectorAll('#expim-form input, #expim-form select');
+            inputs.forEach(function (input) {
+                input.addEventListener('change', checkForm);
+            });
+            let radios = document.querySelectorAll('#expim-form input[type="radio"]');
+            radios.forEach(function (radio) {
+                radio.addEventListener('click', checkForm);
+            });
+        });
+    </script>
+
+    <script>
+        // for 'CPanel' and 'administrator'
+        document.addEventListener('DOMContentLoaded', function() {
+            let hostClassRadios = document.querySelectorAll('input[name="host_class"]');
+            let cpanelWarningDiv = document.getElementById('cpanel_warning');
+            let remoteUserInput = document.getElementById('input_remote_user_login');
+            let winWarningDiv = document.getElementById('windows_warning');
+
+            // Функция для проверки выбранной опции и отображения/скрытия предупреждения
+            function checkCpanel() {
+                // Используем цикл for для прерывания при выполнении условия
+                for (let i = 0; i < hostClassRadios.length; i++) {
+                    if (hostClassRadios[i].checked && hostClassRadios[i].value === '_cpanel') {
+                        cpanelWarningDiv.style.display = 'block';
+                        return; // После показа предупреждения выходим из функции
+                    }
+                }
+                // Если ни одна опция не выбрана или выбрана не CPanel, скрываем предупреждение
+                cpanelWarningDiv.style.display = 'none';
+            }
+
+            function checkUsername() {
+                if (remoteUserInput.value.toLowerCase() === 'administrator') {
+                    // Показать предупреждение, если введен 'administrator'
+                    winWarningDiv.style.display = 'block';
+                } else {
+                    // Скрыть предупреждение, если введено что-то другое
+                    winWarningDiv.style.display = 'none';
+                }
+            }
+
+            // Вызываем функции проверки сразу после загрузки страницы
+            checkCpanel();
+            checkUsername();
+
+            // Слушаем изменения
+            hostClassRadios.forEach(function(radio) {
+                radio.addEventListener('change', checkCpanel);
+            });
+
+            remoteUserInput.addEventListener('change', checkUsername);
+        });
+    </script>
+{% endblock %}
