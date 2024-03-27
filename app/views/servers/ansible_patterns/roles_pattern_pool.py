@@ -78,7 +78,7 @@ def add_new_virtualhost(web_server):
             (roles['web'][f'create_{web_server}_virtualhost'],),
             (roles['web']['ftp_user'],),
             (roles['web'][f'restart_{web_server}'],),
-            (roles['system'][f'return_credentials'],),
+            (roles['system']['return_credentials'],),
         ]
     return roles_pool
 
