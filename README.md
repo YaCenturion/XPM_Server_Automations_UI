@@ -4,7 +4,7 @@ These are various tools for use for VMs.
 Latest stable version: http://vms.expim.local
 
 
-# `>` Imortant Docker preset
+# `>` Important Docker preset
 
 Before deploy:
 - `sudo systemctl stop docker`

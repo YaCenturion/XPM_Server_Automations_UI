@@ -70,7 +70,9 @@ def server(target=False):
                 if request.form['update'] == 'true':
                     printer(f'User starting to update packages')
                     update_pool = get_packages_changes(request.form.items())
-                    front_data, update_logs, msg_text = update_server_packages(front_data, update_pool, ssh, target, ui_usr)
+                    front_data, update_logs, msg_text = update_server_packages(
+                        front_data, update_pool, ssh, target, ui_usr
+                    )
                     full_log += update_logs + "=" * 30 + "\n"
                     if not front_data['update_delete'][0] or not front_data['update_install'][0]:
                         text, cat = f'{msg_text}<br />Warning! Read LOG carefully!', 'error'
@@ -301,7 +303,7 @@ def get_ansible_control(target=False):
         deploy_updated_inventory(ssh, inventory, inventory_ini, sub_inv, ui_usr['name'])
 
         # Local saving inventory
-        save_inventory_local(filename_inv, inventory, inventory_ini)
+        save_inventory_local(filename_inv, inventory)
 
         close_ssh(ssh, ui_usr['name'])
         text += ' Inventory updated!'

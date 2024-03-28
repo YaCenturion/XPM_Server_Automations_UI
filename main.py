@@ -15,12 +15,13 @@ def recreate_db():
 
 
 def run_shell():
-    def make_shell_context():
-        return dict(app=app, db=db, Users=Users, Role=user_app_role_lst)
+    # def make_shell_context():
+    #     return dict(app=app, db=db, Users=Users, Role=user_app_role_lst)
 
     # manager.add_command('shell', Shell(make_context=make_shell_context))
     # manager.add_command('db', MigrateCommand)
     # manager.add_command('runserver', Server(host="0.0.0.0"))
+    pass
 
 
 def starter():
