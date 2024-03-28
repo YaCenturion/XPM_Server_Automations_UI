@@ -4,6 +4,7 @@ pipeline {
     environment {
         REMOTE_DEPLOY_DIRECTORY = "/srv/ExpimOpsUI"
         IMG_NAME = "expim-ops"
+        IMG_PREFIX = "master"
     }
 
     stages {
@@ -62,7 +63,7 @@ pipeline {
                     transfers: [
                         sshTransfer(
                             cleanRemote: false, excludes: '',
-                            execCommand: "cd \"${env.REMOTE_DEPLOY_DIRECTORY}\" && chmod +x start.sh automation.sh && bash automation.sh . ${IMG_NAME} $BUILD_NUMBER",
+                            execCommand: "cd \"${env.REMOTE_DEPLOY_DIRECTORY}\" && chmod +x start.sh automation.sh && bash automation.sh . ${IMG_NAME} $BUILD_NUMBER ${IMG_PREFIX}",
                             execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false,
                             patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false,
                             removePrefix: '', sourceFiles: ''

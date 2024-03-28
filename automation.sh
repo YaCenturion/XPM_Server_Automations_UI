@@ -17,12 +17,12 @@ tag_version="${3:-'_no_revision'}"
 tag_prefix="${4:-'no_tag_prefix'}"
 
 if [[ "$tag_prefix" == "master" || "$tag_prefix" == "prod" || "$tag_prefix" == "main" ]]; then
-    docker_port=80
+  docker_port=80
 else
-    docker_port=8080
-    echo -e "############ WARNING! ############"
-    echo -e "Docker port: $docker_port"
-    echo -e "############# ###### #############"
+  docker_port=8080
+  echo -e "############ WARNING! ############"
+  echo -e "Docker port: $docker_port"
+  echo -e "############# ###### #############"
 fi
 
 if [ "$folder" == "." ]; then
