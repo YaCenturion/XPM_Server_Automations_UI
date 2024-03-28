@@ -9,62 +9,61 @@
 # Result like: expim-ops:master-v73
 
 
+################## DOCKER CHECK-UP ######################
+if ! command -v docker &>/dev/null; then
+    echo ">>> >>> --- ERROR: Docker not found"
+    exit 1
+fi
+
 ################## GET VARS ######################
-#if [[ $# -eq 3 ]]; then
-folder="${1:-'/srv/SandBox'}"
-docker_name="${2:-'expim_NotSetName'}"
-tag_version="${3:-'_no_revision'}"
-tag_prefix="${4:-'no_tag_prefix'}"
+app_folder="${1:-/srv/SandBox}"
+docker_name="${2:-expim_NotSetName}"
+tag_version="${3:-_no_revision}"
+tag_prefix="${4:-_no_tag_prefix}"
+docker_port=80
+[[ ! $tag_prefix =~ ^(master|prod|main)$ ]] && docker_port=8080 && echo ">>> >>> >>> INFO: Docker use special port: $docker_port"
 
-if [[ "$tag_prefix" == "master" || "$tag_prefix" == "prod" || "$tag_prefix" == "main" ]]; then
-  docker_port=80
-else
-  docker_port=8080
-  echo -e "############ WARNING! ############"
-  echo -e "Docker port: $docker_port"
-  echo -e "############# ###### #############"
-fi
 
-if [ "$folder" == "." ]; then
-  # Set folder to the current working directory if the first argument is "."
-  folder=$(pwd)
+# Set folder to the current working directory if the first argument is "."
+if [ "$app_folder" == "." ]; then
+  app_folder=$(pwd)
 fi
+db_folder=$(dirname "$app_folder")/db
+# Add DB folder if not exist
+mkdir -p "$db_folder"
+
+
+# Check Docker container name
 if [ "$docker_name" == "expim_NotSetName" ]; then
-  echo -e "############ WARNING! ############"
-  echo -e "FOLDER: $folder , TAG-PREFIX: $tag_prefix and TAG: $tag_version"
-  echo -e "############# ###### #############"
+  echo ">>> >>> --- WARNING! Not set Docker container name. Using: $docker_name"
 fi
 
 
-echo -e "############ Docker stop & clear ############"
+################## BUIDL & RUN DOCKER ######################
+# Docker stop & clear
 docker ps -a
 docker stop "$docker_name"
 docker rm "$docker_name"
 docker container prune -f
 
 
-echo -e "############ Build container $docker_name:$tag_prefix-v$tag_version ############"
+echo -e ">>> >>> >>> INFO: Build container $docker_name:$tag_prefix-v$tag_version"
 docker build -t "$docker_name":"$tag_prefix"-v"$tag_version" .
 
 
-echo -e "############ Checking docknet ############"
+# Checking docknet
 NETWORK_NAME="docknet"
-if docker network inspect $NETWORK_NAME &>/dev/null; then
-  echo "Network '$NETWORK_NAME' already exist."
-else
+if ! docker network inspect "$NETWORK_NAME" &>/dev/null; then
     # Create docker network
-    if docker network create --subnet=172.29.3.0/16 $NETWORK_NAME; then
-        echo "Network '$NETWORK_NAME' created."
-    else
-        echo "Error when try create network: '$NETWORK_NAME'."
+    if ! docker network create --subnet=172.29.3.0/16 $NETWORK_NAME; then
+        echo ">>> >>> --- ERROR: When try create network: $NETWORK_NAME."
         exit 1
     fi
 fi
 
 
-echo -e "############ Run container $docker_name:$tag_prefix-v$tag_version ############"
-docker run -d -e APP_BUILD_VERSION="$tag_version" -v "$folder"/instance:/app/instance -p "$docker_port":5000 --network=docknet --name "$docker_name" --restart=unless-stopped "$docker_name":"$tag_prefix"-v"$tag_version"
-
-
-echo -e "############ Container started successfully ############"
-exit 0
+echo -e ">>> >>> >>> INFO: Run container $docker_name:$tag_prefix-v$tag_version"
+docker run -d -e APP_BUILD_VERSION="$tag_version" -v "$db_folder"/instance:/app/instance -p "$docker_port":5000 --network=docknet --name "$docker_name" --restart=unless-stopped "$docker_name":"$tag_prefix"-v"$tag_version" || {
+    echo ">>> >>> --- ERROR: When running Docker container."
+    exit 1
+}
