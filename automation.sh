@@ -63,7 +63,7 @@ fi
 
 
 echo -e ">>> >>> >>> INFO: Run container $docker_name:$tag_prefix-v$tag_version"
-docker run -d -e APP_BUILD_VERSION="$tag_version" -v "$db_folder"/instance:/app/instance -p "$docker_port":5000 --network=docknet --name "$docker_name" --restart=unless-stopped "$docker_name":"$tag_prefix"-v"$tag_version" || {
+docker run -d -e APP_BUILD_VERSION="$tag_version" -v "$db_folder":/app/instance -p "$docker_port":5000 --network=docknet --name "$docker_name" --restart=unless-stopped "$docker_name":"$tag_prefix"-v"$tag_version" || {
     echo ">>> >>> --- ERROR: When running Docker container."
     exit 1
 }
