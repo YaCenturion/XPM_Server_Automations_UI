@@ -111,13 +111,15 @@
                                                             <th scope="col" class="align-middle text-center">:3306</th>
                                                             <th scope="col" class="align-middle text-center">:8011</th>
                                                             <th scope="col" class="align-middle text-center">:8443</th>
+                                                            <th scope="col" class="align-middle text-center">:8080</th>
+                                                            <th scope="col" class="align-middle text-center">:10050</th>
                                                             <th scope="col" class="align-middle text-center">:11211</th>
                                                             <th scope="col" class="align-middle text-center">:6081</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                     {% for port in data['ports'] %}
-                                                        {% if port["port"]|int in (80, 443, 21, 3306, 8011, 8443, 11211, 6081) %}
+                                                        {% if port["port"]|int in (80, 443, 21, 3306, 8011, 8080, 8443, 11211, 6081) %}
                                                         <tr>
                                                             <td>{{ port["name"] }}  <span class="badge rounded-pill text-{% if ':' not in port['address'] %}success{% else %}danger{% endif %}-emphasis bg-{% if ':' not in port['address'] %}success{% else %}danger{% endif %}-subtle border-{% if ':' not in port['address'] %}success{% else %}danger{% endif %}-subtle border">{% if ':' not in port['address'] %}IPv4{% else %}IPv6{% endif %}</span></td>
                                                             <td class="align-middle text-center">{% if port['port'] == 80 %}<i class="fa-solid fa-square-check text-success"></i>{% endif %}</td>
@@ -126,6 +128,8 @@
                                                             <td class="align-middle text-center">{% if port['port'] == 3306 %}<i class="fa-solid fa-square-check text-success"></i>{% endif %}</td>
                                                             <td class="align-middle text-center">{% if port['port'] == 8011 %}<i class="fa-solid fa-square-check text-success"></i>{% endif %}</td>
                                                             <td class="align-middle text-center">{% if port['port'] == 8443 %}<i class="fa-solid fa-square-check text-success"></i>{% endif %}</td>
+                                                            <td class="align-middle text-center">{% if port['port'] == 8080 %}<i class="fa-solid fa-square-check text-success"></i>{% endif %}</td>
+                                                            <td class="align-middle text-center">{% if port['port'] == 10050 %}<i class="fa-solid fa-square-check text-success"></i>{% endif %}</td>
                                                             <td class="align-middle text-center">{% if port['port'] == 11211 %}<i class="fa-solid fa-square-check text-success"></i>{% endif %}</td>
                                                             <td class="align-middle text-center">{% if port['port'] == 6081 %}<i class="fa-solid fa-square-check text-success"></i>{% endif %}</td>
                                                         </tr>
